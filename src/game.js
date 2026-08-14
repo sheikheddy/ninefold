@@ -2226,13 +2226,14 @@ function shedHairPath() {
   let x = margin + Math.random() * (width - margin * 2);
   let y = margin + Math.random() * (height - margin * 2);
   let heading = Math.random() * Math.PI * 2;
-  let curvature = (Math.random() - .5) * .1;
-  const steps = 150 + Math.floor(Math.random() * 150);
+  let curvature = (Math.random() - .5) * .06;
+  // Long fine hair: gentle drifting curves, only the rare soft loop.
+  const steps = 380 + Math.floor(Math.random() * 220);
   const points = [{ x, y }];
   for (let i = 0; i < steps; i += 1) {
-    curvature += (Math.random() - .5) * .035;
-    curvature = Math.max(-.24, Math.min(.24, curvature));
-    if (Math.random() < .025) curvature = (Math.random() - .5) * .5; // a sudden kink
+    curvature += (Math.random() - .5) * .016;
+    curvature = Math.max(-.13, Math.min(.13, curvature));
+    if (Math.random() < .008) curvature = (Math.random() - .5) * .3; // a soft turn
     heading += curvature;
     x += Math.cos(heading) * 3.1;
     y += Math.sin(heading) * 3.1;
@@ -2268,8 +2269,8 @@ function drawHairStrand(strand) {
     });
     hairCtx.stroke();
   };
-  drawPass(0, 0, strand.color, 1.25, strand.alpha);
-  drawPass(.7, -.7, 'rgba(140,104,72,.3)', .45, strand.alpha); // a thin sheen along one edge
+  drawPass(0, 0, strand.color, .75, strand.alpha);
+  drawPass(.5, -.5, 'rgba(140,104,72,.22)', .3, strand.alpha); // a thin sheen along one edge
 }
 
 function drawHair(time) {
@@ -2294,8 +2295,8 @@ function drawHair(time) {
       } else return;
     }
     if (strand.landing) {
-      strand.alpha = Math.min(.85, strand.alpha + .03);
-      if (strand.alpha >= .85) strand.landing = false;
+      strand.alpha = Math.min(.55, strand.alpha + .02);
+      if (strand.alpha >= .55) strand.landing = false;
     }
     if (strand.wipe) {
       strand.wipe.drift += 2.6;
