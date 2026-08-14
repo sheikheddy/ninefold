@@ -144,11 +144,23 @@ h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--v
 .section-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 20px; }
 .section-heading h2, .battle-heading h2, .modal h2 { font-size: 28px; letter-spacing: -.03em; margin: 0; }
 
-.team-slots { display: flex; gap: 7px; }
-.team-slot { width: 45px; height: 45px; border: 1px dashed #34415f; position: relative; display: grid; place-items: center; color: var(--dim); font-size: 11px; overflow: hidden; background: #080d1c; }
+.team-slots { display: flex; gap: 26px; }
+.team-slot { width: 45px; height: 45px; border: 1px dashed #34415f; position: relative; display: grid; place-items: center; color: var(--dim); font-size: 11px; overflow: visible; background: #080d1c; }
 .team-slot.filled { border-style: solid; border-color: var(--slot-color); background: color-mix(in srgb, var(--slot-color) 12%, #080d1c); }
-.team-slot canvas { width: 42px; height: 42px; }
-.team-slot canvas.slot-bloom { width: 33px; height: 33px; image-rendering: pixelated; }
+.team-slot canvas { width: 42px; height: 42px; position: relative; z-index: 1; }
+.team-slot canvas.slot-petals {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 112px;
+  height: 112px;
+  margin-left: -56px;
+  margin-top: -56px;
+  transform: none;
+  animation: none;
+  z-index: 0;
+  pointer-events: none;
+}
 
 .character-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
 .character-card {
@@ -406,7 +418,7 @@ h1 em {
 .mission-strip small, .mission-code { color: #b8ced0; }
 .mission-strip strong { color: var(--cream); text-shadow: 2px 2px 0 #0a0d10; }
 
-.team-slots { gap: 9px; }
+.team-slots { gap: 28px; }
 .team-slot {
   width: 47px;
   height: 55px;

@@ -625,33 +625,68 @@ function renderRoster() {
   renderTeamSlots();
 }
 
-// Empty slots count in clematis: a bud, a half-open flower, a full bloom.
-function drawSlotClematis(slotCtx, stage) {
-  const cell = (color, x, y, w = 1, h = 1) => {
-    slotCtx.fillStyle = color;
-    slotCtx.fillRect(x * 3, y * 3, w * 3, h * 3);
-  };
-  const petal = '#b394f0';
-  const deep = '#8a66d6';
-  cell('#46703c', 5, 8, 1, 2); // stem
-  cell('#5d8a4e', 4, 9, 1, 1);
-  if (stage === 0) {
-    cell('#5d8a4e', 4, 6, 1, 1); cell('#5d8a4e', 6, 6, 1, 1); // sepals
-    cell(deep, 4, 4, 3, 2); cell(petal, 5, 3, 1, 2); // the closed bud
-    return;
+// Each slot is a realistic clematis seen from above; the chosen character
+// stands in the middle as stigma, pistil, and ovary. Choosing plucks the
+// petals one by one — she loves me, she loves me not.
+const slotPetalMemory = [null, null, null];
+
+function drawSlotPetals(petalCtx, fallStart, now, includeCenter) {
+  petalCtx.clearRect(0, 0, 180, 180);
+  petalCtx.save();
+  petalCtx.scale(2, 2);
+  for (let i = 0; i < 8; i += 1) {
+    let drop = 0;
+    let spin = 0;
+    let alpha = 1;
+    if (fallStart) {
+      const dt = now - fallStart - i * 130;
+      if (dt > 0) {
+        drop = ((dt / 120) ** 1.6) * 6;
+        spin = (i % 2 ? 1 : -1) * dt * .0012;
+        alpha = Math.max(0, 1 - dt / 520);
+        if (alpha <= 0) continue;
+      }
+    }
+    petalCtx.save();
+    petalCtx.globalAlpha = alpha;
+    petalCtx.translate(45 + (i % 2 ? drop * .3 : -drop * .25), 45 + drop);
+    petalCtx.rotate((Math.PI / 4) * i + (i % 2 ? .12 : -.09) + spin);
+    const gradient = petalCtx.createLinearGradient(0, 10, 0, 42);
+    gradient.addColorStop(0, '#7d5ac8');
+    gradient.addColorStop(.55, '#a98ae6');
+    gradient.addColorStop(1, '#d9c9f7');
+    petalCtx.fillStyle = gradient;
+    petalCtx.beginPath();
+    petalCtx.moveTo(0, 20); // petals begin at the oval's rim and reach outward
+    petalCtx.bezierCurveTo(-9, 25, -8, 37, 0, 44);
+    petalCtx.bezierCurveTo(8, 37, 9, 25, 0, 20);
+    petalCtx.fill();
+    petalCtx.strokeStyle = 'rgba(84,56,140,.4)';
+    petalCtx.lineWidth = .8;
+    petalCtx.stroke();
+    petalCtx.strokeStyle = 'rgba(240,232,255,.55)'; // the pale central crease
+    petalCtx.lineWidth = 1.4;
+    petalCtx.beginPath();
+    petalCtx.moveTo(0, 24);
+    petalCtx.quadraticCurveTo(1, 33, 0, 41);
+    petalCtx.stroke();
+    petalCtx.restore();
   }
-  const cx = 5, cy = 5;
-  [[2, 0], [-2, 0], [0, 2], [0, -2]].forEach(([dx, dy]) => {
-    cell(petal, cx + dx, cy + dy, 1, 1);
-    cell(deep, cx + Math.sign(dx), cy + Math.sign(dy), 1, 1);
-  });
-  if (stage === 2) {
-    [[2, 2], [-2, 2], [2, -2], [-2, -2]].forEach(([dx, dy]) => {
-      cell(petal, cx + dx, cy + dy, 1, 1);
-      cell(deep, cx + Math.sign(dx), cy + Math.sign(dy), 1, 1);
-    });
+  if (includeCenter) {
+    for (let i = 0; i < 9; i += 1) { // nine waiting stamens, of course
+      const angle = (Math.PI * 2 * i) / 9 + .3;
+      petalCtx.strokeStyle = 'rgba(210,190,120,.9)';
+      petalCtx.lineWidth = 1.2;
+      petalCtx.beginPath();
+      petalCtx.moveTo(45, 45);
+      petalCtx.lineTo(45 + Math.cos(angle) * 6, 45 + Math.sin(angle) * 6);
+      petalCtx.stroke();
+      petalCtx.fillStyle = '#efe3a6';
+      petalCtx.fillRect(44 + Math.cos(angle) * 7, 44 + Math.sin(angle) * 7, 2, 2);
+    }
   }
-  cell('#efe3a6', cx, cy, 1, 1); // the cream center
+  petalCtx.restore();
+  petalCtx.globalAlpha = 1;
 }
 
 function renderTeamSlots() {
@@ -663,18 +698,31 @@ function renderTeamSlots() {
     slot.className = `team-slot${character ? ' filled' : ''}`;
     slot.style.setProperty('--slot-color', character?.accent || '#33405d');
     slot.setAttribute('aria-label', character ? `Slot ${i + 1}: ${character.name}` : `Slot ${i + 1}: empty`);
+    const petals = document.createElement('canvas');
+    petals.width = 180; petals.height = 180;
+    petals.className = 'slot-petals';
+    slot.appendChild(petals);
+    const petalCtx = petals.getContext('2d');
     if (character) {
       const mini = document.createElement('canvas');
       mini.width = 64; mini.height = 64;
       mini.dataset.characterId = character.id;
       drawPortrait(mini.getContext('2d'), character);
       slot.appendChild(mini);
+      if (slotPetalMemory[i] !== character.id && !hairStill) {
+        slotPetalMemory[i] = character.id;
+        const fallStart = performance.now();
+        const pluck = (now) => {
+          drawSlotPetals(petalCtx, fallStart, now, false);
+          if (now < fallStart + 1600 && petals.isConnected) requestAnimationFrame(pluck);
+        };
+        requestAnimationFrame(pluck);
+      } else {
+        slotPetalMemory[i] = character.id; // petals already fell for this keeper
+      }
     } else {
-      const bloom = document.createElement('canvas');
-      bloom.width = 33; bloom.height = 33;
-      bloom.className = 'slot-bloom';
-      drawSlotClematis(bloom.getContext('2d'), i);
-      slot.appendChild(bloom);
+      slotPetalMemory[i] = null;
+      drawSlotPetals(petalCtx, 0, 0, true);
     }
     teamSlots.appendChild(slot);
   }
@@ -2293,6 +2341,9 @@ document.addEventListener('pointermove', (event) => {
 function disturbStrand(strand) {
   if (hairStill) return;
   const touchRadius = 42;
+  let dragX = 0;
+  let dragY = 0;
+  let touched = 0;
   strand.points.forEach((point) => {
     const px = point.x + point.ox;
     const py = point.y + point.oy;
@@ -2302,14 +2353,26 @@ function disturbStrand(strand) {
     if (dist < touchRadius) {
       const strength = (1 - dist / touchRadius) ** 2;
       const away = strength * 2.6;
-      point.ox += (dx / (dist || 1)) * away + hairPointer.vx * strength * .38;
-      point.oy += (dy / (dist || 1)) * away + hairPointer.vy * strength * .38;
+      const pushX = (dx / (dist || 1)) * away + hairPointer.vx * strength * .38;
+      const pushY = (dy / (dist || 1)) * away + hairPointer.vy * strength * .38;
+      point.ox += pushX;
+      point.oy += pushY;
+      dragX += pushX;
+      dragY += pushY;
+      touched += 1;
       const magnitude = Math.hypot(point.ox, point.oy);
       if (magnitude > 30) { point.ox *= 30 / magnitude; point.oy *= 30 / magnitude; }
     }
     point.ox *= .9;
     point.oy *= .9;
   });
+  // The touch also slides the whole hair a little across the glass, and it
+  // stays where it was nudged.
+  if (touched) {
+    const shiftX = Math.max(-1.6, Math.min(1.6, (dragX / touched) * .3));
+    const shiftY = Math.max(-1.6, Math.min(1.6, (dragY / touched) * .3));
+    strand.points.forEach((point) => { point.x += shiftX; point.y += shiftY; });
+  }
 }
 
 const hairStrands = Array.from({ length: HAIR_COUNT }, (_, index) => ({
