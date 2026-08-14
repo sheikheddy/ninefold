@@ -156,7 +156,7 @@ const CHARACTERS = [
     ],
   },
   {
-    id: 'erlang', name: 'ERLANG SHEN', verse: ['ERLANG OPENS THE THIRD EYE', 'The mask confesses before the mouth.'], stageLine: 'ERLANG NAMES WHAT HIDES', domain: 'INSIGHT', symbol: '◈',
+    id: 'erlang', name: 'ERLANG SHEN', verse: ['ERLANG OPENS THE PARIETAL EYE', 'The mask confesses before the mouth.'], stageLine: 'ERLANG NAMES WHAT HIDES', domain: 'INSIGHT', symbol: '◈',
     accent: '#62a9ff', dark: '#20355f', hp: 110, power: 18, speed: 18,
     lore: 'He looks until concealment becomes another form of confession.',
     abilities: [
@@ -1467,7 +1467,7 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     }
     r(white, -19 + actionFrame * 5, -35 - (actionFrame % 3), 3, 1);
   } else if (character.id === 'erlang') {
-    // He raises the trident, opens the third eye, and sends the hound to search.
+    // He raises the trident, opens the parietal eye, and sends the hound to search.
     const scanReach = Math.round(actionPulse * 18);
     r('#f55c73', -2, -30, 4, 2); r(colorWithAlpha('#f55c73', .72), 2, -30, scanReach, 1);
     pose(9, -17, .08 - actionPulse * .28, () => {
