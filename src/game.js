@@ -1,4 +1,9 @@
 import './styles.css';
+// 130 examined Clematis specimens sampled from a Systematic Botany revision
+// (SYSBOT-D-25-00021): 11 South American species with collector and voucher.
+import SPECIMENS from './specimens.json';
+
+const SPECIMEN_SPECIES = [...new Set(SPECIMENS.map((record) => record.species))];
 
 const ARCHIVE_STORAGE_KEY = 'ninefold.archive.unlocked.v1';
 const FTUE_STORAGE_KEY = 'ninefold.ftue.complete.v1';
@@ -630,6 +635,33 @@ function renderRoster() {
 // petals one by one — she loves me, she loves me not.
 const slotPetalMemory = [null, null, null];
 
+// Every slot flower is a real examined specimen: the voucher seeds the petal
+// wobble, the species sets the hue, and the label reads like the sheet.
+const slotSpecimens = [null, null, null];
+
+function randomSpecimen() {
+  return SPECIMENS[Math.floor(Math.random() * SPECIMENS.length)];
+}
+
+function specimenSeed(record) {
+  const key = `${record.species}${record.collector}${record.number || ''}`;
+  let hash = 0;
+  for (let i = 0; i < key.length; i += 1) hash = (hash * 31 + key.charCodeAt(i)) % 100000;
+  return hash / 977;
+}
+
+function specimenLabel(record) {
+  const where = [record.state, record.locality].filter(Boolean).join(': ');
+  const voucher = [record.collector, record.number].filter(Boolean).join(' ')
+    + (record.herbarium ? ` (${record.herbarium})` : '');
+  return [
+    record.species,
+    [record.country, where].filter(Boolean).join(', '),
+    [record.phen, record.date].filter(Boolean).join(', '),
+    voucher,
+  ].filter(Boolean).join(' — ');
+}
+
 // Modeled on clematis 'The President': six broad violet sepals that overlap
 // at the base, and a spidery crown of pale stamens tipped in dark maroon.
 // Every measurement carries a seeded wobble so no petal repeats another.
@@ -638,40 +670,49 @@ function petalWobble(seed, salt) {
   return raw - Math.floor(raw); // stable 0..1, per petal, per property
 }
 
-function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0) {
-  petalCtx.clearRect(0, 0, 180, 180);
+function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0, hueBase = 251) {
+  petalCtx.clearRect(0, 0, 280, 280);
   petalCtx.save();
   petalCtx.scale(2, 2);
+  const mid = 70; // the flower's centre in drawing units
   for (let i = 0; i < 6; i += 1) {
     const wob = (salt) => petalWobble(seed * 6 + i, salt) - .5;
     let drop = 0;
     let spin = 0;
     let alpha = 1;
+    let wilt = 0;
     if (fallStart) {
       const dt = now - fallStart - i * 150;
       if (dt > 0) {
-        drop = ((dt / 120) ** 1.6) * 6;
-        spin = (i % 2 ? 1 : -1) * dt * .0012;
-        alpha = Math.max(0, 1 - dt / 520);
+        wilt = Math.min(1, dt / 430); // it browns and curls before it lets go
+        const fallT = Math.max(0, dt - 400);
+        drop = ((fallT / 120) ** 1.6) * 6;
+        spin = (i % 2 ? 1 : -1) * fallT * .0018;
+        alpha = Math.max(0, 1 - fallT / 620);
         if (alpha <= 0) continue;
       }
     }
     const length = 43 + wob(1) * 6;
-    const halfLeft = 12.5 + wob(2) * 4;
-    const halfRight = 12.5 + wob(3) * 4;
+    const halfLeft = 16 + wob(2) * 4;
+    const halfRight = 16 + wob(3) * 4;
     const bend = wob(4) * 7; // the tip leans a little off its axis
-    const hue = 251 + wob(5) * 9;
+    const hue = hueBase + wob(5) * 7;
+    // Wilt the long way round the wheel — violet browns through magenta and
+    // red, never through green.
+    const wiltHue = hue + (390 - hue) * wilt * .85;
+    const wiltSat = 47 - wilt * 26;
     petalCtx.save();
     petalCtx.globalAlpha = alpha * .97;
-    petalCtx.translate(45 + (i % 2 ? drop * .3 : -drop * .25), 45 + drop);
+    petalCtx.translate(mid + (i % 2 ? drop * .3 : -drop * .25), mid + drop);
     petalCtx.rotate((Math.PI / 3) * i + wob(6) * .3 + spin);
-    const gradient = petalCtx.createLinearGradient(0, 14, bend, length);
-    gradient.addColorStop(0, `hsl(${hue} 47% 58%)`);
-    gradient.addColorStop(.5, `hsl(${hue - 2} 45% 46%)`);
-    gradient.addColorStop(1, `hsl(${hue + 3} 47% 38%)`);
+    petalCtx.scale(1.36 * (1 - wilt * .42), 1.36 * (1 - wilt * .17)); // curls in as it wilts
+    const gradient = petalCtx.createLinearGradient(0, 10, bend, length);
+    gradient.addColorStop(0, `hsl(${wiltHue} ${wiltSat}% ${58 - wilt * 16}%)`);
+    gradient.addColorStop(.5, `hsl(${wiltHue - 2} ${wiltSat - 2}% ${46 - wilt * 14}%)`);
+    gradient.addColorStop(1, `hsl(${wiltHue + 3} ${wiltSat}% ${38 - wilt * 12}%)`);
     petalCtx.fillStyle = gradient;
     petalCtx.beginPath();
-    petalCtx.moveTo(0, 14); // broad sepals, overlapping at the base
+    petalCtx.moveTo(0, 10); // broad sepals, overlapping at the base
     petalCtx.bezierCurveTo(
       -halfLeft * .7 + wob(7) * 3, 17 + wob(8) * 3,
       -halfLeft, 25 + wob(9) * 4,
@@ -690,7 +731,7 @@ function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0) {
     petalCtx.bezierCurveTo(
       halfRight, 24 + wob(14) * 4,
       halfRight * .68 + wob(15) * 3, 17 + wob(16) * 3,
-      0, 14,
+      0, 10,
     );
     petalCtx.fill();
     petalCtx.strokeStyle = 'rgba(28,18,64,.35)';
@@ -713,31 +754,67 @@ function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0) {
     });
     petalCtx.restore();
   }
+  if (fallStart) {
+    // What the flower leaves behind: a head of almond-shaped achenes.
+    const set = Math.min(1, Math.max(0, (now - fallStart - 700) / 700));
+    if (set > 0) {
+      petalCtx.globalAlpha = set;
+      for (let i = 0; i < 17; i += 1) {
+        const angle = (Math.PI * 2 * i) / 17 + .22;
+        const reach = (11 + (i % 3) * 3.2) * set;
+        petalCtx.save();
+        petalCtx.translate(mid + Math.cos(angle) * reach, mid + Math.sin(angle) * reach);
+        petalCtx.rotate(angle + Math.PI / 2);
+        petalCtx.strokeStyle = 'rgba(212,196,162,.7)'; // the feathery tail
+        petalCtx.lineWidth = 1;
+        petalCtx.beginPath();
+        petalCtx.moveTo(0, -1.5);
+        petalCtx.quadraticCurveTo(3.2, -8, 1.6, -15 * set);
+        petalCtx.stroke();
+        petalCtx.fillStyle = '#8c6f4a'; // the almond
+        petalCtx.beginPath();
+        petalCtx.moveTo(0, -5);
+        petalCtx.quadraticCurveTo(3.5, -.8, 0, 5.2);
+        petalCtx.quadraticCurveTo(-3.5, -.8, 0, -5);
+        petalCtx.fill();
+        petalCtx.fillStyle = 'rgba(240,227,200,.55)';
+        petalCtx.beginPath();
+        petalCtx.moveTo(-.3, -3.6);
+        petalCtx.quadraticCurveTo(-2, -.5, -.3, 3);
+        petalCtx.quadraticCurveTo(-1.3, -.5, -.3, -3.6);
+        petalCtx.fill();
+        petalCtx.restore();
+      }
+      petalCtx.globalAlpha = 1;
+    }
+  }
   if (includeCenter) {
-    for (let i = 0; i < 22; i += 1) { // the spidery stamen crown
-      const angle = (Math.PI * 2 * i) / 22 + .14;
-      const reach = 9 + (i % 3) * 2.2;
-      const tipX = 45 + Math.cos(angle) * reach;
-      const tipY = 45 + Math.sin(angle) * reach;
-      petalCtx.strokeStyle = 'rgba(240,230,244,.95)';
-      petalCtx.lineWidth = 1;
+    for (let i = 0; i < 26; i += 1) { // the spidery stamen crown
+      const angle = (Math.PI * 2 * i) / 26 + .14;
+      const reach = 13 + (i % 3) * 2.9;
+      const tipX = mid + Math.cos(angle) * reach;
+      const tipY = mid + Math.sin(angle) * reach;
+      petalCtx.strokeStyle = 'rgba(236,226,242,.82)';
+      petalCtx.lineWidth = .75;
       petalCtx.beginPath();
-      petalCtx.moveTo(45 + Math.cos(angle) * 3, 45 + Math.sin(angle) * 3);
+      petalCtx.moveTo(mid + Math.cos(angle) * 3.4, mid + Math.sin(angle) * 3.4);
       petalCtx.quadraticCurveTo(
-        45 + Math.cos(angle + .18) * reach * .6, 45 + Math.sin(angle + .18) * reach * .6,
+        mid + Math.cos(angle + .18) * reach * .6, mid + Math.sin(angle + .18) * reach * .6,
         tipX, tipY,
       );
       petalCtx.stroke();
-      petalCtx.fillStyle = '#66324e'; // dark maroon anthers
-      petalCtx.fillRect(tipX - .9, tipY - .9, 1.8, 1.8);
+      petalCtx.fillStyle = '#5d2b45'; // dark maroon anthers
+      petalCtx.beginPath();
+      petalCtx.ellipse(tipX, tipY, 1.5, .95, angle, 0, Math.PI * 2);
+      petalCtx.fill();
     }
     petalCtx.fillStyle = '#f0e9cf'; // the creamy core
     petalCtx.beginPath();
-    petalCtx.arc(45, 45, 3.4, 0, Math.PI * 2);
+    petalCtx.arc(mid, mid, 4, 0, Math.PI * 2);
     petalCtx.fill();
     petalCtx.fillStyle = '#d8c98e';
-    petalCtx.fillRect(43.8, 43.8, 1.2, 1.2);
-    petalCtx.fillRect(45.4, 44.8, 1, 1);
+    petalCtx.fillRect(mid - 1.4, mid - 1.4, 1.3, 1.3);
+    petalCtx.fillRect(mid + .5, mid - .3, 1.1, 1.1);
   }
   petalCtx.restore();
   petalCtx.globalAlpha = 1;
@@ -751,9 +828,22 @@ function renderTeamSlots() {
     const slot = document.createElement('div');
     slot.className = `team-slot${character ? ' filled' : ''}`;
     slot.style.setProperty('--slot-color', character?.accent || '#33405d');
-    slot.setAttribute('aria-label', character ? `Slot ${i + 1}: ${character.name}` : `Slot ${i + 1}: empty`);
+    // A freshly emptied slot sheds its pressed specimen and grows a new one.
+    if (!slotSpecimens[i] || (!character && slotPetalMemory[i])) slotSpecimens[i] = randomSpecimen();
+    const specimen = slotSpecimens[i];
+    const seed = specimenSeed(specimen);
+    const hueBase = 243 + SPECIMEN_SPECIES.indexOf(specimen.species) * 2.1;
+    const label = specimenLabel(specimen);
+    slot.title = character ? `${character.name} presses ${label}` : label;
+    slot.setAttribute('aria-label', character
+      ? `Slot ${i + 1}: ${character.name}, pressing ${label}`
+      : `Slot ${i + 1}: empty — ${label}`);
+    slot.addEventListener('pointerenter', () => {
+      const caption = $('#specimen-caption');
+      if (caption) caption.textContent = slot.title;
+    });
     const petals = document.createElement('canvas');
-    petals.width = 180; petals.height = 180;
+    petals.width = 280; petals.height = 280;
     petals.className = 'slot-petals';
     slot.appendChild(petals);
     const petalCtx = petals.getContext('2d');
@@ -767,20 +857,26 @@ function renderTeamSlots() {
         slotPetalMemory[i] = character.id;
         const fallStart = performance.now();
         const pluck = (now) => {
-          drawSlotPetals(petalCtx, fallStart, now, false, i + 1);
+          drawSlotPetals(petalCtx, fallStart, now, false, seed, hueBase);
           if (now < fallStart + 1600 && petals.isConnected) requestAnimationFrame(pluck);
         };
         requestAnimationFrame(pluck);
       } else {
-        slotPetalMemory[i] = character.id; // petals already fell for this keeper
+        // The petals already fell for this keeper; the seed head stays.
+        slotPetalMemory[i] = character.id;
+        drawSlotPetals(petalCtx, -9000, 0, false, seed, hueBase);
       }
     } else {
       slotPetalMemory[i] = null;
-      drawSlotPetals(petalCtx, 0, 0, true, i + 1);
+      drawSlotPetals(petalCtx, 0, 0, true, seed, hueBase);
     }
     teamSlots.appendChild(slot);
   }
+  const caption = $('#specimen-caption');
+  if (caption && !caption.textContent) caption.textContent = teamSlots.firstChild?.title || '';
   startButton.disabled = state.selected.length !== 3;
+  // A full chorus pins the door to the bottom of the screen.
+  $('.selection-footer')?.classList.toggle('ready', state.selected.length === 3);
   const selectionVerses = [
     'NO ONE IS CHOSEN; THEREFORE<br>EVERYONE IS ALREADY LOST.',
     'ONE NAME ENTERS YOU;<br>TWO ABSENCES WAIT OUTSIDE.',

@@ -144,7 +144,24 @@ h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--v
 .section-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 20px; }
 .section-heading h2, .battle-heading h2, .modal h2 { font-size: 28px; letter-spacing: -.03em; margin: 0; }
 
-.team-slots { display: flex; gap: 26px; }
+.team-slots-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 0;
+  padding-right: 58px; /* room for the outermost sepals */
+}
+.specimen-caption {
+  margin: 52px 0 0; /* clears the petal spread */
+  max-width: 320px;
+  text-align: right;
+  font-size: 8px;
+  line-height: 1.55;
+  letter-spacing: .04em;
+  color: var(--dim);
+  font-style: italic;
+}
+.team-slots { display: flex; gap: 42px; }
 .team-slot { width: 45px; height: 45px; border: 1px dashed #34415f; position: relative; display: grid; place-items: center; color: var(--dim); font-size: 11px; overflow: visible; background: #080d1c; }
 .team-slot.filled { border-style: solid; border-color: var(--slot-color); background: color-mix(in srgb, var(--slot-color) 12%, #080d1c); }
 .team-slot canvas { width: 42px; height: 42px; position: relative; z-index: 1; }
@@ -152,10 +169,10 @@ h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--v
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 112px;
-  height: 112px;
-  margin-left: -56px;
-  margin-top: -56px;
+  width: 172px;
+  height: 172px;
+  margin-left: -86px;
+  margin-top: -86px;
   transform: none;
   animation: none;
   z-index: 0;
@@ -191,6 +208,15 @@ h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--v
 
 .selection-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 19px; padding-top: 17px; border-top: 1px solid var(--line); }
 .selection-footer p { margin: 0; color: var(--muted); font-size: 10px; }
+.selection-footer.ready {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  margin-bottom: -1px;
+  padding-bottom: 14px;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(7px);
+}
 .selection-actions { display: flex; gap: 9px; }
 .primary-button, .secondary-button { min-height: 44px; border: 1px solid; padding: 0 20px; font-weight: 700; font-size: 10px; letter-spacing: .08em; cursor: pointer; }
 .primary-button { background: var(--blue); border-color: #7390ff; box-shadow: 4px 4px 0 #18265c; }
@@ -418,7 +444,7 @@ h1 em {
 .mission-strip small, .mission-code { color: #b8ced0; }
 .mission-strip strong { color: var(--cream); text-shadow: 2px 2px 0 #0a0d10; }
 
-.team-slots { gap: 28px; }
+.team-slots { gap: 44px; }
 .team-slot {
   width: 47px;
   height: 55px;
