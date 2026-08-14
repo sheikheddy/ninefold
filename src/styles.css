@@ -148,6 +148,7 @@ h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--v
 .team-slot { width: 45px; height: 45px; border: 1px dashed #34415f; position: relative; display: grid; place-items: center; color: var(--dim); font-size: 11px; overflow: hidden; background: #080d1c; }
 .team-slot.filled { border-style: solid; border-color: var(--slot-color); background: color-mix(in srgb, var(--slot-color) 12%, #080d1c); }
 .team-slot canvas { width: 42px; height: 42px; }
+.team-slot canvas.slot-bloom { width: 33px; height: 33px; image-rendering: pixelated; }
 
 .character-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
 .character-card {

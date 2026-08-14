@@ -625,6 +625,35 @@ function renderRoster() {
   renderTeamSlots();
 }
 
+// Empty slots count in clematis: a bud, a half-open flower, a full bloom.
+function drawSlotClematis(slotCtx, stage) {
+  const cell = (color, x, y, w = 1, h = 1) => {
+    slotCtx.fillStyle = color;
+    slotCtx.fillRect(x * 3, y * 3, w * 3, h * 3);
+  };
+  const petal = '#b394f0';
+  const deep = '#8a66d6';
+  cell('#46703c', 5, 8, 1, 2); // stem
+  cell('#5d8a4e', 4, 9, 1, 1);
+  if (stage === 0) {
+    cell('#5d8a4e', 4, 6, 1, 1); cell('#5d8a4e', 6, 6, 1, 1); // sepals
+    cell(deep, 4, 4, 3, 2); cell(petal, 5, 3, 1, 2); // the closed bud
+    return;
+  }
+  const cx = 5, cy = 5;
+  [[2, 0], [-2, 0], [0, 2], [0, -2]].forEach(([dx, dy]) => {
+    cell(petal, cx + dx, cy + dy, 1, 1);
+    cell(deep, cx + Math.sign(dx), cy + Math.sign(dy), 1, 1);
+  });
+  if (stage === 2) {
+    [[2, 2], [-2, 2], [2, -2], [-2, -2]].forEach(([dx, dy]) => {
+      cell(petal, cx + dx, cy + dy, 1, 1);
+      cell(deep, cx + Math.sign(dx), cy + Math.sign(dy), 1, 1);
+    });
+  }
+  cell('#efe3a6', cx, cy, 1, 1); // the cream center
+}
+
 function renderTeamSlots() {
   teamSlots.innerHTML = '';
   for (let i = 0; i < 3; i += 1) {
@@ -640,7 +669,13 @@ function renderTeamSlots() {
       mini.dataset.characterId = character.id;
       drawPortrait(mini.getContext('2d'), character);
       slot.appendChild(mini);
-    } else slot.textContent = `0${i + 1}`;
+    } else {
+      const bloom = document.createElement('canvas');
+      bloom.width = 33; bloom.height = 33;
+      bloom.className = 'slot-bloom';
+      drawSlotClematis(bloom.getContext('2d'), i);
+      slot.appendChild(bloom);
+    }
     teamSlots.appendChild(slot);
   }
   startButton.disabled = state.selected.length !== 3;
@@ -2239,9 +2274,42 @@ function shedHairPath() {
     y += Math.sin(heading) * 3.1;
     if (x < margin || x > width - margin) { heading = Math.PI - heading; curvature *= .4; }
     if (y < margin || y > height - margin) { heading = -heading; curvature *= .4; }
-    points.push({ x, y });
+    points.push({ x, y, ox: 0, oy: 0 });
   }
   return points;
+}
+
+// The cursor is a finger on the glass: strands near it get brushed aside,
+// then settle back into their shed shape.
+const hairPointer = { x: -9999, y: -9999, vx: 0, vy: 0 };
+const hairStill = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.addEventListener('pointermove', (event) => {
+  hairPointer.vx = hairPointer.x === -9999 ? 0 : event.clientX - hairPointer.x;
+  hairPointer.vy = hairPointer.y === -9999 ? 0 : event.clientY - hairPointer.y;
+  hairPointer.x = event.clientX;
+  hairPointer.y = event.clientY;
+});
+
+function disturbStrand(strand) {
+  if (hairStill) return;
+  const touchRadius = 42;
+  strand.points.forEach((point) => {
+    const px = point.x + point.ox;
+    const py = point.y + point.oy;
+    const dx = px - hairPointer.x;
+    const dy = py - hairPointer.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < touchRadius) {
+      const strength = (1 - dist / touchRadius) ** 2;
+      const away = strength * 2.6;
+      point.ox += (dx / (dist || 1)) * away + hairPointer.vx * strength * .38;
+      point.oy += (dy / (dist || 1)) * away + hairPointer.vy * strength * .38;
+      const magnitude = Math.hypot(point.ox, point.oy);
+      if (magnitude > 30) { point.ox *= 30 / magnitude; point.oy *= 30 / magnitude; }
+    }
+    point.ox *= .9;
+    point.oy *= .9;
+  });
 }
 
 const hairStrands = Array.from({ length: HAIR_COUNT }, (_, index) => ({
@@ -2263,8 +2331,8 @@ function drawHairStrand(strand) {
     hairCtx.globalAlpha = alpha;
     hairCtx.beginPath();
     points.forEach((point, i) => {
-      const px = point.x + offsetX + drift;
-      const py = point.y + offsetY + drift * .4;
+      const px = point.x + point.ox + offsetX + drift;
+      const py = point.y + point.oy + offsetY + drift * .4;
       if (i === 0) hairCtx.moveTo(px, py); else hairCtx.lineTo(px, py);
     });
     hairCtx.stroke();
@@ -2308,6 +2376,7 @@ function drawHair(time) {
         return;
       }
     }
+    disturbStrand(strand);
     drawHairStrand(strand);
   });
   hairCtx.globalAlpha = 1;
