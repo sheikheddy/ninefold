@@ -1152,7 +1152,6 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     r('#273d32', -6, -8, 4, 8); r('#273d32', 3, -8, 4, 8);
     r('#355746', -7, -20, 14, 13); r(a, -7, -20, 14, 3); r('#c9a55a', -5, -16, 10, 2);
     r(skin, -5, -28, 10, 9); r('#a84b37', -7, -33, 14, 8); r('#a84b37', -7, -26, 3, 8); r('#a84b37', 4, -26, 3, 8); r(black, 2, -25, 2, 2);
-    r('#75523e', 8, -28, 4, 25); r('#9d7452', 6, -31, 8, 7);
     r('#68718b', -13, -20, 6, 16); r(white, -11, -18, 2, 2); r(white, -11, -13, 2, 2); r(white, -11, -8, 2, 2);
   } else if (character.id === 'jacheongbi') {
     r('#24444a', -6, -8, 4, 8); r('#24444a', 3, -8, 4, 8);
@@ -1199,11 +1198,13 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     const glyphY = -38 + (actionFrame % 4) * 5;
     r(a, -17, glyphY, 4, 1); r(black, -15, glyphY - 2, 1, 2);
   } else if (character.id === 'prometheus') {
-    // He steals the flame from his chest and raises it above his head.
+    // He raises a thick, jointed fennel stalk: a living carrier rather than a spear.
     const fireLift = Math.round(actionPulse * 11);
     r(skin, 5, -18, 4, 4); r(skin, 7, -20 - Math.round(fireLift * .45), 4, 5);
-    r('#6d3b26', 10, -21 - fireLift, 2, 17);
-    r('#ff6646', 7, -29 - fireLift, 8, 9); r('#ffd35c', 9, -32 - fireLift, 3, 8);
+    r('#6d7f45', 9, -21 - fireLift, 4, 17); r('#a8b75d', 8, -17 - fireLift, 6, 2);
+    r('#6d7f45', 5, -16 - fireLift, 5, 2); r('#6d7f45', 12, -12 - fireLift, 5, 2);
+    r('#55743e', 6, -27 - fireLift, 10, 3);
+    r('#ff6646', 6, -34 - fireLift, 11, 9); r('#ffd35c', 9, -37 - fireLift, 4, 9);
     r(actionFrame % 2 ? '#ffd35c' : '#ff6646', 14 - actionFrame, -35 - fireLift - actionFrame, 2, 2);
     r('#ff8d43', -8 + (actionFrame % 4), -38 - (actionFrame % 3), 2, 3);
   } else if (character.id === 'minerva') {
@@ -1211,7 +1212,9 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     const shieldReach = Math.round(actionPulse * 4);
     r(a, -14 - shieldReach, -22, 2, 19); r(a, -13 - shieldReach, -23, 9 + shieldReach, 2);
     pose(9, -17, -.08 - actionPulse * 1.08, () => {
-      r('#c9d0dc', -1, -16, 2, 32); r('#eff5ff', -2, -19, 5, 5);
+      r('#9b7542', -1, -14, 2, 31); r('#c9d0dc', -2, -18, 4, 5);
+      r('#eff5ff', -4, -22, 8, 4); r('#eff5ff', -3, -25, 6, 3); r(white, -1, -28, 2, 4);
+      r('#c99554', -3, 17, 6, 2);
     });
     r(skin, 4, -19, 6, 3);
     for (let line = 0; line < 3; line += 1) r('#c99554', -17 + actionFrame * 3, -7 + line * 3, 8, 1);
@@ -1229,8 +1232,10 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     // He raises the trident, opens the third eye, and sends the hound to search.
     const scanReach = Math.round(actionPulse * 18);
     r('#f55c73', -2, -30, 4, 2); r(colorWithAlpha('#f55c73', .72), 2, -30, scanReach, 1);
-    pose(9, -17, .08 - actionPulse * .72, () => {
-      r('#b8d0e8', -1, -16, 2, 32); r('#f2f5ff', -3, -19, 7, 5); r('#f2f5ff', 0, -22, 2, 5);
+    pose(9, -17, .08 - actionPulse * .28, () => {
+      r('#58749a', -1, -15, 3, 31); r('#b8d0e8', -7, -18, 15, 2);
+      r('#f2f5ff', -7, -25, 2, 8); r('#f2f5ff', 0, -29, 2, 12); r('#f2f5ff', 6, -25, 2, 8);
+      r(a, -5, -22, 3, 2); r(a, 3, -22, 3, 2);
     });
     r(skin, 4, -19, 6, 3);
     const houndX = -18 + actionFrame * 4;
@@ -1242,21 +1247,33 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     r(skin, -8 - handReach, -20, 4 + handReach, 3); r('#8e3841', -10, -22, 5, 7);
     r(black, -22, -24, 8, 4); r(white, -20, -20, 2, 3); r(white, -16, -20, 2, 3);
     r(black, -22, -15, 8, 4); r(white, -20, -17, 2, 3); r(white, -16, -17, 2, 3);
-    pose(9, -17, -.08 - actionPulse * .48, () => {
-      r('#d6dfef', -1, -14, 2, 28); r('#eef4ff', -3, -17, 7, 5);
+    pose(10, -17, -.22 - actionPulse * .34, () => {
+      r('#9ba9c1', -3, -15, 6, 20); r('#eef4ff', -2, -18, 4, 4); r('#66748f', -2, -10, 2, 14);
+      r(a, -7, 4, 14, 3); r('#7b4d34', -2, 7, 4, 8); r('#d2a05f', -3, 14, 6, 2);
     });
+    for (let link = 0; link < 3; link += 1) {
+      const linkX = -13 + link * 5 - Math.round(actionPulse * 2);
+      r(a, linkX, -13 + link * 2, 6, 4); r('#405a7c', linkX + 1, -12 + link * 2, 4, 2);
+    }
     r(a, -13 - Math.round(actionPulse * 4), -19, 3, 2);
   } else if (character.id === 'ogma') {
-    // He draws a knife down the staff, cutting each ogham notch into speech.
-    const carveY = -28 + Math.round(actionPulse * 21);
-    r(skin, 3, carveY - 1, 7, 3); r('#d9e0ea', 8, carveY - 4, 7, 2); r(black, 7, carveY - 2, 3, 2);
-    r(white, 7, carveY, 7, 1); r(a, 10, carveY - 2, 1, 5);
+    // A top-heavy shoulder club carries the ogham; the small knife moves across it.
+    const carveX = -3 + Math.round(actionPulse * 16);
+    r('#75523e', -7, -29, 29, 5); r('#9d7452', 14, -33, 10, 12); r('#5b3e31', 19, -31, 4, 8);
+    [-1, 4, 9].forEach((notchX, index) => {
+      r(index % 2 ? a : white, notchX, -31, 1, 9); r(a, notchX - 2, -27, 5, 1);
+    });
+    r(skin, carveX - 2, -24, 7, 3); r('#d9e0ea', carveX + 2, -29, 2, 8); r(black, carveX, -25, 4, 2);
     r(a, 15 - actionFrame, -32 - (actionFrame % 3), 2, 2);
     if (actionFrame % 2 === 0) r(white, -15, -18 + actionFrame, 3, 1);
   } else if (character.id === 'jacheongbi') {
     // She sweeps the sickle through grain, then casts seed into the opened earth.
-    pose(9, -10, -.58 + actionPulse * 1.18, () => {
-      r('#a9b6c8', -1, -14, 2, 20); r('#dbe4ee', -3, -17, 8, 5); r('#0d1326', 0, -15, 4, 2);
+    pose(10, -9, -.72 + actionPulse * 1.34, () => {
+      r('#76512f', -2, -8, 4, 18);
+      r('#59616c', -4, -16, 12, 4); r('#dbe4ee', -3, -16, 10, 3);
+      r('#59616c', 5, -14, 7, 4); r(white, 6, -13, 5, 3);
+      r('#59616c', 9, -11, 4, 8); r('#dbe4ee', 9, -10, 3, 6);
+      r(white, 7, -5, 5, 3); r('#0d1326', 5, -10, 4, 4);
     });
     r(skin, 4, -18, 6, 3);
     const growth = actionFrame % 4;
