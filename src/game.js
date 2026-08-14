@@ -2,93 +2,93 @@ import './styles.css';
 
 const CHARACTERS = [
   {
-    id: 'thoth', name: 'THOTH', verse: ['THOTH KEEPS THE WORD', 'Till silent signs are heard.'], stageLine: 'THOTH WRITES THE PAGE', domain: 'SCRIBE', symbol: '𓅝',
+    id: 'thoth', name: 'THOTH', verse: ['THOTH WRITES: I WANT', 'The papyrus answers: become.'], stageLine: 'THOTH WRITES THE WOUND', domain: 'SCRIBE', symbol: '𓅝',
     accent: '#61e7e1', dark: '#17394a', hp: 104, power: 17, speed: 17,
-    lore: 'Writes possibility into being and shelters allies behind living glyphs.',
+    lore: 'The sign enters the body; possibility begins calling itself memory.',
     abilities: [
-      { name: 'THE REED WRITES BRIGHT', icon: '⌇', desc: 'And strikes the waiting night.', kind: 'damage', power: 15, gain: 24 },
-      { name: 'THE GLYPHS ALIGN', icon: '▧', desc: 'To raise a ward divine.', kind: 'shield', power: 30, gain: 16, cooldown: 2 },
-      { name: 'THE HOURS UNFURL', icon: '◫', desc: 'And dim the rival world.', kind: 'damage', power: 28, cost: 65, effect: 'weaken', cooldown: 3 },
+      { name: 'A REED ENTERS THE DARK', icon: '⌇', desc: 'The dark remembers it as light.', kind: 'damage', power: 15, gain: 24 },
+      { name: 'GLYPHS GATHER AROUND YOU', icon: '▧', desc: 'A sentence pretending to be shelter.', kind: 'shield', power: 30, gain: 16, cooldown: 2 },
+      { name: 'TIME OPENS ITS MOUTH', icon: '◫', desc: 'What enters returns less certain.', kind: 'damage', power: 28, cost: 65, effect: 'weaken', cooldown: 3 },
     ],
   },
   {
-    id: 'prometheus', name: 'PROMETHEUS', verse: ['PROMETHEUS BEARS THE FLAME', "And brands the dark with heaven's name."], stageLine: 'PROMETHEUS BURNS THE CAGE', domain: 'FLAME', symbol: '♨',
+    id: 'prometheus', name: 'PROMETHEUS', verse: ['PROMETHEUS STEALS THE FIRE', 'The fire steals his name.'], stageLine: 'PROMETHEUS KISSES THE FLAME', domain: 'FLAME', symbol: '♨',
     accent: '#ff774f', dark: '#512033', hp: 112, power: 20, speed: 13,
-    lore: 'Steals momentum with relentless flame, accepting pain to end battles quickly.',
+    lore: 'He calls it theft until the fire begins to call him home.',
     abilities: [
-      { name: 'THE EMBERS RISE', icon: '◆', desc: 'And fire fills their eyes.', kind: 'damage', power: 17, gain: 24 },
-      { name: "STEAL HEAVEN'S FLAME", icon: '♨', desc: 'Then brand the rival name.', kind: 'damage', power: 13, gain: 14, effect: 'burn', cooldown: 2 },
-      { name: 'THE FIRST FIRE CALLS', icon: '✦', desc: 'As every shelter falls.', kind: 'damage', power: 34, cost: 65, recoil: 7, cooldown: 3 },
+      { name: 'AN EMBER SAYS COME CLOSER', icon: '◆', desc: 'Your body mistakes this for warmth.', kind: 'damage', power: 17, gain: 24 },
+      { name: 'HEAVEN LEAVES A DOOR OPEN', icon: '♨', desc: 'He enters carrying your future wound.', kind: 'damage', power: 13, gain: 14, effect: 'burn', cooldown: 2 },
+      { name: 'THE FIRST FIRE REMEMBERS', icon: '✦', desc: 'Every touch wants to become ash.', kind: 'damage', power: 34, cost: 65, recoil: 7, cooldown: 3 },
     ],
   },
   {
-    id: 'minerva', name: 'MINERVA', verse: ['MINERVA FORMS THE PLAN', 'Then shields the wise with steady hand.'], stageLine: 'MINERVA COUNSELS THE SAGE', domain: 'CRAFT', symbol: '⚒',
+    id: 'minerva', name: 'MINERVA', verse: ['MINERVA DRAWS THE END', 'Then teaches the spear to arrive there.'], stageLine: 'MINERVA DIAGRAMS THE LOSS', domain: 'CRAFT', symbol: '⚒',
     accent: '#ffce6c', dark: '#52362c', hp: 118, power: 16, speed: 14,
-    lore: 'Builds an advantage one measured move at a time behind an unbroken aegis.',
+    lore: 'The plan is a future wound drawn carefully enough to resemble mercy.',
     abilities: [
-      { name: 'THE SPEARPOINT FLIES', icon: '↗', desc: 'Where hidden error lies.', kind: 'damage', power: 14, gain: 25 },
-      { name: 'LET AEGIS GLOW', icon: '⬡', desc: 'And turn aside the blow.', kind: 'shield', power: 36, gain: 14, cooldown: 2 },
-      { name: 'THE PERFECT PLAN', icon: '⌘', desc: 'Strikes true and heals the hand.', kind: 'damage', power: 23, cost: 65, heal: 14, cooldown: 3 },
+      { name: 'THE SPEAR FINDS THE MARGIN', icon: '↗', desc: 'Where the plan forgot its body.', kind: 'damage', power: 14, gain: 25 },
+      { name: 'AEGIS: A BRIGHT REFUSAL', icon: '⬡', desc: 'The blow arrives; you remain elsewhere.', kind: 'shield', power: 36, gain: 14, cooldown: 2 },
+      { name: 'A PERFECT PLAN BREAKS', icon: '⌘', desc: 'Beautifully, into wound and remedy.', kind: 'damage', power: 23, cost: 65, heal: 14, cooldown: 3 },
     ],
   },
   {
-    id: 'quetzalcoatl', name: 'QUETZALCŌĀTL', verse: ['QUETZALCŌĀTL RIDES THE AIR', 'And sows the dawn with feathers fair.'], stageLine: 'QUETZALCŌĀTL STIRS THE AGE', domain: 'WIND', symbol: '〰',
+    id: 'quetzalcoatl', name: 'QUETZALCŌĀTL', verse: ['QUETZALCŌĀTL BECOMES WIND', 'To touch the world without staying.'], stageLine: 'QUETZALCŌĀTL ENTERS AS WEATHER', domain: 'WIND', symbol: '〰',
     accent: '#70ef8e', dark: '#1a4a43', hp: 108, power: 17, speed: 19,
-    lore: 'Moves like wind through feathers, balancing renewal with solar force.',
+    lore: 'To become weather: to touch everything and belong nowhere.',
     abilities: [
-      { name: 'THE FEATHERS FLY', icon: '〽', desc: 'And cut the waiting sky.', kind: 'damage', power: 14, gain: 26 },
-      { name: 'THE DAWN DRAWS NEAR', icon: '☼', desc: 'Restoring what was dear.', kind: 'heal', power: 24, gain: 13, cooldown: 2 },
-      { name: 'THE FIFTH SUN BURNS', icon: '◉', desc: 'And brands whomever turns.', kind: 'damage', power: 27, cost: 65, effect: 'burn', cooldown: 3 },
+      { name: 'FEATHERS CROSS THE BODY', icon: '〽', desc: 'The sky calls this a sentence.', kind: 'damage', power: 14, gain: 26 },
+      { name: 'DAWN PUTS YOU TOGETHER', icon: '☼', desc: 'Incorrectly, tenderly, enough.', kind: 'heal', power: 24, gain: 13, cooldown: 2 },
+      { name: 'THE FIFTH SUN OPENS', icon: '◉', desc: 'Inside it, every ending is warm.', kind: 'damage', power: 27, cost: 65, effect: 'burn', cooldown: 3 },
     ],
   },
   {
-    id: 'erlang', name: 'ERLANG SHEN', verse: ['ERLANG OPENS HIS EYE', 'And names the mask beneath the lie.'], stageLine: 'ERLANG READS THE PAGE', domain: 'INSIGHT', symbol: '◈',
+    id: 'erlang', name: 'ERLANG SHEN', verse: ['ERLANG OPENS THE THIRD EYE', 'The mask confesses before the mouth.'], stageLine: 'ERLANG NAMES WHAT HIDES', domain: 'INSIGHT', symbol: '◈',
     accent: '#62a9ff', dark: '#20355f', hp: 110, power: 18, speed: 18,
-    lore: 'Sees through every disguise and exposes the fault line in any defense.',
+    lore: 'He looks until concealment becomes another form of confession.',
     abilities: [
-      { name: 'THE TRIDENT LEAPS', icon: 'Ψ', desc: 'Where guarded weakness sleeps.', kind: 'damage', power: 15, gain: 24 },
-      { name: 'THE TRUE EYE SPIES', icon: '◉', desc: 'And marks the mask of lies.', kind: 'mark', power: 0, gain: 18, cooldown: 2 },
-      { name: 'HOUND OF HEAVEN, FLY', icon: '♞', desc: 'Through every shield and lie.', kind: 'damage', power: 29, cost: 65, pierce: true, cooldown: 3 },
+      { name: 'THE TRIDENT ASKS ONCE', icon: 'Ψ', desc: 'The wound answers without language.', kind: 'damage', power: 15, gain: 24 },
+      { name: 'THE TRUE EYE TOUCHES YOU', icon: '◉', desc: 'Now hiding has your exact shape.', kind: 'mark', power: 0, gain: 18, cooldown: 2 },
+      { name: 'THE HOUND CROSSES HEAVEN', icon: '♞', desc: 'No wall survives being desired.', kind: 'damage', power: 29, cost: 65, pierce: true, cooldown: 3 },
     ],
   },
   {
-    id: 'tyr', name: 'TÝR', verse: ['TÝR SWEARS THE LAW', 'And holds the line without a flaw.'], stageLine: 'TÝR BINDS THE RAGE', domain: 'LAW', symbol: '↑',
+    id: 'tyr', name: 'TÝR', verse: ['TÝR GIVES THE WOLF A HAND', 'The law keeps what love releases.'], stageLine: 'TÝR SWEARS BY WHAT IS MISSING', domain: 'LAW', symbol: '↑',
     accent: '#b8c7ff', dark: '#303d59', hp: 124, power: 18, speed: 11,
-    lore: 'Turns sacrifice into certainty and binds reckless rivals beneath the law.',
+    lore: 'The missing hand remains in every promise made afterward.',
     abilities: [
-      { name: 'THE SWORD OATH RINGS', icon: '†', desc: 'And law its answer brings.', kind: 'damage', power: 16, gain: 25 },
-      { name: 'THE HAND OF LAW', icon: '◇', desc: 'Builds ward without a flaw.', kind: 'shield', power: 27, gain: 15, cleanse: true, cooldown: 2 },
-      { name: "FENRIR'S BOND IS TIED", icon: '∞', desc: "The rival's art is now denied.", kind: 'damage', power: 27, cost: 65, effect: 'seal', cooldown: 3 },
+      { name: 'THE OATH ENTERS THE SWORD', icon: '†', desc: 'Metal repeats what the mouth feared.', kind: 'damage', power: 16, gain: 25 },
+      { name: 'ONE HAND BECOMES A WALL', icon: '◇', desc: 'Loss standing upright, still called law.', kind: 'shield', power: 27, gain: 15, cleanse: true, cooldown: 2 },
+      { name: 'FENRIR PULLS THE SENTENCE', icon: '∞', desc: 'Every promise tightens into chain.', kind: 'damage', power: 27, cost: 65, effect: 'seal', cooldown: 3 },
     ],
   },
   {
-    id: 'ogma', name: 'OGMA', verse: ['OGMA CARVES THE RHYME', 'That binds the tongue and outlasts time.'], stageLine: 'OGMA SPEAKS TO THE AGE', domain: 'WORD', symbol: 'ᚑ',
+    id: 'ogma', name: 'OGMA', verse: ['OGMA CARVES THE TONGUE', 'The cut begins to call itself a word.'], stageLine: 'OGMA SPEAKS THE CUT', domain: 'WORD', symbol: 'ᚑ',
     accent: '#d994ff', dark: '#442d59', hp: 106, power: 19, speed: 16,
-    lore: 'Carves speech into matter, weakening resolve before the final word lands.',
+    lore: 'A word is the wound after the mouth has given it meaning.',
     abilities: [
-      { name: 'THE OGHAM BITES', icon: 'ᚑ', desc: 'A letter forged for fights.', kind: 'damage', power: 16, gain: 24 },
-      { name: 'THE HONEYED WORD', icon: '≈', desc: 'Makes rival strength absurd.', kind: 'weaken', power: 0, gain: 18, cooldown: 2 },
-      { name: 'THE WORD OF POWER', icon: '!', desc: 'Strikes like a falling tower.', kind: 'damage', power: 32, cost: 65, cooldown: 3 },
+      { name: 'OGHAM ENTERS THE SKIN', icon: 'ᚑ', desc: 'A letter looking for its meaning.', kind: 'damage', power: 16, gain: 24 },
+      { name: 'THE SWEET WORD LEANS CLOSE', icon: '≈', desc: 'Strength forgets what it was saying.', kind: 'weaken', power: 0, gain: 18, cooldown: 2 },
+      { name: 'SPEAK ONCE: THE WORLD BREAKS', icon: '!', desc: 'Silence rushes in to hold it.', kind: 'damage', power: 32, cost: 65, cooldown: 3 },
     ],
   },
   {
-    id: 'jacheongbi', name: 'JACHEONGBI', verse: ['JACHEONGBI SOWS THE PLAIN', 'Then calls the lost world back to grain.'], stageLine: 'JACHEONGBI REAPS THE AGE', domain: 'HARVEST', symbol: '❋',
+    id: 'jacheongbi', name: 'JACHEONGBI', verse: ['JACHEONGBI BURIES THE SEED', 'The earth mistakes grief for spring.'], stageLine: 'JACHEONGBI REAPS WHAT RETURNS', domain: 'HARVEST', symbol: '❋',
     accent: '#f0df73', dark: '#4a4230', hp: 116, power: 15, speed: 15,
-    lore: 'Plants recovery in the present and reaps it across the cycles ahead.',
+    lore: 'What is buried returns, though never in the shape that was mourned.',
     abilities: [
-      { name: 'THE SICKLE SWINGS', icon: '◜', desc: 'And brightens what it brings.', kind: 'damage', power: 14, gain: 25 },
-      { name: 'THE FIVE GRAINS GROW', icon: '❋', desc: 'And healing roots below.', kind: 'regen', power: 7, gain: 15, cooldown: 2 },
-      { name: 'THE HARVEST MOON', icon: '◒', desc: 'Cuts deep and mends the wound.', kind: 'damage', power: 24, cost: 65, heal: 18, cooldown: 3 },
+      { name: 'THE SICKLE MAKES A MOON', icon: '◜', desc: 'The body learns harvest by touch.', kind: 'damage', power: 14, gain: 25 },
+      { name: 'FIVE GRAINS DREAM DOWNWARD', icon: '❋', desc: 'Roots practice the shape of return.', kind: 'regen', power: 7, gain: 15, cooldown: 2 },
+      { name: 'THE HARVEST MOON DESCENDS', icon: '◒', desc: 'Cut and cure share one bright edge.', kind: 'damage', power: 24, cost: 65, heal: 18, cooldown: 3 },
     ],
   },
   {
-    id: 'omoikane', name: 'OMOIKANE', verse: ['OMOIKANE COUNTS EACH THOUGHT', "And weaves the end before it's sought."], stageLine: 'OMOIKANE PLANS THE STAGE', domain: 'MIND', symbol: '⌬',
+    id: 'omoikane', name: 'OMOIKANE', verse: ['OMOIKANE THINKS OF THE CAVE', 'The cave begins to think of him.'], stageLine: 'OMOIKANE THINKS PAST THE END', domain: 'MIND', symbol: '⌬',
     accent: '#9d83ff', dark: '#35305f', hp: 102, power: 17, speed: 20,
-    lore: 'Plans several moves at once, converting foresight into focus and control.',
+    lore: 'Each answer opens into another door; foresight becomes a room without exit.',
     abilities: [
-      { name: 'THE THOUGHT SPARK FLIES', icon: '⌁', desc: "Before the rival's eyes.", kind: 'damage', power: 13, gain: 28 },
-      { name: 'THE MYRIAD PLAN', icon: '⌬', desc: 'Builds focus, ward, and hand.', kind: 'focus', power: 28, shield: 12, gain: 0, cooldown: 2 },
-      { name: 'THE CAVE PLAN CLOSES', icon: '◩', desc: "The rival's art reposes.", kind: 'damage', power: 25, cost: 65, effect: 'seal', cooldown: 3 },
+      { name: 'A THOUGHT ENTERS YOUR BODY', icon: '⌁', desc: 'Too late, you name it mine.', kind: 'damage', power: 13, gain: 28 },
+      { name: 'THE MYRIAD PLAN OPENS', icon: '⌬', desc: 'Every answer contains another door.', kind: 'focus', power: 28, shield: 12, gain: 0, cooldown: 2 },
+      { name: 'THE CAVE CLOSES SOFTLY', icon: '◩', desc: 'Outside, the world forgets to happen.', kind: 'damage', power: 25, cost: 65, effect: 'seal', cooldown: 3 },
     ],
   },
 ];
@@ -266,10 +266,10 @@ function renderTeamSlots() {
   }
   startButton.disabled = state.selected.length !== 3;
   const selectionVerses = [
-    'THREE MINDS MUST ALIGN;<br>THEN FATE WILL DEAL THE WISDOM NINE.',
-    'TWO CHOICES YET TO WEIGH;<br>BEFORE THE CARDS MAY PLAY.',
-    "ONE KEEPER MORE;<br>THEN OPEN FATE'S DOOR.",
-    "THREE KEEPERS STAND IN LINE;<br>THE ARCHIVE WAITS—THE HAND IS THINE.",
+    'NO ONE IS CHOSEN; THEREFORE<br>EVERYONE IS ALREADY LOST.',
+    'ONE NAME ENTERS YOU;<br>TWO ABSENCES WAIT OUTSIDE.',
+    'TWO BODIES MAKE A SECRET;<br>THE THIRD WILL MAKE IT FATE.',
+    'THREE NAMES INSIDE THE MOUTH;<br>SAY GO, AND BECOME THEIR AFTERMATH.',
   ];
   selectionHint.innerHTML = selectionVerses[state.selected.length];
 }
@@ -313,9 +313,9 @@ function startBattle() {
   };
   selectionScreen.hidden = true;
   battleScreen.hidden = false;
-  addLog(`<b>${playerCharacters[0].name}</b> steps into the light—<br>three minds are dealt to test the night.`, 'player');
-  addLog(`<b>${enemyCharacters[0].name}</b> answers the call;<br>one council rises, one must fall.`, 'enemy');
-  announce('THREE MINDS ALIGN', 'THE NINEFOLD SIGNS ENTWINE');
+  addLog(`<b>${playerCharacters[0].name}</b> enters the sentence;<br>the sentence closes around them.`, 'player');
+  addLog(`<b>${enemyCharacters[0].name}</b> answers from the other side;<br>desire invents an enemy to survive.`, 'enemy');
+  announce('THE FIGURE BEGINS', 'EVERY BEGINNING HIDES AN END');
   renderBattleUI();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -366,10 +366,10 @@ function renderAbilities(player) {
     button.style.setProperty('--ability-color', index === 2 ? player.accent : index === 1 ? '#9d83ff' : '#61e7e1');
     button.disabled = disabled;
     let cost = ability.cost
-      ? `${ability.cost} THOUGHT<br>FOR POWER SOUGHT`
-      : `GAIN ${ability.gain || 0} LIGHT<br>TO FEED YOUR MIGHT`;
-    if (cooldown > 0) cost = `WAIT ${cooldown} TURN${cooldown === 1 ? '' : 'S'}<br>WHILE WISDOM BURNS`;
-    if (sealed) cost = 'THE LAST ART SLEEPS<br>WHILE SILENCE KEEPS';
+      ? `${ability.cost} DESIRE<br>TO BECOME THE ACT`
+      : `GAIN ${ability.gain || 0} DESIRE<br>THE BODY LEARNS TO WANT`;
+    if (cooldown > 0) cost = `WAIT ${cooldown} BREATH${cooldown === 1 ? '' : 'S'}<br>THE SCENE CONTINUES WITHOUT YOU`;
+    if (sealed) cost = 'THE LAST WORD IS MISSING<br>SILENCE WEARS ITS SHAPE';
     button.innerHTML = `
       <span class="ability-icon">${ability.icon}</span>
       <span class="ability-copy"><strong>${index + 1}. ${ability.name}</strong><small>${ability.desc}</small></span>
@@ -456,7 +456,7 @@ function executeAbility(actor, target, ability, index) {
     result = { ...result, damage: applied.hpDamage, blocked: applied.blocked };
     if (actor.side === 'player') state.battle.metrics.damage += applied.hpDamage;
     state.battle.hitFlash[target.side] = performance.now() + 220;
-    addEffect('hit', target.side, target.accent, applied.hpDamage ? `-${applied.hpDamage}` : 'SHIELD STAYS\nAND TURNS THE BLAZE');
+    addEffect('hit', target.side, target.accent, applied.hpDamage ? `-${applied.hpDamage}` : 'THE BLOW ARRIVES\nYOU ARE ALREADY ELSEWHERE');
     sound.hit();
   }
   if (ability.kind === 'shield') {
@@ -474,33 +474,33 @@ function executeAbility(actor, target, ability, index) {
   }
   if (ability.kind === 'mark') {
     target.status.mark = 2;
-    addEffect('mark', target.side, actor.accent, 'MARKS GROW\nAND GUARDS SHOW');
+    addEffect('mark', target.side, actor.accent, 'THE MASK SLIPS\nTHE WOUND LOOKS BACK');
     sound.shield();
   }
   if (ability.kind === 'weaken') {
     target.status.weaken = 2;
-    addEffect('mark', target.side, actor.accent, 'STRENGTH WANES\nTHE WAGER GAINS');
+    addEffect('mark', target.side, actor.accent, 'STRENGTH FORGETS\nWHAT IT WAS SAYING');
     sound.shield();
   }
   if (ability.kind === 'regen') {
     actor.status.regen = 3;
-    addEffect('heal', actor.side, actor.accent, 'ROOTS RISE\nLIFE REPLIES');
+    addEffect('heal', actor.side, actor.accent, 'THE ROOT DESCENDS\nTHE BODY RETURNS');
     sound.heal();
   }
   if (ability.kind === 'focus') {
     actor.focus = Math.min(100, actor.focus + ability.power);
     actor.shield = Math.min(60, actor.shield + (ability.shield || 0));
-    addEffect('focus', actor.side, actor.accent, `+${ability.power} THOUGHT\nFOR POWER SOUGHT`);
+    addEffect('focus', actor.side, actor.accent, `+${ability.power} DESIRE\nWANT BECOMES AN ACT`);
     sound.shield();
   }
   if (ability.effect === 'burn') {
     target.status.burn = Math.max(target.status.burn, 3);
-    addEffect('burn', target.side, '#ff774f', 'FLAME BURNS\nTHE WAGER TURNS');
+    addEffect('burn', target.side, '#ff774f', 'THE FIRE SAYS STAY\nTHE BODY ANSWERS ASH');
   }
   if (ability.effect === 'weaken') target.status.weaken = Math.max(target.status.weaken, 2);
   if (ability.effect === 'seal') {
     target.status.seal = Math.max(target.status.seal, 2);
-    addEffect('mark', target.side, '#9d83ff', 'ARTS SLEEP\nWHILE SILENCE KEEPS');
+    addEffect('mark', target.side, '#9d83ff', 'THE WORD GOES DARK\nSILENCE TAKES ITS PLACE');
   }
   if (ability.heal) {
     const before = actor.currentHp;
@@ -518,8 +518,8 @@ function executeAbility(actor, target, ability, index) {
   if (result.damage) detail = ` for ${result.damage}`;
   if (result.blocked) detail += `, though ${result.blocked} met the shield`;
   if (result.healed && !result.damage) detail = `, restoring ${result.healed}`;
-  addLog(`<b>${actor.name}</b> lets ${ability.name} fly${detail};<br>the rival hand must now reply.`, actor.side);
-  announce(`${actor.name} DEALS`, `${ability.name}—FATE REVEALS`);
+  addLog(`<b>${actor.name}</b> performs ${ability.name}${detail};<br>the act survives inside the other.`, actor.side);
+  announce(`${actor.name}: THE ACT`, `${ability.name}: THE AFTERMATH`);
   return result;
 }
 
@@ -578,7 +578,7 @@ function tickCycle() {
       fighter.currentHp = Math.max(0, fighter.currentHp - burnDamage);
       fighter.status.burn -= 1;
       addEffect('burn', fighter.side, '#ff774f', `-${burnDamage}`);
-      addLog(`<b>${fighter.name}</b> burns beneath the flame;<br>${burnDamage} life is taken from their name.`, fighter.side);
+      addLog(`<b>${fighter.name}</b> keeps the fire inside;<br>${burnDamage} life leaves without goodbye.`, fighter.side);
     }
     if (fighter.status.regen > 0 && fighter.currentHp > 0) {
       const before = fighter.currentHp;
@@ -600,8 +600,8 @@ async function handleKnockouts() {
   const enemy = getActive('enemy');
   const player = getActive('player');
   if (enemy.currentHp <= 0) {
-    addLog(`<b>${enemy.name}</b> fades beyond our sight;<br>the Archive folds them into night.`, 'enemy');
-    announce(`${enemy.name} LEAVES THE LIGHT`, 'THE ARCHIVE CLAIMS THEM FOR THE NIGHT');
+    addLog(`<b>${enemy.name}</b> leaves the sentence;<br>their absence keeps speaking.`, 'enemy');
+    announce(`${enemy.name} BECOMES ABSENCE`, 'ABSENCE REMAINS IN THE SCENE');
     state.battle.metrics.kos += 1;
     sound.hit();
     await wait(380);
@@ -612,14 +612,14 @@ async function handleKnockouts() {
     }
     battle.enemyActive = nextIndex;
     const next = getActive('enemy');
-    addLog(`<b>${next.name}</b> steps upon the floor;<br>the wager wakes to war once more.`, 'enemy');
-    announce(`${next.name} TAKES THE FLOOR`, 'THE WAGER WAKES TO WAR ONCE MORE');
+    addLog(`<b>${next.name}</b> enters where the other ended;<br>the wound accepts a different name.`, 'enemy');
+    announce(`${next.name} ENTERS THE GAP`, 'THE GAP BECOMES A BODY');
     renderBattleUI();
     await wait(520);
   }
   if (player.currentHp <= 0) {
-    addLog(`<b>${player.name}</b> fades beyond our sight;<br>the Archive folds them into night.`, 'player');
-    announce(`${player.name} LEAVES THE LIGHT`, 'THE ARCHIVE CLAIMS THEM FOR THE NIGHT');
+    addLog(`<b>${player.name}</b> leaves the sentence;<br>their absence keeps speaking.`, 'player');
+    announce(`${player.name} BECOMES ABSENCE`, 'ABSENCE REMAINS IN THE SCENE');
     sound.hit();
     await wait(380);
     const nextIndex = battle.playerTeam.findIndex((fighter) => fighter.currentHp > 0);
@@ -629,8 +629,8 @@ async function handleKnockouts() {
     }
     battle.playerActive = nextIndex;
     const next = getActive('player');
-    addLog(`<b>${next.name}</b> steps upon the floor;<br>the council wakes to strive once more.`, 'player');
-    announce(`${next.name} TAKES THE FLOOR`, 'THE COUNCIL WAKES TO STRIVE ONCE MORE');
+    addLog(`<b>${next.name}</b> enters where the other ended;<br>the ache recognizes no difference.`, 'player');
+    announce(`${next.name} ENTERS THE GAP`, 'THE GAP BECOMES A BODY');
     renderBattleUI();
     await wait(520);
   }
@@ -651,10 +651,10 @@ function openSwapModal() {
     button.style.setProperty('--swap-color', fighter.accent);
     button.disabled = fighter.currentHp <= 0 || isCurrent;
     const statusVerse = isCurrent
-      ? 'NOW HOLDS THE FLOOR<br>AND WAITS TO WAGER MORE'
+      ? 'IS THE BODY IN THE SCENE<br>AND CANNOT SEE ITS EDGES'
       : fighter.currentHp <= 0
-        ? 'HAS LEFT THE LIGHT<br>AND SLEEPS BEYOND THE FIGHT'
-        : `${fighter.currentHp}/${fighter.maxHp} LIFE IN STORE<br>AND READY TO WAGER MORE`;
+        ? 'HAS BECOME ABSENCE<br>ABSENCE KEEPS THEIR SHAPE'
+        : `${fighter.currentHp}/${fighter.maxHp} BODY REMAINS<br>READY TO ENTER THE WOUND`;
     button.innerHTML = `<canvas width="72" height="72" data-character-id="${fighter.id}" aria-hidden="true"></canvas><span><strong>${fighter.name}</strong><small>${statusVerse}</small></span>`;
     button.addEventListener('click', () => performSwap(index));
     options.appendChild(button);
@@ -671,8 +671,8 @@ async function performSwap(index) {
   battle.playerActive = index;
   const fighter = getActive('player');
   closeModal();
-  addLog(`<b>${fighter.name}</b> joins the standing hand;<br>a wiser wager now is planned.`, 'player');
-  announce(`${fighter.name} TAKES THE FLOOR`, 'A WISER WAGER WAKES ONCE MORE');
+  addLog(`<b>${fighter.name}</b> takes the other’s place;<br>the ache, seeing no difference, continues.`, 'player');
+  announce(`${fighter.name} ENTERS THE GAP`, 'THE ACHE CONTINUES UNCHANGED');
   sound.shield();
   renderBattleUI();
   await wait(650);
@@ -685,20 +685,20 @@ function endBattle(victory) {
   battle.locked = true;
   renderBattleUI();
   $('#result-kicker').innerHTML = victory
-    ? 'THE FINAL HAND IS WON<br>THE NINEFOLD LIGHT MEETS SUN'
-    : 'THE FINAL HAND IS LOST<br>YET WISDOM COUNTS THE COST';
+    ? '[FIGURE VI: AFTERMATH]<br>THE SCENE ENDS; DESIRE DOES NOT'
+    : '[FIGURE VI: AFTERMATH]<br>THE SCENE CLOSES; THE WOUND STAYS OPEN';
   $('#result-title').innerHTML = victory
-    ? 'VICTORY GREETS THE SUN<br>THE ARCHIVE WAKES AS ONE'
-    : 'DEFEAT HAS CLAIMED ITS COST<br>NO ROOT OF WISDOM IS LOST';
+    ? 'YOU SURVIVED THE BELOVED<br>THE BELOVED SURVIVES IN YOU'
+    : 'YOU BECOME THE AFTERMATH<br>THE AFTERMATH LEARNS YOUR NAME';
   $('#result-copy').innerHTML = victory
-    ? 'The scattered sparks unite;<br>their wisdom wakes the waiting light.'
-    : 'Yet wisdom roots in pain;<br>what falls may rise and deal again.';
+    ? 'Nine sparks enter one silence;<br>the silence calls itself light.'
+    : 'The body exits. The wanting<br>remains, rehearsing your shape.';
   $('#result-sigil').textContent = victory ? '✦' : '×';
   $('#result-sigil').style.background = victory ? 'var(--cyan)' : 'var(--danger)';
   $('#result-stats').innerHTML = `
-    <div class="result-stat"><strong>${battle.round}</strong><small>CYCLES THAT BURN<br>BEFORE FATE'S RETURN</small></div>
-    <div class="result-stat"><strong>${battle.metrics.damage}</strong><small>WOUNDS THAT SCORE<br>ACROSS THE FLOOR</small></div>
-    <div class="result-stat"><strong>${battle.metrics.kos}</strong><small>RIVALS UNDONE<br>BENEATH THE SUN</small></div>`;
+    <div class="result-stat"><strong>${battle.round}</strong><small>SCENES REPEATED<br>UNTIL TIME GAVE WAY</small></div>
+    <div class="result-stat"><strong>${battle.metrics.damage}</strong><small>WOUNDS EXCHANGED<br>BETWEEN BODY AND SIGN</small></div>
+    <div class="result-stat"><strong>${battle.metrics.kos}</strong><small>ABSENCES MADE<br>STILL SPEAKING</small></div>`;
   if (victory) sound.victory();
   else sound.tone(110, .6, 'sawtooth', .04);
   setTimeout(() => openModal('result-modal'), 700);
@@ -1156,12 +1156,12 @@ function drawCanvasHud(fighter, x, y, right) {
 
 function drawStatuses(fighter, x, y) {
   const active = [];
-  if (fighter.shield) active.push({ text: `WARD ${fighter.shield} · GUARD`, color: '#b8c7ff' });
-  if (fighter.status.burn) active.push({ text: `BURN ${fighter.status.burn} · TURN`, color: '#ff774f' });
-  if (fighter.status.regen) active.push({ text: `ROOT ${fighter.status.regen} · FRUIT`, color: '#70ef8e' });
-  if (fighter.status.mark) active.push({ text: `MARK ${fighter.status.mark} · DARK`, color: '#62a9ff' });
-  if (fighter.status.weaken) active.push({ text: `WEAK ${fighter.status.weaken} · BLEAK`, color: '#d994ff' });
-  if (fighter.status.seal) active.push({ text: `SEAL ${fighter.status.seal} · KNEEL`, color: '#9d83ff' });
+  if (fighter.shield) active.push({ text: `WARD ${fighter.shield} · REFUSAL`, color: '#b8c7ff' });
+  if (fighter.status.burn) active.push({ text: `BURN ${fighter.status.burn} · ASH`, color: '#ff774f' });
+  if (fighter.status.regen) active.push({ text: `ROOT ${fighter.status.regen} · RETURN`, color: '#70ef8e' });
+  if (fighter.status.mark) active.push({ text: `MARK ${fighter.status.mark} · SEEN`, color: '#62a9ff' });
+  if (fighter.status.weaken) active.push({ text: `WEAK ${fighter.status.weaken} · FORGET`, color: '#d994ff' });
+  if (fighter.status.seal) active.push({ text: `SEAL ${fighter.status.seal} · UNSAID`, color: '#9d83ff' });
   ctx.font = '9px Courier New'; ctx.textAlign = 'center';
   active.forEach((status, index) => {
     const width = ctx.measureText(status.text).width + 10;
