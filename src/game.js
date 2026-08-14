@@ -420,20 +420,31 @@ class PixelSound {
     }
   }
   musicTick() {
-    // Four nine-beat petitions: a modal call, a lower response, then a return.
+    // A novena: nine nine-beat petitions. The call climbs night by night to the
+    // seventh, descends through the eighth, and the ninth closes on the amen.
     const petitions = [
       [293.66, null, 349.23, 329.63, 293.66, 261.63, 293.66, 220, null],
       [293.66, null, 392, 349.23, 329.63, 293.66, 261.63, 220, null],
       [349.23, null, 440, 392, 349.23, 329.63, 293.66, 261.63, null],
+      [293.66, 329.63, 349.23, null, 392, 349.23, 329.63, 293.66, null],
+      [349.23, null, 392, 440, 392, 349.23, 329.63, 349.23, null],
+      [392, null, 466.16, 440, 392, 349.23, 329.63, 293.66, null],
+      [440, null, 523.25, 466.16, 440, 392, 349.23, 329.63, null],
+      [349.23, 329.63, 293.66, null, 261.63, 293.66, 329.63, 293.66, null],
       [293.66, 220, 293.66, 349.23, 329.63, 293.66, 261.63, 220, 293.66],
     ];
     const responses = [
       [null, null, null, null, 220, null, 261.63, 220, 196],
       [null, null, null, null, 196, null, 220, 196, 174.61],
       [null, null, null, null, 261.63, null, 246.94, 220, 196],
+      [null, null, null, null, 220, null, 261.63, 220, 174.61],
+      [null, null, null, null, 233.08, null, 220, 196, 174.61],
+      [null, null, null, null, 233.08, null, 220, 196, 196],
+      [null, null, null, null, 261.63, null, 246.94, 220, 220],
+      [null, null, null, null, 196, null, 220, 196, 196],
       [null, null, null, null, 220, null, 196, 220, 146.83],
     ];
-    const roots = [146.83, 116.54, 130.81, 146.83];
+    const roots = [146.83, 116.54, 130.81, 174.61, 116.54, 196, 220, 130.81, 146.83];
     const rubato = [390, 325, 345, 365, 330, 350, 405, 325, 510];
     const prayer = Math.floor(this.musicStep / 9) % petitions.length;
     const step = this.musicStep % 9;
@@ -445,12 +456,12 @@ class PixelSound {
       if (step === 0) {
         this.organNote(root, 3.18, .0095);
         this.organNote(root * 1.5, 3.05, .0048, .06);
-        this.chapelBell(root * 4, 2.45, prayer === 3 ? .008 : .006);
+        this.chapelBell(root * 4, 2.45, prayer === 8 ? .008 : .006);
       }
       if (call) this.chantNote(call, step === 8 ? 1.05 : .67, .0094);
       if (response) this.chantNote(response, .82, .0048, .055);
-      if (step === 8 && prayer < 3) this.chapelBell(root * 6, 1.55, .0037, .04);
-      if (step === 8 && prayer === 3) {
+      if (step === 8 && prayer < 8) this.chapelBell(root * 6, 1.55, .0037, .04);
+      if (step === 8 && prayer === 8) {
         this.organNote(146.83, 3.45, .011);
         this.chapelBell(587.33, 3.1, .009);
       }
