@@ -268,15 +268,29 @@ const FTUE_STEPS = {
     index: 3,
     kicker: '[FIRST ACT: DESIRE]<br>THE SMALL MOVE TEACHES THE LARGE',
     title: 'USE THE FIRST ABILITY<br>LET THE ACT TEACH YOUR HAND',
-    copy: 'Ordinary moves gather Focus.<br>The violet bar remembers each act.',
+    copy: 'Ordinary moves gather Desire.<br>The violet bar remembers each act.',
     target: () => abilityList.querySelector('.ability-button:not(:disabled)') || abilityList,
   },
   focus: {
     index: 4,
-    kicker: '[THE LESSON: CONTINUANCE]<br>DESIRE KEEPS WHAT ACTION GIVES',
-    title: 'WATCH FOCUS BECOME POWER<br>THE LAST MOVE WAKES AT 65',
-    copy: 'Swap when a body nears its ending.<br>Or keep acting until one side is gone.',
-    target: () => $('.active-card'),
+    kicker: '[THE LESSON: HUNGER]<br>DESIRE KEEPS WHAT ACTION GIVES',
+    title: 'FEED THE VIOLET BAR<br>EACH ACT GATHERS DESIRE',
+    copy: 'At 65 the last move wakes.<br>Keep acting; the bar remembers.',
+    target: () => $('.focus-meter'),
+  },
+  ultimate: {
+    index: 4,
+    kicker: '[THE LESSON: SPENDING]<br>DESIRE BECOMES THE EVENT',
+    title: 'THE LAST MOVE IS AWAKE<br>SPEND WHAT YOU GATHERED',
+    copy: 'Touch the burning third figure.<br>Watch hunger become an event.',
+    target: () => abilityList.querySelectorAll('.ability-button')[2] || abilityList,
+  },
+  endure: {
+    index: 5,
+    kicker: '[THE GUIDE WITHDRAWS]<br>HUNGER CONTINUES WITHOUT IT',
+    title: 'THE SCENE IS YOURS NOW<br>SWAP WHEN A BODY FALTERS',
+    copy: 'Change the beloved to save them.<br>Or press on until one side is gone.',
+    target: () => swapButton,
     finish: true,
   },
 };
@@ -549,6 +563,16 @@ function syncFtueSelection() {
   else setFtueStep('enter');
 }
 
+function syncFtueBattle() {
+  if (!state.ftue.active || !state.battle || state.battle.over) return;
+  if (state.ftue.step !== 'focus' && state.ftue.step !== 'ultimate') return;
+  const player = getActive('player');
+  if (!player) return;
+  const ultimate = player.abilities[2];
+  const awake = player.cooldowns[2] === 0 && player.focus >= (ultimate.cost || 0) && player.status.seal === 0;
+  setFtueStep(awake ? 'ultimate' : 'focus', false);
+}
+
 function completeFtue() {
   state.ftue.active = false;
   clearFtueTarget();
@@ -706,6 +730,7 @@ function renderBattleUI() {
   renderTeamStrip('player');
   renderTeamStrip('enemy');
   swapButton.disabled = battle.locked || aliveFighters('player').length < 2;
+  syncFtueBattle();
   renderFtue();
 }
 
@@ -921,7 +946,10 @@ async function playerAction(index) {
   if (!ability || player.cooldowns[index] > 0 || (ability.cost && player.focus < ability.cost) || (index === 2 && player.status.seal > 0)) return;
   battle.locked = true;
   battle.metrics.turns += 1;
-  if (state.ftue.active && state.ftue.step === 'act') state.ftue.step = 'focus';
+  if (state.ftue.active) {
+    if (state.ftue.step === 'act') state.ftue.step = 'focus';
+    else if (index === 2 && (state.ftue.step === 'focus' || state.ftue.step === 'ultimate')) state.ftue.step = 'endure';
+  }
   executeAbility(player, enemy, ability, index);
   renderBattleUI();
   await wait(720);
@@ -1073,6 +1101,7 @@ function endBattle(victory) {
   const battle = state.battle;
   battle.over = true;
   battle.locked = true;
+  if (state.ftue.active) completeFtue();
   renderBattleUI();
   $('#result-kicker').innerHTML = victory
     ? '[FIGURE VI: AFTERMATH]<br>THE SCENE ENDS; DESIRE DOES NOT'
