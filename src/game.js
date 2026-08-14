@@ -259,7 +259,7 @@ const FTUE_STEPS = {
   },
   enter: {
     index: 2,
-    kicker: '[THIRD TOUCH: THE DOOR]<br>THE CHORUS HAS LEARNED YOUR NAME',
+    kicker: '[▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ TOUCH: THE DOOR]<br>THE CHORUS HAS LEARNED YOUR NAME',
     title: 'ENTER THE FIGURE NOW<br>LET THE ORDEAL ANSWER BACK',
     copy: 'Your first name will lead the scene.<br>The others wait inside the wound.',
     target: () => startButton,
@@ -1893,140 +1893,163 @@ function drawStatuses(fighter, x, y) {
   ctx.textAlign = 'left';
 }
 
+// Signature effects share the fighters' 6px grid: every mark is stamped in
+// whole cells so nothing draws between the pixels the sprites live on.
+const FX_PX = 6;
+function fxStamp(color, x, y, thick = 1) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x / FX_PX) * FX_PX, Math.round(y / FX_PX) * FX_PX, thick * FX_PX, thick * FX_PX);
+}
+function fxRect(color, x, y, w, h) {
+  let left = x, top = y, width = w, height = h;
+  if (width < 0) { left += width; width = -width; }
+  if (height < 0) { top += height; height = -height; }
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(left / FX_PX) * FX_PX, Math.round(top / FX_PX) * FX_PX,
+    Math.max(1, Math.round(width / FX_PX)) * FX_PX, Math.max(1, Math.round(height / FX_PX)) * FX_PX);
+}
+function fxLine(color, x1, y1, x2, y2, thick = 1) {
+  const steps = Math.max(Math.abs(Math.round((x2 - x1) / FX_PX)), Math.abs(Math.round((y2 - y1) / FX_PX)), 1);
+  for (let i = 0; i <= steps; i += 1) {
+    fxStamp(color, x1 + ((x2 - x1) * i) / steps, y1 + ((y2 - y1) * i) / steps, thick);
+  }
+}
+function fxRing(color, x, y, radiusX, radiusY, start = 0, sweep = Math.PI * 2) {
+  const steps = Math.max(12, Math.round((radiusX + radiusY) / 4));
+  for (let i = 0; i <= steps; i += 1) {
+    const angle = start + (sweep * i) / steps;
+    fxStamp(color, x + Math.cos(angle) * radiusX, y + Math.sin(angle) * radiusY);
+  }
+}
+function fxDisc(color, x, y, radius) {
+  const cells = Math.max(1, Math.round(radius / FX_PX));
+  for (let dy = -cells; dy <= cells; dy += 1) {
+    for (let dx = -cells; dx <= cells; dx += 1) {
+      if (dx * dx + dy * dy <= cells * cells) fxStamp(color, x + dx * FX_PX, y + dy * FX_PX);
+    }
+  }
+}
+
 function drawLoreSignature(effect, progress) {
   const originX = effect.side === 'player' ? 258 : 702;
   const targetX = effect.targetSide === 'player' ? 258 : 702;
   const direction = targetX > originX ? 1 : -1;
-  const pulse = Math.sin(progress * Math.PI);
-  const travel = Math.min(1, progress * 1.45);
+  // Nine held frames: the signatures move in sprite steps, not smooth tweens.
+  const held = Math.floor(progress * 9) / 9;
+  const pulse = Math.sin(held * Math.PI);
+  const travel = Math.min(1, held * 1.45);
   const ink = '#17131c';
   const paper = '#fffdf5';
   ctx.save();
-  ctx.globalAlpha = Math.max(0, Math.min(1, pulse * 1.7));
-  ctx.strokeStyle = effect.color;
-  ctx.fillStyle = effect.color;
-  ctx.lineWidth = 4;
-  ctx.lineCap = 'square';
+  ctx.globalAlpha = Math.max(0, Math.min(1, Math.sin(progress * Math.PI) * 1.7));
 
   if (effect.characterId === 'thoth') {
     // Five stolen days orbit a moon while the heart is measured against a feather.
-    ctx.beginPath(); ctx.arc(originX, 211, 42 + pulse * 16, -.75 * Math.PI, .75 * Math.PI); ctx.stroke();
+    fxRing(effect.color, originX, 211, 42 + pulse * 16, 42 + pulse * 16, -.75 * Math.PI, 1.5 * Math.PI);
     for (let index = 0; index < 5; index += 1) {
-      const angle = progress * 4 + (Math.PI * 2 * index) / 5;
-      ctx.fillRect(Math.round(originX + Math.cos(angle) * 62) - 4, Math.round(211 + Math.sin(angle) * 39) - 4, 8, 8);
+      const angle = held * 4 + (Math.PI * 2 * index) / 5;
+      fxStamp(effect.color, originX + Math.cos(angle) * 62 - 6, 211 + Math.sin(angle) * 39 - 6, 2);
     }
-    ctx.strokeStyle = ink; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(targetX - 62, 248); ctx.lineTo(targetX + 62, 248); ctx.moveTo(targetX, 225); ctx.lineTo(targetX, 276); ctx.stroke();
-    ctx.fillStyle = '#ff6177'; ctx.fillRect(targetX - 49, 252, 18, 14);
-    ctx.strokeStyle = paper; ctx.beginPath(); ctx.moveTo(targetX + 34, 260); ctx.lineTo(targetX + 56, 241); ctx.stroke();
+    fxLine(ink, targetX - 60, 248, targetX + 60, 248);
+    fxLine(ink, targetX, 225, targetX, 276);
+    fxRect('#ff6177', targetX - 48, 252, 18, 12);
+    fxLine(paper, targetX + 36, 260, targetX + 54, 242);
   } else if (effect.characterId === 'prometheus') {
     // A hidden ember travels the fennel stalk beneath the returning eagle.
-    ctx.fillStyle = '#76884c'; ctx.fillRect(Math.min(originX, targetX), 262, Math.abs(targetX - originX), 9);
-    ctx.fillStyle = '#d8c37c'; ctx.fillRect(Math.min(originX, targetX), 265, Math.abs(targetX - originX), 3);
+    fxRect('#76884c', Math.min(originX, targetX), 258, Math.abs(targetX - originX), 12);
+    fxRect('#d8c37c', Math.min(originX, targetX), 264, Math.abs(targetX - originX), 6);
     const emberX = originX + (targetX - originX) * travel;
-    ctx.fillStyle = '#ff774f'; ctx.fillRect(emberX - 12, 250 - pulse * 28, 24, 24);
-    ctx.fillStyle = '#ffd35c'; ctx.fillRect(emberX - 5, 244 - pulse * 34, 10, 25);
-    ctx.fillStyle = ink;
-    const eagleX = originX + direction * 35;
-    ctx.fillRect(eagleX - 34, 156 - pulse * 18, 68, 8);
-    ctx.fillRect(eagleX - direction * 7, 151 - pulse * 18, 22, 16);
-    ctx.fillRect(eagleX + direction * 13, 157 - pulse * 18, 17, 5);
+    fxRect('#ff774f', emberX - 12, 250 - pulse * 30, 24, 24);
+    fxRect('#ffd35c', emberX - 6, 244 - pulse * 36, 12, 24);
+    const eagleX = originX + direction * 36;
+    fxRect(ink, eagleX - 36, 156 - pulse * 18, 72, 6);
+    fxRect(ink, eagleX - direction * 6, 150 - pulse * 18, 24, 18);
+    fxRect(ink, eagleX + direction * 12, 156 - pulse * 18, 18, 6);
   } else if (effect.characterId === 'minerva') {
     // Loom-lines calculate the target while an armed thought splits its enclosure.
-    ctx.strokeStyle = colorWithAlpha(effect.color, .8); ctx.lineWidth = 2;
+    const thread = colorWithAlpha(effect.color, .8);
     for (let index = -3; index <= 3; index += 1) {
-      ctx.beginPath(); ctx.moveTo(targetX - 78, 215 + index * 17); ctx.lineTo(targetX + 78, 215 + index * 17 + pulse * index * 4); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(targetX + index * 21, 165); ctx.lineTo(targetX + index * 21, 325); ctx.stroke();
+      fxLine(thread, targetX - 78, 215 + index * 17, targetX + 78, 215 + index * 17 + pulse * index * 4);
+      fxLine(thread, targetX + index * 21, 165, targetX + index * 21, 324);
     }
-    ctx.strokeStyle = paper; ctx.lineWidth = 5;
-    ctx.beginPath(); ctx.moveTo(originX, 196 - pulse * 42); ctx.lineTo(originX, 142 - pulse * 24); ctx.stroke();
-    ctx.strokeStyle = effect.color; ctx.beginPath(); ctx.moveTo(originX - 34, 178); ctx.lineTo(originX, 142 - pulse * 24); ctx.lineTo(originX + 34, 178); ctx.stroke();
+    fxLine(paper, originX, 196 - pulse * 42, originX, 142 - pulse * 24);
+    fxLine(effect.color, originX - 36, 178, originX, 142 - pulse * 24);
+    fxLine(effect.color, originX + 36, 178, originX, 142 - pulse * 24);
   } else if (effect.characterId === 'quetzalcoatl') {
     // The wind jewel becomes a hurricane; old bones stand inside its morning star.
-    ctx.beginPath();
     for (let index = 0; index <= 34; index += 1) {
-      const angle = index * .46 + progress * 7;
+      const angle = index * .46 + held * 7;
       const radius = 4 + index * 2.25 * pulse;
-      const px = 480 + Math.cos(angle) * radius;
-      const py = 245 + Math.sin(angle) * radius * .62;
-      if (index === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      fxStamp(effect.color, 480 + Math.cos(angle) * radius, 245 + Math.sin(angle) * radius * .62);
     }
-    ctx.stroke();
-    ctx.fillStyle = paper; ctx.fillRect(targetX - 5, 209, 10, 75);
-    ctx.fillRect(targetX - 34, 235, 68, 8); ctx.fillRect(targetX - 24, 279, 12, 37); ctx.fillRect(targetX + 12, 279, 12, 37);
-    ctx.fillStyle = '#f0df73';
-    ctx.fillRect(targetX - 5, 155 - pulse * 20, 10, 42); ctx.fillRect(targetX - 21, 171 - pulse * 20, 42, 10);
+    fxRect(paper, targetX - 6, 209, 12, 75);
+    fxRect(paper, targetX - 36, 234, 72, 6);
+    fxRect(paper, targetX - 24, 279, 12, 36); fxRect(paper, targetX + 12, 279, 12, 36);
+    fxRect('#f0df73', targetX - 6, 155 - pulse * 18, 12, 42);
+    fxRect('#f0df73', targetX - 21, 171 - pulse * 18, 42, 12);
   } else if (effect.characterId === 'erlang') {
     // Nine turns circle the truth-eye while the celestial hound crosses the scene.
-    ctx.strokeStyle = effect.color; ctx.lineWidth = 5;
-    ctx.beginPath(); ctx.ellipse(480, 186, 68 + pulse * 25, 29 + pulse * 8, 0, 0, Math.PI * 2); ctx.stroke();
-    ctx.fillStyle = '#f55c73'; ctx.beginPath(); ctx.arc(480, 186, 13 + pulse * 5, 0, Math.PI * 2); ctx.fill();
+    fxRing(effect.color, 480, 186, 68 + pulse * 24, 29 + pulse * 8);
+    fxDisc('#f55c73', 480, 186, 13 + pulse * 5);
     for (let index = 0; index < 9; index += 1) {
-      const angle = (Math.PI * 2 * index) / 9 + progress * 5;
-      const px = originX + Math.cos(angle) * 67;
-      const py = 255 + Math.sin(angle) * 48;
-      ctx.save(); ctx.translate(px, py); ctx.rotate(angle); ctx.strokeRect(-6, -6, 12, 12); ctx.restore();
+      const angle = (Math.PI * 2 * index) / 9 + held * 5;
+      const tokenX = originX + Math.cos(angle) * 67;
+      const tokenY = 255 + Math.sin(angle) * 48;
+      fxStamp(effect.color, tokenX - 6, tokenY - 6, 2);
+      fxStamp(index % 2 ? paper : ink, tokenX - 6, tokenY - 6, 1);
     }
     const houndX = originX + (targetX - originX) * travel;
-    ctx.fillStyle = ink; ctx.fillRect(houndX - 28 * direction, 302 - pulse * 10, 43 * direction, 17);
-    ctx.fillRect(houndX + 8 * direction, 291 - pulse * 10, 18 * direction, 18);
+    fxRect(ink, houndX - 28 * direction, 300 - pulse * 12, 42 * direction, 18);
+    fxRect(ink, houndX + 6 * direction, 288 - pulse * 12, 18 * direction, 18);
   } else if (effect.characterId === 'tyr') {
     // The offered hand closes the binding; Fenrir's jaw completes the oath.
-    ctx.strokeStyle = effect.color; ctx.lineWidth = 4;
     for (let index = 0; index < 8; index += 1) {
       const linkX = originX + direction * (32 + index * 38 * travel);
-      ctx.beginPath(); ctx.ellipse(linkX, 236 + (index % 2) * 9, 16, 9, index % 2 ? .5 : -.5, 0, Math.PI * 2); ctx.stroke();
+      fxRing(effect.color, linkX, 236 + (index % 2) * 9, 16, 9);
     }
-    ctx.fillStyle = '#8e3841'; ctx.fillRect(originX - 24, 204 - pulse * 25, 30, 24);
-    ctx.fillStyle = ink;
-    ctx.beginPath(); ctx.moveTo(targetX - 52, 204); ctx.lineTo(targetX + 42, 232); ctx.lineTo(targetX - 18, 245); ctx.closePath(); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(targetX - 52, 291); ctx.lineTo(targetX + 42, 262); ctx.lineTo(targetX - 18, 250); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = paper;
+    fxRect('#8e3841', originX - 24, 204 - pulse * 24, 30, 24);
+    fxRect(ink, targetX - 54, 204, 60, 12); fxRect(ink, targetX - 30, 216, 60, 12); fxRect(ink, targetX - 6, 228, 48, 8);
+    fxRect(ink, targetX - 54, 280, 60, 12); fxRect(ink, targetX - 30, 268, 60, 12); fxRect(ink, targetX - 6, 258, 48, 8);
     for (let index = 0; index < 5; index += 1) {
-      ctx.fillRect(targetX - 21 + index * 13, 230 + index % 2 * 4, 6, 15);
-      ctx.fillRect(targetX - 21 + index * 13, 252 - index % 2 * 4, 6, 15);
+      fxRect(paper, targetX - 21 + index * 13, 230 + (index % 2) * 4, 6, 14);
+      fxRect(paper, targetX - 21 + index * 13, 252 - (index % 2) * 4, 6, 14);
     }
   } else if (effect.characterId === 'ogma') {
     // Ogham cuts a furrow across the arena; Orna answers with remembered force.
-    ctx.strokeStyle = paper; ctx.lineWidth = 7;
-    ctx.beginPath(); ctx.moveTo(originX, 246); ctx.lineTo(targetX, 246); ctx.stroke();
-    ctx.strokeStyle = effect.color; ctx.lineWidth = 3;
+    fxRect(paper, Math.min(originX, targetX), 243, Math.abs(targetX - originX), 7);
     for (let index = 0; index < 14; index += 1) {
       const markX = originX + direction * (18 + index * 25 * travel);
-      ctx.beginPath(); ctx.moveTo(markX, 227 - (index % 3) * 5); ctx.lineTo(markX, 265 + (index % 2) * 6); ctx.stroke();
+      fxLine(effect.color, markX, 228 - (index % 3) * 6, markX, 264 + (index % 2) * 6);
     }
-    ctx.strokeStyle = ink; ctx.lineWidth = 8;
-    ctx.beginPath(); ctx.moveTo(originX - direction * 20, 315); ctx.lineTo(targetX + direction * 22, 184 - pulse * 25); ctx.stroke();
-    ctx.strokeStyle = paper; ctx.lineWidth = 2; ctx.stroke();
+    fxLine(ink, originX - direction * 18, 315, targetX + direction * 24, 184 - pulse * 24, 2);
+    fxLine(paper, originX - direction * 18, 315, targetX + direction * 24, 184 - pulse * 24, 1);
   } else if (effect.characterId === 'jacheongbi') {
     // Five grains and the hardy sixth seed cross fire, then flower around the fallen.
     const grainColors = ['#f0df73', '#e9c48d', '#70ef8e', '#ffce6c', '#fffdf5', '#d994ff'];
     grainColors.forEach((color, index) => {
       const arc = Math.sin(travel * Math.PI) * (46 + index * 5);
       const seedX = originX + (targetX - originX) * travel + direction * index * 5;
-      ctx.fillStyle = color; ctx.fillRect(seedX - 5, 284 - arc + index % 2 * 8, 10, 7);
+      fxRect(color, seedX - 6, 282 - arc + (index % 2) * 8, 12, 8);
     });
     grainColors.forEach((color, index) => {
       const angle = (Math.PI * 2 * index) / grainColors.length;
-      ctx.fillStyle = color;
-      ctx.fillRect(targetX + Math.cos(angle) * (24 + pulse * 36) - 8, 245 + Math.sin(angle) * (18 + pulse * 27) - 8, 16, 16);
+      fxStamp(color, targetX + Math.cos(angle) * (24 + pulse * 36) - 8, 245 + Math.sin(angle) * (18 + pulse * 27) - 8, 2);
     });
-    ctx.fillStyle = '#6ca56f';
-    for (let index = -3; index <= 3; index += 1) ctx.fillRect(targetX + index * 18, 305 - pulse * (20 + Math.abs(index) * 5), 4, 42);
+    for (let index = -3; index <= 3; index += 1) {
+      fxRect('#6ca56f', targetX + index * 18, 306 - pulse * (18 + Math.abs(index) * 6), 6, 42);
+    }
   } else if (effect.characterId === 'omoikane') {
     // Many thoughts become two pillars; the cave opens only where they agree.
-    ctx.fillStyle = ink; ctx.fillRect(targetX - 92, 157, 184, 170);
-    ctx.fillStyle = paper; ctx.fillRect(targetX - 4 - pulse * 16, 157, 8 + pulse * 32, 170);
+    fxRect(ink, targetX - 90, 156, 180, 168);
+    fxRect(paper, targetX - 6 - pulse * 18, 156, 12 + pulse * 36, 168);
     for (let index = 0; index < 8; index += 1) {
-      const angle = (Math.PI * 2 * index) / 8 + progress * 2;
+      const angle = (Math.PI * 2 * index) / 8 + held * 2;
       const fromX = originX + Math.cos(angle) * 92;
       const fromY = 241 + Math.sin(angle) * 70;
-      const nodeX = fromX + (480 - fromX) * travel;
-      const nodeY = fromY + (206 - fromY) * travel;
-      ctx.fillStyle = index % 2 ? '#61e7e1' : effect.color;
-      ctx.fillRect(nodeX - 7, nodeY - 7, 14, 14);
+      fxStamp(index % 2 ? '#61e7e1' : effect.color, fromX + (480 - fromX) * travel - 6, fromY + (206 - fromY) * travel - 6, 2);
     }
-    ctx.fillStyle = effect.color; ctx.fillRect(originX - 62, 192, 17, 141); ctx.fillRect(originX + 45, 192, 17, 141);
+    fxRect(effect.color, originX - 60, 192, 18, 138);
+    fxRect(effect.color, originX + 42, 192, 18, 138);
   }
   ctx.restore();
 }
@@ -2037,29 +2060,81 @@ function drawEffects(time) {
     const progress = (time - effect.start) / effect.duration;
     const x = effect.side === 'player' ? 258 : 702;
     const direction = effect.side === 'player' ? 1 : -1;
+    // Generic effects live on the fighters' own 6px grid (258 and 702 are both
+    // multiples of 6) and animate in six held frames, like the sprites do.
+    const PX = 6;
+    const cx = x / PX;
+    const frame = Math.min(5, Math.floor(progress * 6));
+    const px = (color, cellX, cellY, cellW = 1, cellH = 1) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(cellX * PX, cellY * PX, cellW * PX, cellH * PX);
+    };
     ctx.save();
-    ctx.globalAlpha = Math.max(0, 1 - progress);
+    ctx.globalAlpha = Math.max(.15, 1 - frame * .16);
     if (effect.type === 'lore') {
+      ctx.globalAlpha = Math.max(0, 1 - progress);
       drawLoreSignature(effect, progress);
     } else if (effect.type === 'hit') {
-      ctx.fillStyle = effect.color;
-      for (let i = 0; i < 10; i += 1) {
-        const angle = (Math.PI * 2 * i) / 10;
-        ctx.fillRect(x + Math.cos(angle) * progress * 80, 270 + Math.sin(angle) * progress * 65, 7, 7);
+      const reach = 2 + frame * 2;
+      [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]].forEach(([dx, dy], i) => {
+        const dist = reach - (i % 2);
+        const size = frame < 3 ? 2 : 1;
+        px(i % 3 ? effect.color : '#edf3ff',
+          cx + dx * dist - (dx < 0 ? size - 1 : 0),
+          45 + dy * Math.round(dist * .8) - (dy < 0 ? size - 1 : 0), size, size);
+      });
+      if (frame < 3) {
+        for (let stair = 0; stair < 6; stair += 1) {
+          px('#edf3ff', cx + direction * (stair - 7 + frame * 2), 40 + stair, 2, 1);
+        }
       }
-      ctx.fillStyle = '#fff'; ctx.fillRect(x - 42 * direction, 235 - progress * 25, 72 * direction, 5);
+      if (frame < 2) {
+        px('#edf3ff', cx - 1, 44, 2, 2);
+        px(effect.color, cx - 3, 44, 2, 2); px(effect.color, cx + 2, 44, 2, 2);
+        px(effect.color, cx - 1, 42, 2, 2); px(effect.color, cx - 1, 46, 2, 2);
+      }
     } else if (effect.type === 'shield') {
-      ctx.strokeStyle = effect.color; ctx.lineWidth = 5;
-      ctx.strokeRect(x - 68 - progress * 10, 180 - progress * 10, 136 + progress * 20, 160 + progress * 20);
+      const grow = frame >> 1;
+      const left = cx - 12 - grow, right = cx + 11 + grow, top = 29 - grow, bottom = 57 + grow;
+      px(effect.color, left, top, 4, 1); px(effect.color, left, top + 1, 1, 3);
+      px(effect.color, right - 3, top, 4, 1); px(effect.color, right, top + 1, 1, 3);
+      px(effect.color, left, bottom, 4, 1); px(effect.color, left, bottom - 3, 1, 3);
+      px(effect.color, right - 3, bottom, 4, 1); px(effect.color, right, bottom - 3, 1, 3);
+      if (frame % 2 === 0) {
+        px('#edf3ff', cx, top, 1, 1); px('#edf3ff', cx, bottom, 1, 1);
+        px('#edf3ff', left, 43, 1, 1); px('#edf3ff', right, 43, 1, 1);
+      }
     } else if (effect.type === 'heal' || effect.type === 'focus') {
-      ctx.fillStyle = effect.color;
-      for (let i = 0; i < 8; i += 1) ctx.fillRect(x - 50 + i * 14, 330 - progress * (80 + (i % 3) * 18), 5, 12);
+      for (let i = 0; i < 8; i += 1) {
+        const col = cx - 8 + i * 2 + (i % 2);
+        const cellY = 54 - Math.floor(progress * (9 + (i % 3) * 3));
+        px(effect.color, col, cellY, 1, 2);
+        px('#edf3ff', col, cellY, 1, 1);
+        if (i % 3 === 0 && frame % 2 === 0) {
+          px(effect.color, col - 1, cellY + 1, 1, 1); px(effect.color, col + 1, cellY + 1, 1, 1);
+        }
+      }
     } else if (effect.type === 'burn') {
-      ctx.fillStyle = '#ff774f';
-      for (let i = 0; i < 8; i += 1) ctx.fillRect(x - 34 + i * 10, 330 - progress * (90 + (i % 2) * 30), 7, 16);
+      for (let i = 0; i < 5; i += 1) {
+        const col = cx - 6 + i * 3;
+        const base = 54 - Math.floor(progress * (11 + (i % 2) * 4));
+        const flick = (frame + i) % 2;
+        px('#ff774f', col, base, 2, 3);
+        px('#ff8d43', col + flick, base + 1, 1, 2);
+        px('#ffd35c', col + 1 - flick, base - 1, 1, 1);
+      }
     } else if (effect.type === 'mark') {
-      ctx.strokeStyle = effect.color; ctx.lineWidth = 3;
-      ctx.strokeRect(x - 30 - progress * 15, 230 - progress * 15, 60 + progress * 30, 60 + progress * 30);
+      const mid = 43;
+      const half = 8 - Math.min(4, frame);
+      const bl = cx - half, br = cx + half, bt = mid - half, bb = mid + half;
+      px(effect.color, bl, bt, 3, 1); px(effect.color, bl, bt, 1, 3);
+      px(effect.color, br - 2, bt, 3, 1); px(effect.color, br, bt, 1, 3);
+      px(effect.color, bl, bb, 3, 1); px(effect.color, bl, bb - 2, 1, 3);
+      px(effect.color, br - 2, bb, 3, 1); px(effect.color, br, bb - 2, 1, 3);
+      if (frame >= 2) {
+        px('#edf3ff', cx - 1, mid - 1, 3, 2);
+        px('#101529', cx, mid - 1, 1, 1);
+      }
     }
     if (effect.text) {
       ctx.globalAlpha = Math.max(0, 1 - progress * 1.15);
