@@ -8,7 +8,7 @@ const CHARACTERS = [
     abilities: [
       { name: 'A REED ENTERS THE DARK', icon: '⌇', desc: 'The dark remembers it as light.', kind: 'damage', power: 15, gain: 24 },
       { name: 'GLYPHS GATHER AROUND YOU', icon: '▧', desc: 'A sentence pretending to be shelter.', kind: 'shield', power: 30, gain: 16, cooldown: 2 },
-      { name: 'TIME OPENS ITS MOUTH', icon: '◫', desc: 'What enters returns less certain.', kind: 'damage', power: 28, cost: 65, effect: 'weaken', cooldown: 3 },
+      { name: 'FIVE DAYS FALL FROM THE MOON', icon: '◫', desc: 'Time survives by learning to cheat.', kind: 'damage', power: 28, cost: 65, effect: 'weaken', rewind: 1, cooldown: 3 },
     ],
   },
   {
@@ -16,8 +16,8 @@ const CHARACTERS = [
     accent: '#ff774f', dark: '#512033', hp: 112, power: 20, speed: 13,
     lore: 'He calls it theft until the fire begins to call him home.',
     abilities: [
-      { name: 'AN EMBER SAYS COME CLOSER', icon: '◆', desc: 'Your body mistakes this for warmth.', kind: 'damage', power: 17, gain: 24 },
-      { name: 'HEAVEN LEAVES A DOOR OPEN', icon: '♨', desc: 'He enters carrying your future wound.', kind: 'damage', power: 13, gain: 14, effect: 'burn', cooldown: 2 },
+      { name: 'FIRE HIDES IN THE FENNEL', icon: '◆', desc: 'A hollow stem carries tomorrow.', kind: 'damage', power: 17, gain: 24 },
+      { name: 'THE EAGLE RETURNS AT DAWN', icon: '♨', desc: 'The wound is eaten; the wound returns.', kind: 'damage', power: 13, gain: 14, effect: 'burn', selfRegen: 2, cooldown: 2 },
       { name: 'THE FIRST FIRE REMEMBERS', icon: '✦', desc: 'Every touch wants to become ash.', kind: 'damage', power: 34, cost: 65, recoil: 7, cooldown: 3 },
     ],
   },
@@ -28,7 +28,7 @@ const CHARACTERS = [
     abilities: [
       { name: 'THE SPEAR FINDS THE MARGIN', icon: '↗', desc: 'Where the plan forgot its body.', kind: 'damage', power: 14, gain: 25 },
       { name: 'AEGIS: A BRIGHT REFUSAL', icon: '⬡', desc: 'The blow arrives; you remain elsewhere.', kind: 'shield', power: 36, gain: 14, cooldown: 2 },
-      { name: 'A PERFECT PLAN BREAKS', icon: '⌘', desc: 'Beautifully, into wound and remedy.', kind: 'damage', power: 23, cost: 65, heal: 14, cooldown: 3 },
+      { name: 'THE HELMET BREAKS THE FATHER', icon: '⌘', desc: 'A thought arrives already armed.', kind: 'damage', power: 23, cost: 65, heal: 14, cooldown: 3 },
     ],
   },
   {
@@ -36,9 +36,9 @@ const CHARACTERS = [
     accent: '#70ef8e', dark: '#1a4a43', hp: 108, power: 17, speed: 19,
     lore: 'To become weather: to touch everything and belong nowhere.',
     abilities: [
-      { name: 'FEATHERS CROSS THE BODY', icon: '〽', desc: 'The sky calls this a sentence.', kind: 'damage', power: 14, gain: 26 },
-      { name: 'DAWN PUTS YOU TOGETHER', icon: '☼', desc: 'Incorrectly, tenderly, enough.', kind: 'heal', power: 24, gain: 13, cooldown: 2 },
-      { name: 'THE FIFTH SUN OPENS', icon: '◉', desc: 'Inside it, every ending is warm.', kind: 'damage', power: 27, cost: 65, effect: 'burn', cooldown: 3 },
+      { name: 'THE WIND JEWEL TURNS', icon: '〽', desc: 'A conch remembers every hurricane.', kind: 'damage', power: 14, gain: 26 },
+      { name: 'BONES RETURN FROM MICTLAN', icon: '☼', desc: 'Blood teaches the dead to rise.', kind: 'heal', power: 24, gain: 13, revive: 22, cooldown: 2 },
+      { name: 'THE MORNING STAR OPENS', icon: '◉', desc: 'Ash lifts its heart into dawn.', kind: 'damage', power: 27, cost: 65, effect: 'burn', cooldown: 3 },
     ],
   },
   {
@@ -57,7 +57,7 @@ const CHARACTERS = [
     lore: 'The missing hand remains in every promise made afterward.',
     abilities: [
       { name: 'THE OATH ENTERS THE SWORD', icon: '†', desc: 'Metal repeats what the mouth feared.', kind: 'damage', power: 16, gain: 25 },
-      { name: 'ONE HAND BECOMES A WALL', icon: '◇', desc: 'Loss standing upright, still called law.', kind: 'shield', power: 27, gain: 15, cleanse: true, cooldown: 2 },
+      { name: 'THE HAND ENTERS THE BINDING', icon: '◇', desc: 'The wolf closes; the law remains.', kind: 'shield', power: 32, gain: 15, cleanse: true, recoil: 6, cooldown: 2 },
       { name: 'FENRIR PULLS THE SENTENCE', icon: '∞', desc: 'Every promise tightens into chain.', kind: 'damage', power: 27, cost: 65, effect: 'seal', cooldown: 3 },
     ],
   },
@@ -68,7 +68,7 @@ const CHARACTERS = [
     abilities: [
       { name: 'OGHAM ENTERS THE SKIN', icon: 'ᚑ', desc: 'A letter looking for its meaning.', kind: 'damage', power: 16, gain: 24 },
       { name: 'THE SWEET WORD LEANS CLOSE', icon: '≈', desc: 'Strength forgets what it was saying.', kind: 'weaken', power: 0, gain: 18, cooldown: 2 },
-      { name: 'SPEAK ONCE: THE WORLD BREAKS', icon: '!', desc: 'Silence rushes in to hold it.', kind: 'damage', power: 32, cost: 65, cooldown: 3 },
+      { name: 'ORNA RECITES THE WOUND', icon: '!', desc: 'The sword remembers what the hand denied.', kind: 'damage', power: 28, cost: 65, echo: .45, cooldown: 3 },
     ],
   },
   {
@@ -78,7 +78,7 @@ const CHARACTERS = [
     abilities: [
       { name: 'THE SICKLE MAKES A MOON', icon: '◜', desc: 'The body learns harvest by touch.', kind: 'damage', power: 14, gain: 25 },
       { name: 'FIVE GRAINS DREAM DOWNWARD', icon: '❋', desc: 'Roots practice the shape of return.', kind: 'regen', power: 7, gain: 15, cooldown: 2 },
-      { name: 'THE HARVEST MOON DESCENDS', icon: '◒', desc: 'Cut and cure share one bright edge.', kind: 'damage', power: 24, cost: 65, heal: 18, cooldown: 3 },
+      { name: 'FIVE FLOWERS CROSS THE FIRE', icon: '◒', desc: 'The dead return carrying spring inside.', kind: 'damage', power: 24, cost: 65, heal: 18, revive: 24, cooldown: 3 },
     ],
   },
   {
@@ -87,7 +87,7 @@ const CHARACTERS = [
     lore: 'Each answer opens into another door; foresight becomes a room without exit.',
     abilities: [
       { name: 'A THOUGHT ENTERS YOUR BODY', icon: '⌁', desc: 'Too late, you name it mine.', kind: 'damage', power: 13, gain: 28 },
-      { name: 'THE MYRIAD PLAN OPENS', icon: '⌬', desc: 'Every answer contains another door.', kind: 'focus', power: 28, shield: 12, gain: 0, cooldown: 2 },
+      { name: 'MANY MINDS BUILD ONE DOOR', icon: '⌬', desc: 'Each answer shoulders another.', kind: 'focus', power: 28, shield: 12, counsel: 10, gain: 0, cooldown: 2 },
       { name: 'THE CAVE CLOSES SOFTLY', icon: '◩', desc: 'Outside, the world forgets to happen.', kind: 'damage', power: 25, cost: 65, effect: 'seal', cooldown: 3 },
     ],
   },
@@ -209,6 +209,53 @@ class PixelSound {
       { ratio: 3.98, level: .09 },
     ], volume, delay, .012);
   }
+  glideNote(freq, duration = .8, volume = .003, endRatio = 1.45, type = 'triangle') {
+    if (!this.context || state.muted) return;
+    const at = this.context.currentTime;
+    const osc = this.context.createOscillator();
+    const gain = this.context.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, at);
+    osc.frequency.exponentialRampToValueAtTime(freq * endRatio, at + duration);
+    gain.gain.setValueAtTime(.0001, at);
+    gain.gain.exponentialRampToValueAtTime(volume, at + .12);
+    gain.gain.exponentialRampToValueAtTime(.0001, at + duration);
+    osc.connect(gain).connect(this.musicBus);
+    osc.start(at);
+    osc.stop(at + duration + .04);
+  }
+  characterVoice(characterId, step, root, call) {
+    if (!characterId) return;
+    if (characterId === 'thoth' && (step === 2 || step === 6)) {
+      this.chapelBell((call || root * 2) * 2, 1.25, .0028);
+    } else if (characterId === 'prometheus' && (step === 3 || step === 7)) {
+      this.glideNote(root * 3, .72, .0027, 1.34, 'sawtooth');
+    } else if (characterId === 'minerva' && [1, 4, 7].includes(step)) {
+      this.musicVoice(root * 4, .17, [{ ratio: 1, level: 1, type: 'square' }], .0021, 0, .018);
+    } else if (characterId === 'quetzalcoatl' && (step === 0 || step === 4)) {
+      this.glideNote(root * 2.5, 1.05, .0031, step === 0 ? 1.62 : .72);
+    } else if (characterId === 'erlang' && step === 4) {
+      this.musicVoice(root * 3, .78, [
+        { ratio: 1, level: 1, type: 'triangle' },
+        { ratio: 1.5, level: .45 },
+        { ratio: 2.25, level: .16 },
+      ], .0033, 0, .045);
+    } else if (characterId === 'tyr' && (step === 0 || step === 8)) {
+      this.organNote(root * (step === 0 ? 1 : 2), 1.35, .0041);
+    } else if (characterId === 'ogma' && call) {
+      this.musicVoice(call * 2, .14, [{ ratio: 1, level: 1, type: 'square' }], .00165, 0, .012);
+    } else if (characterId === 'jacheongbi' && step >= 4) {
+      const grainRatios = [1, 1.125, 1.25, 1.5, 1.6875];
+      this.musicVoice(root * 2 * grainRatios[step - 4], .52, [{ ratio: 1, level: 1, type: 'triangle' }], .0026, 0, .035);
+    } else if (characterId === 'omoikane' && step === 4) {
+      this.musicVoice(root * 2, 1.05, [
+        { ratio: 1, level: 1 },
+        { ratio: 1.25, level: .43 },
+        { ratio: 1.5, level: .32 },
+        { ratio: 2, level: .14 },
+      ], .0034, 0, .19);
+    }
+  }
   musicTick() {
     // Four nine-beat petitions: a modal call, a lower response, then a return.
     const petitions = [
@@ -244,6 +291,8 @@ class PixelSound {
         this.organNote(146.83, 3.45, .011);
         this.chapelBell(587.33, 3.1, .009);
       }
+      const activeVoice = getActive('player')?.id || state.selected[state.selected.length - 1];
+      this.characterVoice(activeVoice, step, root, call);
     }
     this.musicStep += 1;
     this.musicTimer = window.setTimeout(() => {
@@ -279,6 +328,7 @@ function cloneFighter(character, side, index) {
     currentHp: character.hp,
     focus: 0,
     shield: 0,
+    lastDamage: 0,
     cooldowns: [0, 0, 0],
     status: { burn: 0, weaken: 0, mark: 0, seal: 0, regen: 0 },
   };
@@ -507,8 +557,13 @@ function applyDamage(target, damage, pierce = false) {
 
 function executeAbility(actor, target, ability, index) {
   const motionNow = performance.now();
-  state.battle.motion[actor.side] = { type: 'attack', start: motionNow, duration: 470 };
-  state.battle.motion[target.side] = { type: 'hurt', start: motionNow + 145, duration: 390 };
+  state.battle.motion[actor.side] = {
+    type: 'attack', start: motionNow, duration: 680, characterId: actor.id, abilityIndex: index,
+  };
+  state.battle.motion[target.side] = { type: 'hurt', start: motionNow + 185, duration: 430 };
+  addEffect('lore', actor.side, actor.accent, '', {
+    characterId: actor.id, abilityIndex: index, targetSide: target.side, duration: 1040,
+  });
   if (ability.cost) actor.focus = Math.max(0, actor.focus - ability.cost);
   else actor.focus = Math.min(100, actor.focus + (ability.gain || 0));
   if (ability.cooldown) actor.cooldowns[index] = ability.cooldown + 1;
@@ -516,12 +571,15 @@ function executeAbility(actor, target, ability, index) {
   const isDamage = ability.kind === 'damage';
   let result = { damage: 0, blocked: 0, healed: 0 };
   if (isDamage) {
-    const rawDamage = computeDamage(actor, target, ability);
+    const echoDamage = ability.echo ? Math.round(actor.lastDamage * ability.echo) : 0;
+    const rawDamage = computeDamage(actor, target, ability) + echoDamage;
     const applied = applyDamage(target, rawDamage, ability.pierce);
     result = { ...result, damage: applied.hpDamage, blocked: applied.blocked };
+    actor.lastDamage = applied.hpDamage;
     if (actor.side === 'player') state.battle.metrics.damage += applied.hpDamage;
     state.battle.hitFlash[target.side] = performance.now() + 220;
     addEffect('hit', target.side, target.accent, applied.hpDamage ? `-${applied.hpDamage}` : 'THE BLOW ARRIVES\nYOU ARE ALREADY ELSEWHERE');
+    if (echoDamage) addEffect('mark', target.side, actor.accent, `ORNA SPEAKS AGAIN\n${echoDamage} RETURNS AS WORD`);
     sound.hit();
   }
   if (ability.kind === 'shield') {
@@ -562,6 +620,10 @@ function executeAbility(actor, target, ability, index) {
     target.status.burn = Math.max(target.status.burn, 3);
     addEffect('burn', target.side, '#ff774f', 'THE FIRE SAYS STAY\nTHE BODY ANSWERS ASH');
   }
+  if (ability.selfRegen) {
+    actor.status.regen = Math.max(actor.status.regen, ability.selfRegen);
+    addEffect('heal', actor.side, actor.accent, 'THE LIVER RETURNS\nBEFORE MORNING CAN CLOSE');
+  }
   if (ability.effect === 'weaken') target.status.weaken = Math.max(target.status.weaken, 2);
   if (ability.effect === 'seal') {
     target.status.seal = Math.max(target.status.seal, 2);
@@ -572,6 +634,27 @@ function executeAbility(actor, target, ability, index) {
     actor.currentHp = Math.min(actor.maxHp, actor.currentHp + ability.heal);
     result.healed += actor.currentHp - before;
     if (actor.currentHp > before) addEffect('heal', actor.side, actor.accent, `+${actor.currentHp - before}`);
+  }
+  if (ability.revive) {
+    const team = actor.side === 'player' ? state.battle.playerTeam : state.battle.enemyTeam;
+    const fallen = team.find((fighter) => fighter.currentHp <= 0);
+    if (fallen) {
+      fallen.currentHp = Math.min(fallen.maxHp, ability.revive);
+      fallen.status = { burn: 0, weaken: 0, mark: 0, seal: 0, regen: 0 };
+      addEffect('heal', actor.side, fallen.accent, `${fallen.name} RETURNS\nABSENCE RELEASES ITS ROOT`);
+      addLog(`<b>${fallen.name}</b> returns through flower and bone;<br>absence loosens what it held.`, actor.side);
+    }
+  }
+  if (ability.rewind) {
+    actor.cooldowns = actor.cooldowns.map((value) => Math.max(0, value - ability.rewind));
+    addEffect('focus', actor.side, actor.accent, 'FIVE DAYS ARE STOLEN\nTHE CLOCK FORGETS ITS DEBT');
+  }
+  if (ability.counsel) {
+    const team = actor.side === 'player' ? state.battle.playerTeam : state.battle.enemyTeam;
+    team.filter((fighter) => fighter.currentHp > 0 && fighter !== actor).forEach((fighter) => {
+      fighter.focus = Math.min(100, fighter.focus + ability.counsel);
+    });
+    addEffect('focus', actor.side, actor.accent, 'MANY MINDS GATHER\nONE DOOR LEARNS TO OPEN');
   }
   if (ability.recoil) {
     actor.currentHp = Math.max(1, actor.currentHp - ability.recoil);
@@ -792,8 +875,8 @@ function closeModal() {
   [...modalBackdrop.querySelectorAll('.modal')].forEach((modal) => { modal.hidden = true; });
 }
 
-function addEffect(type, side, color, text) {
-  state.effects.push({ type, side, color, text, start: performance.now(), duration: 900 });
+function addEffect(type, side, color, text, details = {}) {
+  state.effects.push({ type, side, color, text, start: performance.now(), duration: 900, ...details });
 }
 
 function colorWithAlpha(hex, alpha) {
@@ -1017,6 +1100,64 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     r('#f0df73', Math.round(thoughtX * .55), -42 + (loreFrame % 3), 2, 2);
     if (loreFrame === 0 || loreFrame === 4) { r(white, -3, -43, 6, 1); r(white, -1, -45, 2, 5); }
   }
+
+  // Attacks briefly transform the sprite into a character-specific mythic figure.
+  if (motion.signatureProgress !== undefined) {
+    const signaturePulse = Math.sin(motion.signatureProgress * Math.PI);
+    const reach = Math.round(signaturePulse * (5 + (motion.abilityIndex || 0) * 2));
+    if (character.id === 'thoth') {
+      for (let index = 0; index < 5; index += 1) {
+        const glyphX = -18 + index * 9;
+        r(index % 2 ? white : a, glyphX, -42 - reach + (index % 2) * 3, 4, 1);
+        r(a, glyphX + 1, -45 - reach + (index % 2) * 3, 1, 6);
+      }
+      r('#d5a94f', -16, -13 - reach, 32, 1);
+    } else if (character.id === 'prometheus') {
+      r('#6d7f45', 8, -26 - reach, 3, 25 + reach);
+      r('#ff5a45', 5, -31 - reach, 9, 8 + reach);
+      r('#ffd35c', 8, -35 - reach, 3, 9);
+      r(black, -18, -43, 10, 3); r(black, -13, -47, 3, 8); r(black, -8, -45, 7, 2);
+    } else if (character.id === 'minerva') {
+      r(white, -1, -45 - reach, 2, 15);
+      r(a, -8 - reach, -39, 7 + reach, 2); r(a, 2, -39, 7 + reach, 2);
+      for (let index = 0; index < 4; index += 1) r('#c99554', -18, -24 + index * 5, 36, 1);
+    } else if (character.id === 'quetzalcoatl') {
+      const serpentColors = [a, '#5aaeff', '#f36b79', '#f0d96c'];
+      for (let index = 0; index < 7; index += 1) {
+        const coilX = -22 + index * 7;
+        const coilY = -15 - Math.round(Math.sin(index + motion.signatureProgress * 7) * (4 + reach));
+        r(serpentColors[index % serpentColors.length], coilX, coilY, 7, 3);
+      }
+    } else if (character.id === 'erlang') {
+      r('#f55c73', -3 - reach, -31, 6 + reach * 2, 3);
+      r(white, 4, -31, 12 + reach * 2, 1);
+      r('#29334e', -21 - reach, -9, 10 + reach, 5); r('#b9c4dd', -18 - reach, -12, 4, 4);
+    } else if (character.id === 'tyr') {
+      for (let index = 0; index < 4; index += 1) {
+        r(a, -19 + index * 9, -28 - reach + (index % 2) * 4, 7, 2);
+        r(a, -18 + index * 9, -30 - reach + (index % 2) * 4, 2, 6);
+      }
+      r('#8e3841', -18, -20, 7 + reach, 5);
+    } else if (character.id === 'ogma') {
+      r(white, -19, -42 - reach, 38, 2);
+      for (let index = 0; index < 7; index += 1) {
+        r(index % 2 ? a : white, -16 + index * 5, -45 - reach, 1, 8);
+      }
+      r('#9d7452', 7, -35 - reach, 5, 34 + reach);
+    } else if (character.id === 'jacheongbi') {
+      const petals = ['#f0df73', '#f36b79', a, '#fffdf5', '#6ca56f', '#d994ff'];
+      petals.forEach((color, index) => {
+        const angle = (Math.PI * 2 * index) / petals.length;
+        r(color, Math.round(Math.cos(angle) * (13 + reach)) - 2, -22 + Math.round(Math.sin(angle) * (13 + reach)) - 2, 4, 4);
+      });
+    } else if (character.id === 'omoikane') {
+      for (let index = 0; index < 8; index += 1) {
+        const angle = (Math.PI * 2 * index) / 8;
+        r(index % 2 ? '#61e7e1' : a, Math.round(Math.cos(angle) * (17 + reach)) - 1, -25 + Math.round(Math.sin(angle) * (13 + reach)) - 1, 3, 3);
+      }
+      r(white, -12 - reach, -8, 3, 8); r(white, 9 + reach, -8, 3, 8);
+    }
+  }
   targetCtx.restore();
 }
 
@@ -1032,13 +1173,53 @@ function getBattleSpriteMotion(side, time) {
   if (current.type === 'attack') {
     const direction = side === 'player' ? 1 : -1;
     const lunge = Math.sin(progress * Math.PI);
+    const signature = current.characterId;
+    const common = { energy: 2.15, signature, signatureProgress: progress, abilityIndex: current.abilityIndex };
+    if (signature === 'thoth') return {
+      ...common, offsetX: direction * lunge * 12, offsetY: -lunge * 19,
+      rotate: direction * Math.sin(progress * Math.PI * 2) * .04, scaleX: 1 + lunge * .05, scaleY: 1 + lunge * .08,
+    };
+    if (signature === 'prometheus') return {
+      ...common, offsetX: direction * lunge * 48, offsetY: -Math.sin(progress * Math.PI * 2) * 5,
+      rotate: direction * lunge * .11, scaleX: 1 + lunge * .15, scaleY: 1 - lunge * .08,
+    };
+    if (signature === 'minerva') return {
+      ...common, offsetX: direction * lunge * 31, offsetY: progress < .42 ? 0 : -Math.sin(progress * Math.PI) * 7,
+      rotate: direction * (progress < .48 ? -.055 : .095) * lunge, scaleX: 1 + lunge * .07, scaleY: 1 - lunge * .03,
+    };
+    if (signature === 'quetzalcoatl') return {
+      ...common, offsetX: direction * lunge * 27, offsetY: -lunge * 15,
+      rotate: direction * Math.sin(progress * Math.PI * 2) * .22, scaleX: 1 + lunge * .2, scaleY: 1 - lunge * .1,
+    };
+    if (signature === 'erlang') {
+      const blinkLunge = progress < .5 ? Math.sin(progress * Math.PI) * 58 : Math.sin((1 - progress) * Math.PI) * 58;
+      return { ...common, offsetX: direction * blinkLunge, offsetY: -lunge * 8, rotate: direction * lunge * .06, scaleX: 1 + lunge * .12, scaleY: 1 - lunge * .08 };
+    }
+    if (signature === 'tyr') {
+      const oathDrive = progress < .28
+        ? -Math.sin((progress / .28) * Math.PI) * 13
+        : Math.sin(((progress - .28) / .72) * Math.PI) * 43;
+      return { ...common, offsetX: direction * oathDrive, offsetY: -lunge * 5, rotate: direction * lunge * .13, scaleX: 1 + lunge * .08, scaleY: 1 - lunge * .04 };
+    }
+    if (signature === 'ogma') return {
+      ...common, offsetX: direction * lunge * 22, offsetY: -lunge * 28,
+      rotate: direction * Math.sin(progress * Math.PI * 2) * .12, scaleX: 1 + lunge * .1, scaleY: 1 - lunge * .04,
+    };
+    if (signature === 'jacheongbi') return {
+      ...common, offsetX: direction * lunge * 25, offsetY: -lunge * 13,
+      rotate: direction * Math.sin(progress * Math.PI * 2) * .24, scaleX: 1 + lunge * .11, scaleY: 1 - lunge * .04,
+    };
+    if (signature === 'omoikane') return {
+      ...common, offsetX: direction * lunge * 8, offsetY: -lunge * 24,
+      rotate: Math.sin(progress * Math.PI * 2) * .035, scaleX: 1 + lunge * .16, scaleY: 1 + lunge * .16,
+    };
     return {
+      ...common,
       offsetX: direction * lunge * 36,
       offsetY: -Math.sin(progress * Math.PI * 2) * 3,
       rotate: direction * lunge * .075,
       scaleX: 1 + lunge * .08,
       scaleY: 1 - lunge * .045,
-      energy: 1.7,
     };
   }
   const recoil = Math.sin(progress * Math.PI * 6) * (1 - progress);
@@ -1238,6 +1419,144 @@ function drawStatuses(fighter, x, y) {
   ctx.textAlign = 'left';
 }
 
+function drawLoreSignature(effect, progress) {
+  const originX = effect.side === 'player' ? 258 : 702;
+  const targetX = effect.targetSide === 'player' ? 258 : 702;
+  const direction = targetX > originX ? 1 : -1;
+  const pulse = Math.sin(progress * Math.PI);
+  const travel = Math.min(1, progress * 1.45);
+  const ink = '#17131c';
+  const paper = '#fffdf5';
+  ctx.save();
+  ctx.globalAlpha = Math.max(0, Math.min(1, pulse * 1.7));
+  ctx.strokeStyle = effect.color;
+  ctx.fillStyle = effect.color;
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'square';
+
+  if (effect.characterId === 'thoth') {
+    // Five stolen days orbit a moon while the heart is measured against a feather.
+    ctx.beginPath(); ctx.arc(originX, 211, 42 + pulse * 16, -.75 * Math.PI, .75 * Math.PI); ctx.stroke();
+    for (let index = 0; index < 5; index += 1) {
+      const angle = progress * 4 + (Math.PI * 2 * index) / 5;
+      ctx.fillRect(Math.round(originX + Math.cos(angle) * 62) - 4, Math.round(211 + Math.sin(angle) * 39) - 4, 8, 8);
+    }
+    ctx.strokeStyle = ink; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(targetX - 62, 248); ctx.lineTo(targetX + 62, 248); ctx.moveTo(targetX, 225); ctx.lineTo(targetX, 276); ctx.stroke();
+    ctx.fillStyle = '#ff6177'; ctx.fillRect(targetX - 49, 252, 18, 14);
+    ctx.strokeStyle = paper; ctx.beginPath(); ctx.moveTo(targetX + 34, 260); ctx.lineTo(targetX + 56, 241); ctx.stroke();
+  } else if (effect.characterId === 'prometheus') {
+    // A hidden ember travels the fennel stalk beneath the returning eagle.
+    ctx.fillStyle = '#76884c'; ctx.fillRect(Math.min(originX, targetX), 262, Math.abs(targetX - originX), 9);
+    ctx.fillStyle = '#d8c37c'; ctx.fillRect(Math.min(originX, targetX), 265, Math.abs(targetX - originX), 3);
+    const emberX = originX + (targetX - originX) * travel;
+    ctx.fillStyle = '#ff774f'; ctx.fillRect(emberX - 12, 250 - pulse * 28, 24, 24);
+    ctx.fillStyle = '#ffd35c'; ctx.fillRect(emberX - 5, 244 - pulse * 34, 10, 25);
+    ctx.fillStyle = ink;
+    const eagleX = originX + direction * 35;
+    ctx.fillRect(eagleX - 34, 156 - pulse * 18, 68, 8);
+    ctx.fillRect(eagleX - direction * 7, 151 - pulse * 18, 22, 16);
+    ctx.fillRect(eagleX + direction * 13, 157 - pulse * 18, 17, 5);
+  } else if (effect.characterId === 'minerva') {
+    // Loom-lines calculate the target while an armed thought splits its enclosure.
+    ctx.strokeStyle = colorWithAlpha(effect.color, .8); ctx.lineWidth = 2;
+    for (let index = -3; index <= 3; index += 1) {
+      ctx.beginPath(); ctx.moveTo(targetX - 78, 215 + index * 17); ctx.lineTo(targetX + 78, 215 + index * 17 + pulse * index * 4); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(targetX + index * 21, 165); ctx.lineTo(targetX + index * 21, 325); ctx.stroke();
+    }
+    ctx.strokeStyle = paper; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(originX, 196 - pulse * 42); ctx.lineTo(originX, 142 - pulse * 24); ctx.stroke();
+    ctx.strokeStyle = effect.color; ctx.beginPath(); ctx.moveTo(originX - 34, 178); ctx.lineTo(originX, 142 - pulse * 24); ctx.lineTo(originX + 34, 178); ctx.stroke();
+  } else if (effect.characterId === 'quetzalcoatl') {
+    // The wind jewel becomes a hurricane; old bones stand inside its morning star.
+    ctx.beginPath();
+    for (let index = 0; index <= 34; index += 1) {
+      const angle = index * .46 + progress * 7;
+      const radius = 4 + index * 2.25 * pulse;
+      const px = 480 + Math.cos(angle) * radius;
+      const py = 245 + Math.sin(angle) * radius * .62;
+      if (index === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    ctx.fillStyle = paper; ctx.fillRect(targetX - 5, 209, 10, 75);
+    ctx.fillRect(targetX - 34, 235, 68, 8); ctx.fillRect(targetX - 24, 279, 12, 37); ctx.fillRect(targetX + 12, 279, 12, 37);
+    ctx.fillStyle = '#f0df73';
+    ctx.fillRect(targetX - 5, 155 - pulse * 20, 10, 42); ctx.fillRect(targetX - 21, 171 - pulse * 20, 42, 10);
+  } else if (effect.characterId === 'erlang') {
+    // Nine turns circle the truth-eye while the celestial hound crosses the scene.
+    ctx.strokeStyle = effect.color; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.ellipse(480, 186, 68 + pulse * 25, 29 + pulse * 8, 0, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#f55c73'; ctx.beginPath(); ctx.arc(480, 186, 13 + pulse * 5, 0, Math.PI * 2); ctx.fill();
+    for (let index = 0; index < 9; index += 1) {
+      const angle = (Math.PI * 2 * index) / 9 + progress * 5;
+      const px = originX + Math.cos(angle) * 67;
+      const py = 255 + Math.sin(angle) * 48;
+      ctx.save(); ctx.translate(px, py); ctx.rotate(angle); ctx.strokeRect(-6, -6, 12, 12); ctx.restore();
+    }
+    const houndX = originX + (targetX - originX) * travel;
+    ctx.fillStyle = ink; ctx.fillRect(houndX - 28 * direction, 302 - pulse * 10, 43 * direction, 17);
+    ctx.fillRect(houndX + 8 * direction, 291 - pulse * 10, 18 * direction, 18);
+  } else if (effect.characterId === 'tyr') {
+    // The offered hand closes the binding; Fenrir's jaw completes the oath.
+    ctx.strokeStyle = effect.color; ctx.lineWidth = 4;
+    for (let index = 0; index < 8; index += 1) {
+      const linkX = originX + direction * (32 + index * 38 * travel);
+      ctx.beginPath(); ctx.ellipse(linkX, 236 + (index % 2) * 9, 16, 9, index % 2 ? .5 : -.5, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.fillStyle = '#8e3841'; ctx.fillRect(originX - 24, 204 - pulse * 25, 30, 24);
+    ctx.fillStyle = ink;
+    ctx.beginPath(); ctx.moveTo(targetX - 52, 204); ctx.lineTo(targetX + 42, 232); ctx.lineTo(targetX - 18, 245); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(targetX - 52, 291); ctx.lineTo(targetX + 42, 262); ctx.lineTo(targetX - 18, 250); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = paper;
+    for (let index = 0; index < 5; index += 1) {
+      ctx.fillRect(targetX - 21 + index * 13, 230 + index % 2 * 4, 6, 15);
+      ctx.fillRect(targetX - 21 + index * 13, 252 - index % 2 * 4, 6, 15);
+    }
+  } else if (effect.characterId === 'ogma') {
+    // Ogham cuts a furrow across the arena; Orna answers with remembered force.
+    ctx.strokeStyle = paper; ctx.lineWidth = 7;
+    ctx.beginPath(); ctx.moveTo(originX, 246); ctx.lineTo(targetX, 246); ctx.stroke();
+    ctx.strokeStyle = effect.color; ctx.lineWidth = 3;
+    for (let index = 0; index < 14; index += 1) {
+      const markX = originX + direction * (18 + index * 25 * travel);
+      ctx.beginPath(); ctx.moveTo(markX, 227 - (index % 3) * 5); ctx.lineTo(markX, 265 + (index % 2) * 6); ctx.stroke();
+    }
+    ctx.strokeStyle = ink; ctx.lineWidth = 8;
+    ctx.beginPath(); ctx.moveTo(originX - direction * 20, 315); ctx.lineTo(targetX + direction * 22, 184 - pulse * 25); ctx.stroke();
+    ctx.strokeStyle = paper; ctx.lineWidth = 2; ctx.stroke();
+  } else if (effect.characterId === 'jacheongbi') {
+    // Five grains and the hardy sixth seed cross fire, then flower around the fallen.
+    const grainColors = ['#f0df73', '#e9c48d', '#70ef8e', '#ffce6c', '#fffdf5', '#d994ff'];
+    grainColors.forEach((color, index) => {
+      const arc = Math.sin(travel * Math.PI) * (46 + index * 5);
+      const seedX = originX + (targetX - originX) * travel + direction * index * 5;
+      ctx.fillStyle = color; ctx.fillRect(seedX - 5, 284 - arc + index % 2 * 8, 10, 7);
+    });
+    grainColors.forEach((color, index) => {
+      const angle = (Math.PI * 2 * index) / grainColors.length;
+      ctx.fillStyle = color;
+      ctx.fillRect(targetX + Math.cos(angle) * (24 + pulse * 36) - 8, 245 + Math.sin(angle) * (18 + pulse * 27) - 8, 16, 16);
+    });
+    ctx.fillStyle = '#6ca56f';
+    for (let index = -3; index <= 3; index += 1) ctx.fillRect(targetX + index * 18, 305 - pulse * (20 + Math.abs(index) * 5), 4, 42);
+  } else if (effect.characterId === 'omoikane') {
+    // Many thoughts become two pillars; the cave opens only where they agree.
+    ctx.fillStyle = ink; ctx.fillRect(targetX - 92, 157, 184, 170);
+    ctx.fillStyle = paper; ctx.fillRect(targetX - 4 - pulse * 16, 157, 8 + pulse * 32, 170);
+    for (let index = 0; index < 8; index += 1) {
+      const angle = (Math.PI * 2 * index) / 8 + progress * 2;
+      const fromX = originX + Math.cos(angle) * 92;
+      const fromY = 241 + Math.sin(angle) * 70;
+      const nodeX = fromX + (480 - fromX) * travel;
+      const nodeY = fromY + (206 - fromY) * travel;
+      ctx.fillStyle = index % 2 ? '#61e7e1' : effect.color;
+      ctx.fillRect(nodeX - 7, nodeY - 7, 14, 14);
+    }
+    ctx.fillStyle = effect.color; ctx.fillRect(originX - 62, 192, 17, 141); ctx.fillRect(originX + 45, 192, 17, 141);
+  }
+  ctx.restore();
+}
+
 function drawEffects(time) {
   state.effects = state.effects.filter((effect) => time - effect.start < effect.duration);
   state.effects.forEach((effect) => {
@@ -1246,7 +1565,9 @@ function drawEffects(time) {
     const direction = effect.side === 'player' ? 1 : -1;
     ctx.save();
     ctx.globalAlpha = Math.max(0, 1 - progress);
-    if (effect.type === 'hit') {
+    if (effect.type === 'lore') {
+      drawLoreSignature(effect, progress);
+    } else if (effect.type === 'hit') {
       ctx.fillStyle = effect.color;
       for (let i = 0; i < 10; i += 1) {
         const angle = (Math.PI * 2 * i) / 10;
@@ -1266,10 +1587,12 @@ function drawEffects(time) {
       ctx.strokeStyle = effect.color; ctx.lineWidth = 3;
       ctx.strokeRect(x - 30 - progress * 15, 230 - progress * 15, 60 + progress * 30, 60 + progress * 30);
     }
-    ctx.globalAlpha = Math.max(0, 1 - progress * 1.15);
-    const effectLines = effect.text.split('\n');
-    ctx.font = `bold ${effectLines.length > 1 ? 12 : 16}px Courier New`; ctx.textAlign = 'center'; ctx.fillStyle = effect.color;
-    effectLines.forEach((line, lineIndex) => ctx.fillText(line, x, 197 + lineIndex * 15 - progress * 45));
+    if (effect.text) {
+      ctx.globalAlpha = Math.max(0, 1 - progress * 1.15);
+      const effectLines = effect.text.split('\n');
+      ctx.font = `bold ${effectLines.length > 1 ? 12 : 16}px Courier New`; ctx.textAlign = 'center'; ctx.fillStyle = effect.color;
+      effectLines.forEach((line, lineIndex) => ctx.fillText(line, x, 197 + lineIndex * 15 - progress * 45));
+    }
     ctx.restore();
   });
 }
