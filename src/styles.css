@@ -799,8 +799,7 @@ footer { color: #b7c0bd; border-top: 4px solid #080c10; background: rgba(14,25,3
   cursor: pointer;
   font: 900 8px/1.25 "Marker Felt", "Chalkboard SE", "Comic Sans MS", cursive;
 }
-.archive-nav-button span { display: block; }
-.archive-nav-button span + span { opacity: .66; font-size: .82em; }
+.archive-nav-button svg { display: block; width: 36px; height: 20px; margin: 0 auto; }
 .archive-nav-button:disabled { opacity: .32; cursor: default; }
 .archive-page {
   display: flex;
