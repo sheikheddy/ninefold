@@ -1213,6 +1213,22 @@ function openArchive() {
   openModal('archive-modal');
 }
 
+function openArchiveIntro() {
+  // A brand-new visitor meets the story before the roster: the archive opens
+  // itself on the first fragment, once ever. Silent — no gesture yet, so the
+  // AudioContext must not be created here.
+  const INTRO_KEY = 'ninefold.archive.intro.v1';
+  try {
+    if (window.localStorage.getItem(INTRO_KEY) === 'true') return;
+    window.localStorage.setItem(INTRO_KEY, 'true');
+  } catch {
+    return; // Without storage every visit would replay the intro; skip it instead.
+  }
+  state.archive.selected = 0;
+  renderArchive();
+  openModal('archive-modal');
+}
+
 function unlockNextArchiveFragment() {
   if (state.archive.unlocked >= ARCHIVE_FRAGMENTS.length) return null;
   const unlockedIndex = state.archive.unlocked;
@@ -2195,4 +2211,5 @@ window.addEventListener('keydown', (event) => {
 installSplitThreeTypography();
 updateArchiveProgress();
 renderRoster();
+openArchiveIntro();
 requestAnimationFrame(drawFrame);
