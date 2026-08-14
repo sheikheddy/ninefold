@@ -102,6 +102,16 @@ main { flex: 1; width: min(1460px, 100%); margin: 0 auto; padding: clamp(24px, 4
 .eyebrow span { display: inline-block; width: 18px; height: 2px; background: currentColor; vertical-align: middle; margin-right: 7px; }
 
 h1, h2, h3, p { margin-top: 0; }
+
+.split-three {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .4em;
+  white-space: nowrap;
+}
+
+.split-three > span { display: inline-block; }
+
 h1 { font-size: clamp(40px, 5.4vw, 78px); line-height: .94; letter-spacing: -.06em; margin-bottom: 28px; }
 h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--violet); text-shadow: 3px 3px 0 rgba(143, 99, 255, .16); }
 .lede { max-width: 470px; color: var(--muted); font-family: Arial, sans-serif; font-size: 15px; line-height: 1.75; }

@@ -1,5 +1,50 @@
 import './styles.css';
 
+const splitThreeForCanvas = (value) => String(value).replaceAll('3', 'II  I');
+
+function createSplitThree() {
+  const split = document.createElement('span');
+  split.className = 'split-three';
+  split.setAttribute('role', 'img');
+  split.setAttribute('aria-label', 'three');
+  split.innerHTML = '<span aria-hidden="true">II</span><span aria-hidden="true">I</span>';
+  return split;
+}
+
+function splitThreeTextNode(node) {
+  if (!node.nodeValue?.includes('3') || node.parentElement?.closest('.split-three, script, style, textarea')) return;
+  const pieces = node.nodeValue.split('3');
+  const replacement = document.createDocumentFragment();
+  pieces.forEach((piece, index) => {
+    if (piece) replacement.append(document.createTextNode(piece));
+    if (index < pieces.length - 1) replacement.append(createSplitThree());
+  });
+  node.replaceWith(replacement);
+}
+
+function splitVisibleThrees(root) {
+  if (root.nodeType === Node.TEXT_NODE) {
+    splitThreeTextNode(root);
+    return;
+  }
+  if (root.nodeType !== Node.ELEMENT_NODE) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  textNodes.forEach(splitThreeTextNode);
+}
+
+function installSplitThreeTypography() {
+  splitVisibleThrees(document.body);
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'characterData') splitThreeTextNode(mutation.target);
+      mutation.addedNodes.forEach(splitVisibleThrees);
+    });
+  });
+  observer.observe(document.body, { childList: true, characterData: true, subtree: true });
+}
+
 const CHARACTERS = [
   {
     id: 'thoth', name: 'THOTH', verse: ['THOTH WRITES: I WANT', 'The papyrus answers: become.'], stageLine: 'THOTH WRITES THE WOUND', domain: 'SCRIBE', symbol: '𓅝',
@@ -1470,11 +1515,12 @@ function drawStatuses(fighter, x, y) {
   if (fighter.status.seal) active.push({ text: `SEAL ${fighter.status.seal} · UNSAID`, color: '#9d83ff' });
   ctx.font = '9px Courier New'; ctx.textAlign = 'center';
   active.forEach((status, index) => {
-    const width = ctx.measureText(status.text).width + 10;
+    const displayText = splitThreeForCanvas(status.text);
+    const width = ctx.measureText(displayText).width + 10;
     const sx = x + (index - (active.length - 1) / 2) * 58;
     ctx.fillStyle = '#17131c'; ctx.beginPath(); ctx.roundRect(sx - width / 2 - 2, y - 2, width + 4, 20, 5); ctx.fill();
     ctx.fillStyle = '#fffdf5'; ctx.beginPath(); ctx.roundRect(sx - width / 2, y, width, 16, 3); ctx.fill();
-    ctx.fillStyle = status.color; ctx.fillText(status.text, sx, y + 11);
+    ctx.fillStyle = status.color; ctx.fillText(displayText, sx, y + 11);
   });
   ctx.textAlign = 'left';
 }
@@ -1651,7 +1697,7 @@ function drawEffects(time) {
       ctx.globalAlpha = Math.max(0, 1 - progress * 1.15);
       const effectLines = effect.text.split('\n');
       ctx.font = `bold ${effectLines.length > 1 ? 12 : 16}px Courier New`; ctx.textAlign = 'center'; ctx.fillStyle = effect.color;
-      effectLines.forEach((line, lineIndex) => ctx.fillText(line, x, 197 + lineIndex * 15 - progress * 45));
+      effectLines.forEach((line, lineIndex) => ctx.fillText(splitThreeForCanvas(line), x, 197 + lineIndex * 15 - progress * 45));
     }
     ctx.restore();
   });
@@ -1687,5 +1733,6 @@ window.addEventListener('keydown', (event) => {
   if (event.key.toLowerCase() === 's') openSwapModal();
 });
 
+installSplitThreeTypography();
 renderRoster();
 requestAnimationFrame(drawFrame);
