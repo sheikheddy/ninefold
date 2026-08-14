@@ -4,3 +4,6 @@ dist/
 npm-debug.log*
 
 .archive-jpg/
+
+# generated copy inventory
+copy-strings.json
