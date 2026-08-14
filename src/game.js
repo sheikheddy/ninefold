@@ -632,11 +632,18 @@ const slotPetalMemory = [null, null, null];
 
 // Modeled on clematis 'The President': six broad violet sepals that overlap
 // at the base, and a spidery crown of pale stamens tipped in dark maroon.
-function drawSlotPetals(petalCtx, fallStart, now, includeCenter) {
+// Every measurement carries a seeded wobble so no petal repeats another.
+function petalWobble(seed, salt) {
+  const raw = Math.sin(seed * 127.1 + salt * 311.7) * 43758.5453;
+  return raw - Math.floor(raw); // stable 0..1, per petal, per property
+}
+
+function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0) {
   petalCtx.clearRect(0, 0, 180, 180);
   petalCtx.save();
   petalCtx.scale(2, 2);
   for (let i = 0; i < 6; i += 1) {
+    const wob = (salt) => petalWobble(seed * 6 + i, salt) - .5;
     let drop = 0;
     let spin = 0;
     let alpha = 1;
@@ -649,35 +656,59 @@ function drawSlotPetals(petalCtx, fallStart, now, includeCenter) {
         if (alpha <= 0) continue;
       }
     }
+    const length = 43 + wob(1) * 6;
+    const halfLeft = 12.5 + wob(2) * 4;
+    const halfRight = 12.5 + wob(3) * 4;
+    const bend = wob(4) * 7; // the tip leans a little off its axis
+    const hue = 251 + wob(5) * 9;
     petalCtx.save();
-    petalCtx.globalAlpha = alpha;
+    petalCtx.globalAlpha = alpha * .97;
     petalCtx.translate(45 + (i % 2 ? drop * .3 : -drop * .25), 45 + drop);
-    petalCtx.rotate((Math.PI / 3) * i + (i % 2 ? .09 : -.06) + spin);
-    const gradient = petalCtx.createLinearGradient(0, 14, 0, 45);
-    gradient.addColorStop(0, '#6c5bc9');
-    gradient.addColorStop(.5, '#5544ad');
-    gradient.addColorStop(1, '#463593');
+    petalCtx.rotate((Math.PI / 3) * i + wob(6) * .3 + spin);
+    const gradient = petalCtx.createLinearGradient(0, 14, bend, length);
+    gradient.addColorStop(0, `hsl(${hue} 47% 58%)`);
+    gradient.addColorStop(.5, `hsl(${hue - 2} 45% 46%)`);
+    gradient.addColorStop(1, `hsl(${hue + 3} 47% 38%)`);
     petalCtx.fillStyle = gradient;
     petalCtx.beginPath();
     petalCtx.moveTo(0, 14); // broad sepals, overlapping at the base
-    petalCtx.bezierCurveTo(-13, 19, -14, 33, 0, 45);
-    petalCtx.bezierCurveTo(14, 33, 13, 19, 0, 14);
+    petalCtx.bezierCurveTo(
+      -halfLeft * .7 + wob(7) * 3, 17 + wob(8) * 3,
+      -halfLeft, 25 + wob(9) * 4,
+      -halfLeft * .88, 32 + wob(10) * 3,
+    );
+    petalCtx.bezierCurveTo(
+      -halfLeft * .62, 38 + wob(11) * 3,
+      bend - halfLeft * .22, length - 3,
+      bend, length,
+    );
+    petalCtx.bezierCurveTo(
+      bend + halfRight * .22, length - 3,
+      halfRight * .58, 39 + wob(12) * 3,
+      halfRight * .86, 32 + wob(13) * 3,
+    );
+    petalCtx.bezierCurveTo(
+      halfRight, 24 + wob(14) * 4,
+      halfRight * .68 + wob(15) * 3, 17 + wob(16) * 3,
+      0, 14,
+    );
     petalCtx.fill();
-    petalCtx.strokeStyle = 'rgba(28,18,64,.4)';
-    petalCtx.lineWidth = .8;
+    petalCtx.strokeStyle = 'rgba(28,18,64,.35)';
+    petalCtx.lineWidth = .7;
     petalCtx.stroke();
-    petalCtx.strokeStyle = 'rgba(158,140,228,.55)'; // the paler central bar
-    petalCtx.lineWidth = 2.6;
+    petalCtx.strokeStyle = 'rgba(163,146,230,.5)'; // the paler central bar
+    petalCtx.lineWidth = 2.4 + wob(17);
     petalCtx.beginPath();
     petalCtx.moveTo(0, 18);
-    petalCtx.quadraticCurveTo(.6, 30, 0, 42);
+    petalCtx.quadraticCurveTo(bend * .4 + wob(18) * 2, 30, bend * .85, length - 4);
     petalCtx.stroke();
-    petalCtx.strokeStyle = 'rgba(30,18,74,.22)'; // faint side veins
-    petalCtx.lineWidth = .8;
-    [-4.5, 4.5].forEach((vein) => {
+    petalCtx.strokeStyle = 'rgba(30,18,74,.2)'; // faint crooked side veins
+    petalCtx.lineWidth = .7;
+    [-1, 1].forEach((side) => {
+      const spread = (side < 0 ? halfLeft : halfRight) * (.38 + wob(19 + side) * .2);
       petalCtx.beginPath();
       petalCtx.moveTo(0, 17);
-      petalCtx.quadraticCurveTo(vein, 28, vein * .5, 40);
+      petalCtx.quadraticCurveTo(side * spread, 27 + wob(21 + side) * 4, side * spread * .6 + bend * .6, length - 7);
       petalCtx.stroke();
     });
     petalCtx.restore();
@@ -736,7 +767,7 @@ function renderTeamSlots() {
         slotPetalMemory[i] = character.id;
         const fallStart = performance.now();
         const pluck = (now) => {
-          drawSlotPetals(petalCtx, fallStart, now, false);
+          drawSlotPetals(petalCtx, fallStart, now, false, i + 1);
           if (now < fallStart + 1600 && petals.isConnected) requestAnimationFrame(pluck);
         };
         requestAnimationFrame(pluck);
@@ -745,7 +776,7 @@ function renderTeamSlots() {
       }
     } else {
       slotPetalMemory[i] = null;
-      drawSlotPetals(petalCtx, 0, 0, true);
+      drawSlotPetals(petalCtx, 0, 0, true, i + 1);
     }
     teamSlots.appendChild(slot);
   }
