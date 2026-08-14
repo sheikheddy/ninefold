@@ -122,6 +122,9 @@ class PixelSound {
   constructor() {
     this.context = null;
     this.musicGain = null;
+    this.musicBus = null;
+    this.musicFilter = null;
+    this.musicDelay = null;
     this.musicTimer = null;
     this.musicStep = 0;
   }
@@ -129,7 +132,24 @@ class PixelSound {
     if (!this.context) {
       this.context = new (window.AudioContext || window.webkitAudioContext)();
       this.musicGain = this.context.createGain();
-      this.musicGain.gain.value = state.muted ? 0 : .82;
+      this.musicBus = this.context.createGain();
+      this.musicFilter = this.context.createBiquadFilter();
+      this.musicDelay = this.context.createDelay(1.4);
+      const echoReturn = this.context.createGain();
+      const echoFeedback = this.context.createGain();
+
+      this.musicGain.gain.value = state.muted ? 0 : .74;
+      this.musicBus.gain.value = .92;
+      this.musicFilter.type = 'lowpass';
+      this.musicFilter.frequency.value = 1850;
+      this.musicFilter.Q.value = .5;
+      this.musicDelay.delayTime.value = .47;
+      echoReturn.gain.value = .16;
+      echoFeedback.gain.value = .19;
+
+      this.musicBus.connect(this.musicFilter).connect(this.musicGain);
+      this.musicFilter.connect(this.musicDelay).connect(echoReturn).connect(this.musicGain);
+      this.musicDelay.connect(echoFeedback).connect(this.musicDelay);
       this.musicGain.connect(this.context.destination);
     }
     if (this.context.state === 'suspended') this.context.resume();
@@ -149,53 +169,98 @@ class PixelSound {
     osc.connect(gain).connect(this.context.destination);
     osc.start(at); osc.stop(at + duration);
   }
-  musicNote(freq, duration = .36, type = 'triangle', volume = .012, delay = 0) {
+  musicVoice(freq, duration, partials, volume, delay = 0, attack = .08) {
     if (!this.context || state.muted) return;
     const at = this.context.currentTime + delay;
-    const osc = this.context.createOscillator();
-    const gain = this.context.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, at);
-    osc.detune.setValueAtTime(Math.sin(this.musicStep * 1.7) * 4, at);
-    gain.gain.setValueAtTime(.0001, at);
-    gain.gain.exponentialRampToValueAtTime(volume, at + .025);
-    gain.gain.exponentialRampToValueAtTime(.0001, at + duration);
-    osc.connect(gain).connect(this.musicGain);
-    osc.start(at); osc.stop(at + duration + .02);
+    partials.forEach(({ ratio, level, type = 'sine', detune = 0 }) => {
+      const osc = this.context.createOscillator();
+      const gain = this.context.createGain();
+      const crest = Math.min(at + attack, at + duration * .45);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq * ratio, at);
+      osc.detune.setValueAtTime(detune + Math.sin(this.musicStep * 1.17) * 2.5, at);
+      gain.gain.setValueAtTime(.0001, at);
+      gain.gain.exponentialRampToValueAtTime(Math.max(.0002, volume * level), crest);
+      gain.gain.setValueAtTime(Math.max(.0002, volume * level * .82), Math.max(crest, at + duration * .68));
+      gain.gain.exponentialRampToValueAtTime(.0001, at + duration);
+      osc.connect(gain).connect(this.musicBus);
+      osc.start(at);
+      osc.stop(at + duration + .04);
+    });
+  }
+  chantNote(freq, duration = .62, volume = .009, delay = 0) {
+    this.musicVoice(freq, duration, [
+      { ratio: 1, level: 1, type: 'triangle', detune: -2 },
+      { ratio: 2, level: .13, type: 'sine', detune: 3 },
+    ], volume, delay, .075);
+  }
+  organNote(freq, duration = 3.1, volume = .008, delay = 0) {
+    this.musicVoice(freq, duration, [
+      { ratio: .5, level: .38 },
+      { ratio: 1, level: 1 },
+      { ratio: 2, level: .24 },
+      { ratio: 3, level: .07 },
+    ], volume, delay, .34);
+  }
+  chapelBell(freq, duration = 2.2, volume = .008, delay = 0) {
+    this.musicVoice(freq, duration, [
+      { ratio: 1, level: 1 },
+      { ratio: 2.01, level: .42, type: 'triangle' },
+      { ratio: 3.98, level: .09 },
+    ], volume, delay, .012);
   }
   musicTick() {
-    const melody = [
-      293.66, null, 349.23, 440, null, 392,
-      293.66, null, 329.63, 392, null, 349.23,
-      261.63, null, 293.66, 349.23, null, 329.63,
-      220, null, 261.63, 293.66, null, 220,
+    // Four nine-beat petitions: a modal call, a lower response, then a return.
+    const petitions = [
+      [293.66, null, 349.23, 329.63, 293.66, 261.63, 293.66, 220, null],
+      [293.66, null, 392, 349.23, 329.63, 293.66, 261.63, 220, null],
+      [349.23, null, 440, 392, 349.23, 329.63, 293.66, 261.63, null],
+      [293.66, 220, 293.66, 349.23, 329.63, 293.66, 261.63, 220, 293.66],
     ];
-    const bass = [146.83, 130.81, 174.61, 110];
-    const step = this.musicStep % melody.length;
-    if (!state.muted && this.context?.state === 'running') {
-      const note = melody[step];
-      if (note) this.musicNote(note, step % 6 === 3 ? .5 : .32, 'triangle', .011);
-      if (step % 6 === 0) this.musicNote(bass[Math.floor(step / 6)], 1.05, 'sine', .014);
-      if (step % 6 === 2) this.musicNote((melody[step] || 293.66) * 2, .22, 'sine', .0045, .035);
-      if (step % 12 === 9) {
-        const root = bass[Math.floor(step / 6)] || 130.81;
-        this.musicNote(root * 2, .7, 'sine', .005);
-        this.musicNote(root * 2.5, .7, 'sine', .004, .018);
+    const responses = [
+      [null, null, null, null, 220, null, 261.63, 220, 196],
+      [null, null, null, null, 196, null, 220, 196, 174.61],
+      [null, null, null, null, 261.63, null, 246.94, 220, 196],
+      [null, null, null, null, 220, null, 196, 220, 146.83],
+    ];
+    const roots = [146.83, 116.54, 130.81, 146.83];
+    const rubato = [390, 325, 345, 365, 330, 350, 405, 325, 510];
+    const prayer = Math.floor(this.musicStep / 9) % petitions.length;
+    const step = this.musicStep % 9;
+    if (!state.muted && this.context) {
+      const call = petitions[prayer][step];
+      const response = responses[prayer][step];
+      const root = roots[prayer];
+
+      if (step === 0) {
+        this.organNote(root, 3.18, .0095);
+        this.organNote(root * 1.5, 3.05, .0048, .06);
+        this.chapelBell(root * 4, 2.45, prayer === 3 ? .008 : .006);
+      }
+      if (call) this.chantNote(call, step === 8 ? 1.05 : .67, .0094);
+      if (response) this.chantNote(response, .82, .0048, .055);
+      if (step === 8 && prayer < 3) this.chapelBell(root * 6, 1.55, .0037, .04);
+      if (step === 8 && prayer === 3) {
+        this.organNote(146.83, 3.45, .011);
+        this.chapelBell(587.33, 3.1, .009);
       }
     }
     this.musicStep += 1;
+    this.musicTimer = window.setTimeout(() => {
+      this.musicTimer = null;
+      this.musicTick();
+    }, rubato[step]);
   }
   startMusic() {
     if (this.musicTimer) return;
     this.musicTick();
-    this.musicTimer = window.setInterval(() => this.musicTick(), 210);
   }
   setMuted(muted) {
     if (!muted) this.ensure();
     if (!this.musicGain || !this.context) return;
     const now = this.context.currentTime;
     this.musicGain.gain.cancelScheduledValues(now);
-    this.musicGain.gain.setTargetAtTime(muted ? .0001 : .82, now, .035);
+    this.musicGain.gain.setTargetAtTime(muted ? .0001 : .74, now, .035);
   }
   click() { this.tone(440, .045, 'square', .025); }
   hit() { this.tone(135, .11, 'sawtooth', .045); this.tone(82, .08, 'square', .025, .03); }
