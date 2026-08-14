@@ -1355,7 +1355,7 @@ function archiveCountLine() {
   const unlocked = state.archive.unlocked;
   if (unlocked === ARCHIVE_FRAGMENTS.length) return 'EVERY FRAGMENT HAS RETURNED<br>THE DARK HAS NOTHING LEFT TO HIDE';
   if (unlocked === 1) return 'ONE FRAGMENT HAS RETURNED';
-  return `${unlocked} FRAGMENTS HAVE RETURNED`;
+  return `${unlocked} FRAGMENTS RETURNED`;
 }
 
 function updateArchiveProgress() {
