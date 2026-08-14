@@ -58,6 +58,7 @@
             <div class="selection-footer">
               <p id="selection-hint">No one is chosen; therefore<br />everyone is already lost.</p>
               <div class="selection-actions">
+                <button id="archive-button" class="secondary-button archive-button" type="button"><span>OPEN WHAT REMAINS</span><span id="archive-progress">ONE FRAGMENT BREATHES · 01 / 14</span></button>
                 <button id="random-button" class="secondary-button" type="button"><span>LET ACCIDENT SPEAK</span><span>I WILL CALL IT DESIRE</span></button>
                 <button id="start-button" class="primary-button" type="button" disabled>
                   <span>ENTER THE FIGURE</span><span>LEAVE AS ANOTHER →</span>
@@ -146,12 +147,36 @@
         <div id="swap-options" class="swap-options"></div>
       </section>
 
+      <section id="archive-modal" class="modal archive-modal" role="dialog" aria-modal="true" aria-labelledby="archive-title" hidden>
+        <button class="modal-close" type="button" data-close-modal aria-label="Close">×</button>
+        <p class="eyebrow"><span></span> [FIGURE VII: REMAINS]<br />THE ORDEAL OPENS WHAT LOVE HID</p>
+        <h2 id="archive-title">THE ARCHIVE REMEMBERS<br />WHAT THE BODY COULD NOT SAY</h2>
+        <p id="archive-copy" class="archive-copy">ONE FRAGMENT HAS RETURNED<br />THE REST ARE WAITING IN THE DARK</p>
+        <div id="archive-index" class="archive-index" aria-label="Unlocked fragments"></div>
+        <div class="archive-reader">
+          <div class="archive-reader-head">
+            <p id="archive-reader-label">THE FIRST FRAGMENT SURFACES<br />WHAT WAS BURIED KEEPS SPEAKING</p>
+            <div class="archive-reader-nav">
+              <button id="archive-previous" class="archive-nav-button" type="button"><span>TURN TOWARD BEFORE</span><span>THE PAST TURNS TOO</span></button>
+              <button id="archive-next" class="archive-nav-button" type="button"><span>TURN TOWARD AFTER</span><span>THE FUTURE LOOKS BACK</span></button>
+            </div>
+          </div>
+          <div class="archive-page">
+            <img id="archive-image" src="/archive/fragment-01.png" alt="The first unlocked story fragment" />
+          </div>
+        </div>
+      </section>
+
       <section id="result-modal" class="modal result-modal" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
         <div id="result-sigil" class="result-sigil">✦</div>
         <p id="result-kicker" class="eyebrow">[FIGURE VI: AFTERMATH]<br />THE SCENE ENDS; DESIRE DOES NOT</p>
         <h2 id="result-title">YOU SURVIVED THE BELOVED<br />THE BELOVED SURVIVES IN YOU</h2>
         <p id="result-copy">Nine sparks enter one silence;<br />the silence calls itself light.</p>
         <div id="result-stats" class="result-stats"></div>
+        <div id="reward-reveal" class="reward-reveal" hidden>
+          <p id="reward-label">A FRAGMENT OPENS<br />THE ARCHIVE LEARNS YOUR HAND</p>
+          <img id="reward-image" alt="A newly unlocked story fragment" />
+        </div>
         <button id="play-again-button" class="primary-button modal-action" type="button"><span>REPEAT THE SCENE</span><span>DESIRE NEVER LEARNS</span></button>
       </section>
     </div>

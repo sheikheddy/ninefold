@@ -1,5 +1,19 @@
 import './styles.css';
 
+const ARCHIVE_STORAGE_KEY = 'ninefold.archive.unlocked.v1';
+const ARCHIVE_FRAGMENTS = Array.from({ length: 14 }, (_, index) => (
+  `/archive/fragment-${String(index + 1).padStart(2, '0')}.png`
+));
+
+function readArchiveProgress() {
+  try {
+    const stored = Number.parseInt(window.localStorage.getItem(ARCHIVE_STORAGE_KEY) || '1', 10);
+    return Math.min(ARCHIVE_FRAGMENTS.length, Math.max(1, Number.isFinite(stored) ? stored : 1));
+  } catch {
+    return 1;
+  }
+}
+
 function splitThreeParts(value) {
   const normalized = String(value)
     .replace(/\bthree\b/gi, '៣')
@@ -190,6 +204,7 @@ const characterGrid = $('#character-grid');
 const teamSlots = $('#team-slots');
 const startButton = $('#start-button');
 const randomButton = $('#random-button');
+const archiveButton = $('#archive-button');
 const selectionHint = $('#selection-hint');
 const modalBackdrop = $('#modal-backdrop');
 const abilityList = $('#ability-list');
@@ -206,6 +221,10 @@ const state = {
   effects: [],
   lastFrame: performance.now(),
   portraitFrame: -1,
+  archive: {
+    unlocked: readArchiveProgress(),
+    selected: 0,
+  },
 };
 
 class PixelSound {
@@ -937,6 +956,7 @@ function endBattle(victory) {
     <div class="result-stat"><strong>${battle.round}</strong><small>SCENES REPEATED<br>UNTIL TIME GAVE WAY</small></div>
     <div class="result-stat"><strong>${battle.metrics.damage}</strong><small>WOUNDS EXCHANGED<br>BETWEEN BODY AND SIGN</small></div>
     <div class="result-stat"><strong>${battle.metrics.kos}</strong><small>ABSENCES MADE<br>STILL SPEAKING</small></div>`;
+  renderRewardReveal(unlockNextArchiveFragment());
   if (victory) sound.victory();
   else sound.tone(110, .6, 'sawtooth', .04);
   setTimeout(() => openModal('result-modal'), 700);
@@ -957,6 +977,102 @@ function openModal(id) {
   [...modalBackdrop.querySelectorAll('.modal')].forEach((modal) => { modal.hidden = true; });
   modalBackdrop.hidden = false;
   $(`#${id}`).hidden = false;
+}
+
+function writeArchiveProgress() {
+  try {
+    window.localStorage.setItem(ARCHIVE_STORAGE_KEY, String(state.archive.unlocked));
+  } catch {
+    // The archive still works for this visit when storage is unavailable.
+  }
+}
+
+function archiveCountLine() {
+  const unlocked = state.archive.unlocked;
+  if (unlocked === ARCHIVE_FRAGMENTS.length) return 'EVERY FRAGMENT HAS RETURNED<br>THE DARK HAS NOTHING LEFT TO HIDE';
+  if (unlocked === 1) return 'ONE FRAGMENT HAS RETURNED<br>THE REST ARE WAITING IN THE DARK';
+  return `${unlocked} FRAGMENTS HAVE RETURNED<br>THE REST ARE WAITING IN THE DARK`;
+}
+
+function updateArchiveProgress() {
+  const unlocked = state.archive.unlocked;
+  const phrase = unlocked === ARCHIVE_FRAGMENTS.length
+    ? 'EVERY FRAGMENT BREATHES'
+    : unlocked === 1 ? 'ONE FRAGMENT BREATHES' : `${unlocked} FRAGMENTS BREATHE`;
+  $('#archive-progress').textContent = `${phrase} · ${String(unlocked).padStart(2, '0')} / ${ARCHIVE_FRAGMENTS.length}`;
+  $('#archive-copy').innerHTML = archiveCountLine();
+}
+
+function renderArchiveReader() {
+  const index = Math.min(state.archive.selected, state.archive.unlocked - 1);
+  state.archive.selected = Math.max(0, index);
+  const ordinal = String(state.archive.selected + 1).padStart(2, '0');
+  const image = $('#archive-image');
+  image.src = ARCHIVE_FRAGMENTS[state.archive.selected];
+  image.alt = `Unlocked story fragment ${state.archive.selected + 1} of ${state.archive.unlocked}`;
+  $('#archive-reader-label').innerHTML = `FRAGMENT ${ordinal} SURFACES<br>WHAT WAS BURIED KEEPS SPEAKING`;
+  $('#archive-previous').disabled = state.archive.selected === 0;
+  $('#archive-next').disabled = state.archive.selected === state.archive.unlocked - 1;
+  [...$('#archive-index').children].forEach((button, buttonIndex) => {
+    button.classList.toggle('selected', buttonIndex === state.archive.selected);
+    button.setAttribute('aria-current', buttonIndex === state.archive.selected ? 'true' : 'false');
+  });
+}
+
+function renderArchive() {
+  updateArchiveProgress();
+  const index = $('#archive-index');
+  index.innerHTML = '';
+  ARCHIVE_FRAGMENTS.forEach((_, fragmentIndex) => {
+    const button = document.createElement('button');
+    const unlocked = fragmentIndex < state.archive.unlocked;
+    button.type = 'button';
+    button.className = `archive-index-mark ${unlocked ? 'unlocked' : 'locked'}`;
+    button.disabled = !unlocked;
+    button.setAttribute('aria-label', unlocked
+      ? `Read unlocked fragment ${fragmentIndex + 1}`
+      : `Fragment ${fragmentIndex + 1} is still locked`);
+    if (unlocked) {
+      button.addEventListener('click', () => {
+        state.archive.selected = fragmentIndex;
+        sound.click();
+        renderArchiveReader();
+      });
+    }
+    index.appendChild(button);
+  });
+  renderArchiveReader();
+}
+
+function openArchive() {
+  state.archive.selected = Math.max(0, state.archive.unlocked - 1);
+  renderArchive();
+  sound.click();
+  openModal('archive-modal');
+}
+
+function unlockNextArchiveFragment() {
+  if (state.archive.unlocked >= ARCHIVE_FRAGMENTS.length) return null;
+  const unlockedIndex = state.archive.unlocked;
+  state.archive.unlocked += 1;
+  state.archive.selected = unlockedIndex;
+  writeArchiveProgress();
+  updateArchiveProgress();
+  return unlockedIndex;
+}
+
+function renderRewardReveal(unlockedIndex) {
+  const reveal = $('#reward-reveal');
+  if (unlockedIndex === null) {
+    reveal.hidden = true;
+    return;
+  }
+  const ordinal = String(unlockedIndex + 1).padStart(2, '0');
+  $('#reward-label').innerHTML = `FRAGMENT ${ordinal} OPENS<br>THE ARCHIVE LEARNS YOUR HAND`;
+  const image = $('#reward-image');
+  image.src = ARCHIVE_FRAGMENTS[unlockedIndex];
+  image.alt = `Newly unlocked story fragment ${unlockedIndex + 1}`;
+  reveal.hidden = false;
 }
 
 function closeModal() {
@@ -1802,6 +1918,7 @@ function drawFrame(time) {
 
 startButton.addEventListener('click', startBattle);
 randomButton.addEventListener('click', randomizeTeam);
+archiveButton.addEventListener('click', openArchive);
 swapButton.addEventListener('click', openSwapModal);
 $('#how-to-button').addEventListener('click', () => { sound.click(); openModal('help-modal'); });
 $('#sound-button').addEventListener('click', (event) => {
@@ -1813,6 +1930,18 @@ $('#sound-button').addEventListener('click', (event) => {
   if (!state.muted) sound.click();
 });
 $('#play-again-button').addEventListener('click', resetGame);
+$('#archive-previous').addEventListener('click', () => {
+  if (state.archive.selected <= 0) return;
+  state.archive.selected -= 1;
+  sound.click();
+  renderArchiveReader();
+});
+$('#archive-next').addEventListener('click', () => {
+  if (state.archive.selected >= state.archive.unlocked - 1) return;
+  state.archive.selected += 1;
+  sound.click();
+  renderArchiveReader();
+});
 document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', closeModal));
 modalBackdrop.addEventListener('click', (event) => { if (event.target === modalBackdrop) closeModal(); });
 window.addEventListener('keydown', (event) => {
@@ -1824,5 +1953,6 @@ window.addEventListener('keydown', (event) => {
 });
 
 installSplitThreeTypography();
+updateArchiveProgress();
 renderRoster();
 requestAnimationFrame(drawFrame);
