@@ -1090,9 +1090,18 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
   const seed = motion.seed || 1;
   const energy = motion.energy || 1;
   const idlePhase = time / 330 + seed * .91;
-  const idleBob = Math.round(Math.sin(idlePhase) * energy);
-  const breathe = 1 + Math.sin(idlePhase * .74) * .018 * energy;
-  const sway = Math.sin(idlePhase * .46) * .015 * energy;
+  const actionPhase = ((time / 2600) + seed * .071) % 1;
+  const actionPulse = .5 - Math.cos(actionPhase * Math.PI * 2) * .5;
+  const idleBob = 0;
+  const breathe = 1 + Math.sin(idlePhase * .74) * .004 * energy;
+  const sway = Math.sin(idlePhase * .46) * .004 * energy;
+  const pose = (poseX, poseY, rotation, draw) => {
+    targetCtx.save();
+    targetCtx.translate(poseX, poseY);
+    targetCtx.rotate(rotation);
+    draw();
+    targetCtx.restore();
+  };
   targetCtx.save();
   targetCtx.translate(Math.round(x + (motion.offsetX || 0)), Math.round(y + bob + idleBob + (motion.offsetY || 0)));
   targetCtx.rotate(sway + (motion.rotate || 0));
@@ -1114,13 +1123,11 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     r(skin, -10, -18, 3, 10); r(skin, 7, -18, 3, 10);
     r(skin, -5, -28, 10, 9); r(black, -3, -25, 2, 2); r(black, 3, -25, 2, 2);
     r('#ff4b43', -6, -31, 12, 5); r('#ff8d43', -4, -35, 4, 6); r('#ffd35c', 1, -38, 3, 8); r('#ff5a45', 4, -34, 4, 6);
-    r('#6d3b26', 9, -17, 2, 17); r('#ffcf58', 7, -24, 6, 8); r('#ff6646', 8, -27, 4, 7);
   } else if (character.id === 'minerva') {
     r('#5b3d36', -6, -8, 4, 8); r('#5b3d36', 3, -8, 4, 8);
     r('#dbc98c', -7, -20, 14, 13); r('#865f4c', -4, -20, 8, 13); r(a, -7, -20, 14, 3);
     r(skin, -5, -28, 10, 8); r('#a9864d', -7, -31, 14, 6); r('#6f5137', -7, -27, 3, 7);
     r('#e65d52', -5, -36, 10, 5); r('#e65d52', -2, -39, 4, 4); r(black, 2, -26, 2, 2);
-    r('#c9d0dc', 8, -31, 2, 31); r('#eff5ff', 7, -33, 4, 5);
     r('#8766b6', -12, -19, 8, 13); r(a, -11, -18, 6, 11); r('#8766b6', -10, -15, 4, 5);
   } else if (character.id === 'quetzalcoatl') {
     r('#2b806d', -11, -9, 19, 7); r(a, -7, -13, 17, 7); r('#f0d96c', -2, -16, 13, 6);
@@ -1132,13 +1139,12 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     r('#335ba6', -7, -21, 14, 14); r(a, -5, -19, 10, 4); r('#d4b96e', -7, -14, 14, 3);
     r(skin, -5, -29, 10, 9); r(black, -7, -33, 14, 8); r(black, -7, -25, 3, 7); r(black, 4, -25, 3, 7);
     r('#f55c73', -1, -29, 3, 2); r(black, -3, -25, 2, 2); r(black, 3, -25, 2, 2);
-    r('#b8d0e8', 9, -32, 2, 32); r('#f2f5ff', 7, -34, 6, 5); r('#f2f5ff', 9, -37, 2, 5);
     r('#29334e', -13, -7, 8, 5); r('#b9c4dd', -12, -9, 4, 3); r('#62a9ff', -8, -8, 3, 2);
   } else if (character.id === 'tyr') {
     r('#31384d', -6, -8, 4, 8); r('#31384d', 3, -8, 4, 8);
     r('#405a7c', -7, -21, 14, 14); r('#8e3841', -7, -21, 4, 14); r(a, -5, -18, 10, 3);
     r(skin, -5, -29, 10, 9); r('#d2a05f', -7, -32, 14, 5); r('#7b4d34', -5, -21, 10, 4); r(black, 2, -26, 2, 2);
-    r(skin, 6, -19, 3, 8); r('#d6dfef', 9, -27, 2, 26); r('#eef4ff', 7, -29, 6, 5);
+    r(skin, 6, -19, 3, 8);
     r('#8e3841', -11, -23, 5, 17);
   } else if (character.id === 'ogma') {
     r('#273d32', -6, -8, 4, 8); r('#273d32', 3, -8, 4, 8);
@@ -1150,7 +1156,6 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     r('#24444a', -6, -8, 4, 8); r('#24444a', 3, -8, 4, 8);
     r('#d24f63', -8, -19, 16, 12); r('#f2da75', -6, -20, 12, 6); r('#5e9c91', -8, -12, 16, 5);
     r(skin, -5, -28, 10, 9); r(black, -7, -32, 14, 7); r(black, 4, -27, 4, 15); r(black, 6, -15, 3, 4); r(black, 2, -25, 2, 2);
-    r('#a9b6c8', 9, -23, 2, 19); r('#dbe4ee', 7, -25, 7, 5); r('#0d1326', 9, -23, 4, 2);
     r('#d8b94e', -12, -18, 3, 15); r(a, -14, -20, 2, 4); r(a, -11, -22, 2, 5); r(a, -8, -20, 2, 4);
   } else if (character.id === 'omoikane') {
     r('#302a58', -6, -8, 4, 8); r('#302a58', 3, -8, 4, 8);
@@ -1181,72 +1186,96 @@ function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, 
     });
   }
 
-  // Each keeper's loop is rooted in their own lore rather than a shared idle effect.
-  const loreFrame = Math.floor(time / 145 + seed) % 8;
+  // Each keeper performs a readable, lore-rooted action instead of sharing a float cycle.
+  const actionFrame = Math.floor(actionPhase * 8);
   if (character.id === 'thoth') {
-    // Living glyphs climb from the reed while a small line is continually written.
-    const glyphY = -37 + (loreFrame % 4) * 5;
+    // He braces a papyrus and writes a line from left to right with the reed.
+    const penTravel = Math.round(actionPulse * 6);
+    r('#f4e6bd', 7, -22, 11, 12); r('#b99755', 8, -20, 8, 1); r('#b99755', 8, -16, 8, 1);
+    r(white, 4, -18, 5 + penTravel, 3); r(skin, 7 + penTravel, -18, 2, 2);
+    r('#d5a94f', 9 + penTravel, -23, 1, 7); r(a, 9, -19, 1 + penTravel, 1);
+    const glyphY = -38 + (actionFrame % 4) * 5;
     r(a, -17, glyphY, 4, 1); r(black, -15, glyphY - 2, 1, 2);
-    r('#d5a94f', -7 + (loreFrame % 5), -15, 1, 3);
-    if (loreFrame % 2 === 0) r(white, 14, -29, 2, 2);
   } else if (character.id === 'prometheus') {
-    // The stolen flame changes silhouette as sparks rise from the torch and crown.
-    const flameLift = loreFrame % 3;
-    r('#ff5a45', 8, -31 - flameLift, 3, 5); r('#ffd35c', 9, -34 - flameLift, 1, 4);
-    r(loreFrame % 2 ? '#ffd35c' : '#ff6646', 13 - loreFrame, -35 - loreFrame, 2, 2);
-    r('#ff8d43', -8 + (loreFrame % 4), -38 - (loreFrame % 3), 2, 3);
+    // He steals the flame from his chest and raises it above his head.
+    const fireLift = Math.round(actionPulse * 11);
+    r(skin, 5, -18, 4, 4); r(skin, 7, -20 - Math.round(fireLift * .45), 4, 5);
+    r('#6d3b26', 10, -21 - fireLift, 2, 17);
+    r('#ff6646', 7, -29 - fireLift, 8, 9); r('#ffd35c', 9, -32 - fireLift, 3, 8);
+    r(actionFrame % 2 ? '#ffd35c' : '#ff6646', 14 - actionFrame, -35 - fireLift - actionFrame, 2, 2);
+    r('#ff8d43', -8 + (actionFrame % 4), -38 - (actionFrame % 3), 2, 3);
   } else if (character.id === 'minerva') {
-    // The aegis tightens and releases while a calculated spear-glint traces a plan.
-    const shieldPulse = loreFrame % 3;
-    r(a, -14 - shieldPulse, -21 - shieldPulse, 2, 17 + shieldPulse * 2);
-    r(a, -13, -22 - shieldPulse, 8 + shieldPulse, 2);
-    r(white, 7 + (loreFrame % 4), -37 + (loreFrame % 4), 2, 2);
-    r('#c99554', -15 + loreFrame * 2, -4, 2, 1);
+    // She sights a measured path, then lowers the spear into the planned thrust.
+    const shieldReach = Math.round(actionPulse * 4);
+    r(a, -14 - shieldReach, -22, 2, 19); r(a, -13 - shieldReach, -23, 9 + shieldReach, 2);
+    pose(9, -17, -.08 - actionPulse * 1.08, () => {
+      r('#c9d0dc', -1, -16, 2, 32); r('#eff5ff', -2, -19, 5, 5);
+    });
+    r(skin, 4, -19, 6, 3);
+    for (let line = 0; line < 3; line += 1) r('#c99554', -17 + actionFrame * 3, -7 + line * 3, 8, 1);
   } else if (character.id === 'quetzalcoatl') {
-    // Feathers ride three different wind paths and the long body ripples behind them.
-    r('#5aaeff', -19 + loreFrame * 2, -35 - (loreFrame % 3), 4, 1);
-    r('#f36b79', 14 - loreFrame * 2, -29 + (loreFrame % 2), 3, 1);
-    r('#f0d96c', -13 + loreFrame, -18 - (loreFrame % 4), 2, 2);
-    r(a, -10 + (loreFrame % 3), -11, 18, 1);
-  } else if (character.id === 'erlang') {
-    // The third eye opens in a pulse while the celestial hound paces at his feet.
-    const eyeOpen = loreFrame < 5;
-    r(eyeOpen ? '#f55c73' : black, -2, -30, eyeOpen ? 4 : 3, eyeOpen ? 2 : 1);
-    const houndX = -18 + loreFrame * 4;
-    r('#29334e', houndX, -7, 5, 3); r('#b9c4dd', houndX + 1, -9, 2, 2);
-    r(a, houndX + (loreFrame % 2 ? 4 : 0), -4, 2, 2);
-  } else if (character.id === 'tyr') {
-    // A binding oath travels up the sword; its light flares only after the vow completes.
-    const oathY = -7 - loreFrame * 4;
-    r(a, 8, oathY, 4, 2);
-    if (loreFrame >= 6) {
-      r(white, 7, -34, 6, 1); r(white, 9, -36, 2, 5);
+    // The feathered body coils while both wings beat air into visible wind paths.
+    const wingReach = 5 + Math.round(actionPulse * 7);
+    r('#5aaeff', -7 - wingReach, -29, wingReach, 3); r('#f36b79', -9 - wingReach, -25, wingReach + 2, 3);
+    r('#f0d96c', 7, -28, wingReach, 3); r('#5aaeff', 8, -24, wingReach + 2, 3);
+    for (let coil = 0; coil < 5; coil += 1) {
+      const coilY = -12 - Math.round(Math.sin(actionPhase * Math.PI * 2 + coil) * 3);
+      r(coil % 2 ? a : '#2b806d', -12 + coil * 5, coilY, 7, 3);
     }
-    r('#8e3841', -15 + (loreFrame % 4), -25, 2, 2);
+    r(white, -19 + actionFrame * 5, -35 - (actionFrame % 3), 3, 1);
+  } else if (character.id === 'erlang') {
+    // He raises the trident, opens the third eye, and sends the hound to search.
+    const scanReach = Math.round(actionPulse * 18);
+    r('#f55c73', -2, -30, 4, 2); r(colorWithAlpha('#f55c73', .72), 2, -30, scanReach, 1);
+    pose(9, -17, .08 - actionPulse * .72, () => {
+      r('#b8d0e8', -1, -16, 2, 32); r('#f2f5ff', -3, -19, 7, 5); r('#f2f5ff', 0, -22, 2, 5);
+    });
+    r(skin, 4, -19, 6, 3);
+    const houndX = -18 + actionFrame * 4;
+    r('#29334e', houndX, -7, 5, 3); r('#b9c4dd', houndX + 1, -9, 2, 2);
+    r(a, houndX + (actionFrame % 2 ? 4 : 0), -4, 2, 2);
+  } else if (character.id === 'tyr') {
+    // He offers the hand into the wolf's closing jaw while the oath-sword lowers.
+    const handReach = Math.round(actionPulse * 9);
+    r(skin, -8 - handReach, -20, 4 + handReach, 3); r('#8e3841', -10, -22, 5, 7);
+    r(black, -22, -24, 8, 4); r(white, -20, -20, 2, 3); r(white, -16, -20, 2, 3);
+    r(black, -22, -15, 8, 4); r(white, -20, -17, 2, 3); r(white, -16, -17, 2, 3);
+    pose(9, -17, -.08 - actionPulse * .48, () => {
+      r('#d6dfef', -1, -14, 2, 28); r('#eef4ff', -3, -17, 7, 5);
+    });
+    r(a, -13 - Math.round(actionPulse * 4), -19, 3, 2);
   } else if (character.id === 'ogma') {
-    // Ogham notches rise along the staff and detach as spoken letters.
-    const notchY = -5 - (loreFrame % 6) * 5;
-    r(white, 7, notchY, 7, 1); r(a, 10, notchY - 2, 1, 5);
-    r(a, 15 - loreFrame, -32 - (loreFrame % 3), 2, 2);
-    if (loreFrame % 2 === 0) r(white, -15, -18 + loreFrame, 3, 1);
+    // He draws a knife down the staff, cutting each ogham notch into speech.
+    const carveY = -28 + Math.round(actionPulse * 21);
+    r(skin, 3, carveY - 1, 7, 3); r('#d9e0ea', 8, carveY - 4, 7, 2); r(black, 7, carveY - 2, 3, 2);
+    r(white, 7, carveY, 7, 1); r(a, 10, carveY - 2, 1, 5);
+    r(a, 15 - actionFrame, -32 - (actionFrame % 3), 2, 2);
+    if (actionFrame % 2 === 0) r(white, -15, -18 + actionFrame, 3, 1);
   } else if (character.id === 'jacheongbi') {
-    // Seed, shoot, leaf, and grain cycle continuously around the harvest keeper.
-    const growth = loreFrame % 4;
+    // She sweeps the sickle through grain, then casts seed into the opened earth.
+    pose(9, -10, -.58 + actionPulse * 1.18, () => {
+      r('#a9b6c8', -1, -14, 2, 20); r('#dbe4ee', -3, -17, 8, 5); r('#0d1326', 0, -15, 4, 2);
+    });
+    r(skin, 4, -18, 6, 3);
+    const growth = actionFrame % 4;
     [-15, -10, 11, 16].forEach((sproutX, index) => {
       const height = 1 + ((growth + index) % 4);
       r('#6ca56f', sproutX, -height - 1, 1, height);
       if (height > 2) r(index % 2 ? '#f0df73' : a, sproutX - 1, -height - 2, 3, 2);
     });
-    r('#f0df73', -14 + loreFrame * 4, -7 - (loreFrame % 3), 2, 2);
+    r('#f0df73', -14 + actionFrame * 4, -7 - (actionFrame % 3), 2, 2);
   } else if (character.id === 'omoikane') {
-    // Thought nodes orbit, connect, and resolve into a brief four-point plan.
-    const thoughtAngle = loreFrame * Math.PI / 4;
+    // He parts the cave with both hands while scattered thoughts resolve into counsel.
+    const counselReach = Math.round(actionPulse * 7);
+    r('#17131c', -19 - counselReach, -31, 5, 28); r('#17131c', 14 + counselReach, -31, 5, 28);
+    r(skin, -10 - counselReach, -19, 6 + counselReach, 3); r(skin, 4, -19, 6 + counselReach, 3);
+    const thoughtAngle = actionFrame * Math.PI / 4;
     const thoughtX = Math.round(Math.cos(thoughtAngle) * 16);
     const thoughtY = -25 + Math.round(Math.sin(thoughtAngle) * 12);
     r('#9d83ff', thoughtX, thoughtY, 3, 3);
     r('#61e7e1', -thoughtX, -27 - Math.round(Math.sin(thoughtAngle) * 9), 2, 2);
-    r('#f0df73', Math.round(thoughtX * .55), -42 + (loreFrame % 3), 2, 2);
-    if (loreFrame === 0 || loreFrame === 4) { r(white, -3, -43, 6, 1); r(white, -1, -45, 2, 5); }
+    r('#f0df73', Math.round(thoughtX * .55), -42 + (actionFrame % 3), 2, 2);
+    if (actionFrame === 0 || actionFrame === 4) { r(white, -3, -43, 6, 1); r(white, -1, -45, 2, 5); }
   }
 
   // Attacks briefly transform the sprite into a character-specific mythic figure.
