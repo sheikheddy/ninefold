@@ -887,11 +887,12 @@ function colorWithAlpha(hex, alpha) {
   return `rgba(${red},${green},${blue},${alpha})`;
 }
 
-function drawPortraitAura(portraitCtx, character, time, energy = 1) {
+function drawPortraitAura(portraitCtx, character, time, energy = 1, still = false) {
   const width = portraitCtx.canvas.width;
   const height = portraitCtx.canvas.height;
   const seed = CHARACTERS.findIndex((item) => item.id === character.id) + 1;
   const phase = time / 720 + seed * .83;
+  const selected = energy > 1.45;
   portraitCtx.save();
   portraitCtx.globalAlpha = .18 + energy * .08;
   portraitCtx.strokeStyle = character.accent;
@@ -901,6 +902,65 @@ function drawPortraitAura(portraitCtx, character, time, energy = 1) {
   portraitCtx.ellipse(width / 2, height * .66, width * (.32 + Math.sin(phase) * .015), height * .22, Math.sin(phase * .7) * .08, 0, Math.PI * 2);
   portraitCtx.stroke();
   portraitCtx.setLineDash([]);
+
+  if (selected) {
+    const centerX = width / 2;
+    const centerY = height * .58;
+    const radiusX = width * .37;
+    const radiusY = height * .29;
+    const pitch = still ? -.58 : time / 680 + seed * .37;
+    const drift = still ? seed * .19 : time / 2100 + seed * .19;
+    const dotCount = 22;
+    const projectDot = (angle, tilt) => {
+      const ringX = Math.cos(angle) * radiusX;
+      const ringY = Math.sin(angle) * radiusY;
+      const depth = ringY * Math.sin(tilt);
+      const perspective = 1 + depth / (height * 2.2);
+      return {
+        x: centerX + ringX * perspective,
+        y: centerY + ringY * Math.cos(tilt),
+        depth: .5 + depth / (radiusY * 2),
+      };
+    };
+
+    portraitCtx.globalAlpha = 1;
+    for (let index = 0; index < dotCount; index += 1) {
+      const angle = (index / dotCount) * Math.PI * 2 + drift;
+      const point = projectDot(angle, pitch);
+
+      if (!still) {
+        for (let trail = 5; trail > 0; trail -= 1) {
+          const oldPoint = projectDot(angle - trail * .025, pitch - trail * .065);
+          const fade = (1 - trail / 6) * (.085 + point.depth * .14);
+          portraitCtx.fillStyle = colorWithAlpha(character.accent, fade);
+          portraitCtx.fillRect(
+            Math.round(oldPoint.x),
+            Math.round(oldPoint.y + trail * 2),
+            1,
+            trail < 3 ? 3 : trail < 5 ? 2 : 1,
+          );
+        }
+      }
+
+      const front = Math.max(0, Math.min(1, point.depth));
+      const dotSize = front > .68 || index % 7 === 0 ? 3 : 2;
+      portraitCtx.fillStyle = colorWithAlpha(character.accent, .42 + front * .52);
+      portraitCtx.fillRect(
+        Math.round(point.x - dotSize / 2),
+        Math.round(point.y - dotSize / 2),
+        dotSize,
+        dotSize,
+      );
+      if (front < .42) {
+        portraitCtx.fillStyle = colorWithAlpha('#17141c', .28);
+        portraitCtx.fillRect(Math.round(point.x), Math.round(point.y), 1, 1);
+      }
+    }
+
+    portraitCtx.restore();
+    return;
+  }
+
   for (let index = 0; index < 4; index += 1) {
     const orbit = phase + index * Math.PI / 2;
     const px = width / 2 + Math.cos(orbit) * width * .34;
@@ -919,7 +979,7 @@ function drawPortrait(portraitCtx, character, time = 0, energy = 1) {
   portraitCtx.imageSmoothingEnabled = false;
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const liveTime = still ? 0 : time;
-  drawPortraitAura(portraitCtx, character, liveTime, energy);
+  drawPortraitAura(portraitCtx, character, liveTime, energy, still);
   const scale = Math.floor(Math.min(width / 42, height / 45));
   drawCharacterSprite(portraitCtx, character, width / 2, height * .83, scale, 1, 0, {
     time: liveTime,
