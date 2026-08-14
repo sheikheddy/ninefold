@@ -1,16 +1,17 @@
 import './styles.css';
 
 const ARCHIVE_STORAGE_KEY = 'ninefold.archive.unlocked.v1';
+const INITIAL_ARCHIVE_UNLOCKS = 3;
 const ARCHIVE_FRAGMENTS = Array.from({ length: 14 }, (_, index) => (
   `/archive/fragment-${String(index + 1).padStart(2, '0')}.png`
 ));
 
 function readArchiveProgress() {
   try {
-    const stored = Number.parseInt(window.localStorage.getItem(ARCHIVE_STORAGE_KEY) || '1', 10);
-    return Math.min(ARCHIVE_FRAGMENTS.length, Math.max(1, Number.isFinite(stored) ? stored : 1));
+    const stored = Number.parseInt(window.localStorage.getItem(ARCHIVE_STORAGE_KEY) || String(INITIAL_ARCHIVE_UNLOCKS), 10);
+    return Math.min(ARCHIVE_FRAGMENTS.length, Math.max(INITIAL_ARCHIVE_UNLOCKS, Number.isFinite(stored) ? stored : INITIAL_ARCHIVE_UNLOCKS));
   } catch {
-    return 1;
+    return INITIAL_ARCHIVE_UNLOCKS;
   }
 }
 
