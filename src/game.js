@@ -630,16 +630,18 @@ function renderRoster() {
 // petals one by one — she loves me, she loves me not.
 const slotPetalMemory = [null, null, null];
 
+// Modeled on clematis 'The President': six broad violet sepals that overlap
+// at the base, and a spidery crown of pale stamens tipped in dark maroon.
 function drawSlotPetals(petalCtx, fallStart, now, includeCenter) {
   petalCtx.clearRect(0, 0, 180, 180);
   petalCtx.save();
   petalCtx.scale(2, 2);
-  for (let i = 0; i < 8; i += 1) {
+  for (let i = 0; i < 6; i += 1) {
     let drop = 0;
     let spin = 0;
     let alpha = 1;
     if (fallStart) {
-      const dt = now - fallStart - i * 130;
+      const dt = now - fallStart - i * 150;
       if (dt > 0) {
         drop = ((dt / 120) ** 1.6) * 6;
         spin = (i % 2 ? 1 : -1) * dt * .0012;
@@ -650,40 +652,61 @@ function drawSlotPetals(petalCtx, fallStart, now, includeCenter) {
     petalCtx.save();
     petalCtx.globalAlpha = alpha;
     petalCtx.translate(45 + (i % 2 ? drop * .3 : -drop * .25), 45 + drop);
-    petalCtx.rotate((Math.PI / 4) * i + (i % 2 ? .12 : -.09) + spin);
-    const gradient = petalCtx.createLinearGradient(0, 10, 0, 42);
-    gradient.addColorStop(0, '#7d5ac8');
-    gradient.addColorStop(.55, '#a98ae6');
-    gradient.addColorStop(1, '#d9c9f7');
+    petalCtx.rotate((Math.PI / 3) * i + (i % 2 ? .09 : -.06) + spin);
+    const gradient = petalCtx.createLinearGradient(0, 14, 0, 45);
+    gradient.addColorStop(0, '#6c5bc9');
+    gradient.addColorStop(.5, '#5544ad');
+    gradient.addColorStop(1, '#463593');
     petalCtx.fillStyle = gradient;
     petalCtx.beginPath();
-    petalCtx.moveTo(0, 20); // petals begin at the oval's rim and reach outward
-    petalCtx.bezierCurveTo(-9, 25, -8, 37, 0, 44);
-    petalCtx.bezierCurveTo(8, 37, 9, 25, 0, 20);
+    petalCtx.moveTo(0, 14); // broad sepals, overlapping at the base
+    petalCtx.bezierCurveTo(-13, 19, -14, 33, 0, 45);
+    petalCtx.bezierCurveTo(14, 33, 13, 19, 0, 14);
     petalCtx.fill();
-    petalCtx.strokeStyle = 'rgba(84,56,140,.4)';
+    petalCtx.strokeStyle = 'rgba(28,18,64,.4)';
     petalCtx.lineWidth = .8;
     petalCtx.stroke();
-    petalCtx.strokeStyle = 'rgba(240,232,255,.55)'; // the pale central crease
-    petalCtx.lineWidth = 1.4;
+    petalCtx.strokeStyle = 'rgba(158,140,228,.55)'; // the paler central bar
+    petalCtx.lineWidth = 2.6;
     petalCtx.beginPath();
-    petalCtx.moveTo(0, 24);
-    petalCtx.quadraticCurveTo(1, 33, 0, 41);
+    petalCtx.moveTo(0, 18);
+    petalCtx.quadraticCurveTo(.6, 30, 0, 42);
     petalCtx.stroke();
+    petalCtx.strokeStyle = 'rgba(30,18,74,.22)'; // faint side veins
+    petalCtx.lineWidth = .8;
+    [-4.5, 4.5].forEach((vein) => {
+      petalCtx.beginPath();
+      petalCtx.moveTo(0, 17);
+      petalCtx.quadraticCurveTo(vein, 28, vein * .5, 40);
+      petalCtx.stroke();
+    });
     petalCtx.restore();
   }
   if (includeCenter) {
-    for (let i = 0; i < 9; i += 1) { // nine waiting stamens, of course
-      const angle = (Math.PI * 2 * i) / 9 + .3;
-      petalCtx.strokeStyle = 'rgba(210,190,120,.9)';
-      petalCtx.lineWidth = 1.2;
+    for (let i = 0; i < 22; i += 1) { // the spidery stamen crown
+      const angle = (Math.PI * 2 * i) / 22 + .14;
+      const reach = 9 + (i % 3) * 2.2;
+      const tipX = 45 + Math.cos(angle) * reach;
+      const tipY = 45 + Math.sin(angle) * reach;
+      petalCtx.strokeStyle = 'rgba(240,230,244,.95)';
+      petalCtx.lineWidth = 1;
       petalCtx.beginPath();
-      petalCtx.moveTo(45, 45);
-      petalCtx.lineTo(45 + Math.cos(angle) * 6, 45 + Math.sin(angle) * 6);
+      petalCtx.moveTo(45 + Math.cos(angle) * 3, 45 + Math.sin(angle) * 3);
+      petalCtx.quadraticCurveTo(
+        45 + Math.cos(angle + .18) * reach * .6, 45 + Math.sin(angle + .18) * reach * .6,
+        tipX, tipY,
+      );
       petalCtx.stroke();
-      petalCtx.fillStyle = '#efe3a6';
-      petalCtx.fillRect(44 + Math.cos(angle) * 7, 44 + Math.sin(angle) * 7, 2, 2);
+      petalCtx.fillStyle = '#66324e'; // dark maroon anthers
+      petalCtx.fillRect(tipX - .9, tipY - .9, 1.8, 1.8);
     }
+    petalCtx.fillStyle = '#f0e9cf'; // the creamy core
+    petalCtx.beginPath();
+    petalCtx.arc(45, 45, 3.4, 0, Math.PI * 2);
+    petalCtx.fill();
+    petalCtx.fillStyle = '#d8c98e';
+    petalCtx.fillRect(43.8, 43.8, 1.2, 1.2);
+    petalCtx.fillRect(45.4, 44.8, 1, 1);
   }
   petalCtx.restore();
   petalCtx.globalAlpha = 1;
