@@ -1,23 +1,60 @@
 import './styles.css';
 
-const splitThreeForCanvas = (value) => String(value).replaceAll('3', 'II  I');
+function splitThreeParts(value) {
+  const normalized = String(value).replace(/(^|\D)03(?=\D|$)/g, (_, prefix) => `${prefix}3`);
+  return normalized.split(/(\bIII\b|3)/g).filter(Boolean).map((part) => ({
+    text: part,
+    glyph: part === '3' || part === 'III',
+  }));
+}
+
+function measureSplitCanvasText(targetCtx, value) {
+  const fontSize = Number.parseFloat(targetCtx.font.match(/([\d.]+)px/)?.[1] || '12');
+  return splitThreeParts(value).reduce((width, part) => (
+    width + (part.glyph
+      ? targetCtx.measureText('II').width + fontSize * .36 + fontSize * .62
+      : targetCtx.measureText(part.text).width)
+  ), 0);
+}
+
+function fillSplitCanvasText(targetCtx, value, x, y) {
+  const parts = splitThreeParts(value);
+  const fontSize = Number.parseFloat(targetCtx.font.match(/([\d.]+)px/)?.[1] || '12');
+  const totalWidth = measureSplitCanvasText(targetCtx, value);
+  const originalAlign = targetCtx.textAlign;
+  let cursor = x;
+  if (originalAlign === 'center') cursor -= totalWidth / 2;
+  if (originalAlign === 'right' || originalAlign === 'end') cursor -= totalWidth;
+  targetCtx.save();
+  targetCtx.textAlign = 'left';
+  parts.forEach((part) => {
+    if (!part.glyph) {
+      targetCtx.fillText(part.text, cursor, y);
+      cursor += targetCtx.measureText(part.text).width;
+      return;
+    }
+    targetCtx.fillText('II', cursor, y);
+    cursor += targetCtx.measureText('II').width + fontSize * .36;
+    targetCtx.fillRect(cursor, y - fontSize * .39, fontSize * .62, Math.max(1, fontSize * .09));
+    cursor += fontSize * .62;
+  });
+  targetCtx.restore();
+}
 
 function createSplitThree() {
   const split = document.createElement('span');
   split.className = 'split-three';
   split.setAttribute('role', 'img');
   split.setAttribute('aria-label', 'three');
-  split.innerHTML = '<span aria-hidden="true">II</span><span aria-hidden="true">I</span>';
+  split.innerHTML = '<span aria-hidden="true">II</span><span class="split-three-side" aria-hidden="true">I</span>';
   return split;
 }
 
 function splitThreeTextNode(node) {
-  if (!node.nodeValue?.includes('3') || node.parentElement?.closest('.split-three, script, style, textarea')) return;
-  const pieces = node.nodeValue.split('3');
+  if (!/[3]|\bIII\b/.test(node.nodeValue || '') || node.parentElement?.closest('.split-three, script, style, textarea')) return;
   const replacement = document.createDocumentFragment();
-  pieces.forEach((piece, index) => {
-    if (piece) replacement.append(document.createTextNode(piece));
-    if (index < pieces.length - 1) replacement.append(createSplitThree());
+  splitThreeParts(node.nodeValue).forEach((part) => {
+    replacement.append(part.glyph ? createSplitThree() : document.createTextNode(part.text));
   });
   node.replaceWith(replacement);
 }
@@ -1515,12 +1552,11 @@ function drawStatuses(fighter, x, y) {
   if (fighter.status.seal) active.push({ text: `SEAL ${fighter.status.seal} · UNSAID`, color: '#9d83ff' });
   ctx.font = '9px Courier New'; ctx.textAlign = 'center';
   active.forEach((status, index) => {
-    const displayText = splitThreeForCanvas(status.text);
-    const width = ctx.measureText(displayText).width + 10;
+    const width = measureSplitCanvasText(ctx, status.text) + 10;
     const sx = x + (index - (active.length - 1) / 2) * 58;
     ctx.fillStyle = '#17131c'; ctx.beginPath(); ctx.roundRect(sx - width / 2 - 2, y - 2, width + 4, 20, 5); ctx.fill();
     ctx.fillStyle = '#fffdf5'; ctx.beginPath(); ctx.roundRect(sx - width / 2, y, width, 16, 3); ctx.fill();
-    ctx.fillStyle = status.color; ctx.fillText(displayText, sx, y + 11);
+    ctx.fillStyle = status.color; fillSplitCanvasText(ctx, status.text, sx, y + 11);
   });
   ctx.textAlign = 'left';
 }
@@ -1697,7 +1733,7 @@ function drawEffects(time) {
       ctx.globalAlpha = Math.max(0, 1 - progress * 1.15);
       const effectLines = effect.text.split('\n');
       ctx.font = `bold ${effectLines.length > 1 ? 12 : 16}px Courier New`; ctx.textAlign = 'center'; ctx.fillStyle = effect.color;
-      effectLines.forEach((line, lineIndex) => ctx.fillText(splitThreeForCanvas(line), x, 197 + lineIndex * 15 - progress * 45));
+      effectLines.forEach((line, lineIndex) => fillSplitCanvasText(ctx, line, x, 197 + lineIndex * 15 - progress * 45));
     }
     ctx.restore();
   });
