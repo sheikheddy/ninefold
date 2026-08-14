@@ -1,6 +1,7 @@
 import './styles.css';
 
 const ARCHIVE_STORAGE_KEY = 'ninefold.archive.unlocked.v1';
+const FTUE_STORAGE_KEY = 'ninefold.ftue.complete.v1';
 const INITIAL_ARCHIVE_UNLOCKS = 3;
 const ARCHIVE_FRAGMENTS = Array.from({ length: 14 }, (_, index) => (
   `/archive/fragment-${String(index + 1).padStart(2, '0')}.png`
@@ -12,6 +13,14 @@ function readArchiveProgress() {
     return Math.min(ARCHIVE_FRAGMENTS.length, Math.max(INITIAL_ARCHIVE_UNLOCKS, Number.isFinite(stored) ? stored : INITIAL_ARCHIVE_UNLOCKS));
   } catch {
     return INITIAL_ARCHIVE_UNLOCKS;
+  }
+}
+
+function readFtueComplete() {
+  try {
+    return window.localStorage.getItem(FTUE_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
   }
 }
 
@@ -206,6 +215,7 @@ const teamSlots = $('#team-slots');
 const startButton = $('#start-button');
 const randomButton = $('#random-button');
 const archiveButton = $('#archive-button');
+const ftueCoach = $('#ftue-coach');
 const selectionHint = $('#selection-hint');
 const modalBackdrop = $('#modal-backdrop');
 const abilityList = $('#ability-list');
@@ -225,6 +235,49 @@ const state = {
   archive: {
     unlocked: readArchiveProgress(),
     selected: 0,
+  },
+  ftue: {
+    active: !readFtueComplete(),
+    step: 'choose-first',
+  },
+};
+
+const FTUE_STEPS = {
+  'choose-first': {
+    index: 0,
+    kicker: '[FIRST TOUCH: A NAME]<br>CHOICE BEGINS THE ORDEAL',
+    title: 'TOUCH ONE PORTRAIT<br>LET THE PORTRAIT ANSWER',
+    copy: 'No wrong figure waits here.<br>Begin with whoever watches back.',
+    target: () => characterGrid,
+  },
+  'choose-more': {
+    index: 1,
+    kicker: '[SECOND TOUCH: A CHORUS]<br>ONE BODY CANNOT HOLD THE SCENE',
+    title: 'CHOOSE TWO MORE NAMES<br>MAKE A CHORUS OF WOUNDS',
+    copy: 'Your order decides who enters first.<br>Touch a chosen name to release it.',
+    target: () => characterGrid,
+  },
+  enter: {
+    index: 2,
+    kicker: '[THIRD TOUCH: THE DOOR]<br>THE CHORUS HAS LEARNED YOUR NAME',
+    title: 'ENTER THE FIGURE NOW<br>LET THE ORDEAL ANSWER BACK',
+    copy: 'Your first name will lead the scene.<br>The others wait inside the wound.',
+    target: () => startButton,
+  },
+  act: {
+    index: 3,
+    kicker: '[FIRST ACT: DESIRE]<br>THE SMALL MOVE TEACHES THE LARGE',
+    title: 'USE THE FIRST ABILITY<br>LET THE ACT TEACH YOUR HAND',
+    copy: 'Ordinary moves gather Focus.<br>The violet bar remembers each act.',
+    target: () => abilityList.querySelector('.ability-button:not(:disabled)') || abilityList,
+  },
+  focus: {
+    index: 4,
+    kicker: '[THE LESSON: CONTINUANCE]<br>DESIRE KEEPS WHAT ACTION GIVES',
+    title: 'WATCH FOCUS BECOME POWER<br>THE LAST MOVE WAKES AT 65',
+    copy: 'Swap when a body nears its ending.<br>Or keep acting until one side is gone.',
+    target: () => $('.active-card'),
+    finish: true,
   },
 };
 
@@ -444,6 +497,70 @@ function cloneFighter(character, side, index) {
   };
 }
 
+function clearFtueTarget() {
+  document.querySelectorAll('.ftue-target').forEach((element) => element.classList.remove('ftue-target'));
+}
+
+function renderFtue() {
+  clearFtueTarget();
+  if (!state.ftue.active) {
+    ftueCoach.hidden = true;
+    return;
+  }
+  const step = FTUE_STEPS[state.ftue.step];
+  if (!step) return;
+  ftueCoach.hidden = false;
+  $('#ftue-kicker').innerHTML = step.kicker;
+  $('#ftue-title').innerHTML = step.title;
+  $('#ftue-copy').innerHTML = step.copy;
+  $('#ftue-continue').hidden = !step.finish;
+  [...$('#ftue-progress').children].forEach((mark, index) => {
+    mark.classList.toggle('complete', index < step.index);
+    mark.classList.toggle('current', index === step.index);
+  });
+  step.target()?.classList.add('ftue-target');
+}
+
+function setFtueStep(stepName, scroll = true) {
+  if (!state.ftue.active || !FTUE_STEPS[stepName]) return;
+  const changed = state.ftue.step !== stepName;
+  state.ftue.step = stepName;
+  renderFtue();
+  if (scroll && changed) {
+    window.setTimeout(() => FTUE_STEPS[stepName].target()?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+  }
+}
+
+function syncFtueSelection() {
+  if (!state.ftue.active || state.battle) return;
+  if (state.selected.length === 0) setFtueStep('choose-first', false);
+  else if (state.selected.length < 3) setFtueStep('choose-more');
+  else setFtueStep('enter');
+}
+
+function completeFtue() {
+  state.ftue.active = false;
+  clearFtueTarget();
+  ftueCoach.hidden = true;
+  try {
+    window.localStorage.setItem(FTUE_STORAGE_KEY, 'true');
+  } catch {
+    // Completion still lasts for this visit when storage is unavailable.
+  }
+}
+
+function restartFtue() {
+  state.ftue.active = true;
+  try {
+    window.localStorage.removeItem(FTUE_STORAGE_KEY);
+  } catch {
+    // The guide can still restart for this visit.
+  }
+  closeModal();
+  if (state.battle && !state.battle.over) setFtueStep('act');
+  else syncFtueSelection();
+}
+
 function renderRoster() {
   characterGrid.innerHTML = '';
   CHARACTERS.forEach((character, index) => {
@@ -497,6 +614,7 @@ function renderTeamSlots() {
     'THREE NAMES INSIDE THE MOUTH;<br>SAY GO, AND BECOME THEIR AFTERMATH.',
   ];
   selectionHint.innerHTML = selectionVerses[state.selected.length];
+  syncFtueSelection();
 }
 
 function toggleSelection(id) {
@@ -542,6 +660,7 @@ function startBattle() {
   addLog(`<b>${enemyCharacters[0].name}</b> answers from the other side;<br>desire invents an enemy to survive.`, 'enemy');
   announce('THE FIGURE BEGINS', 'EVERY BEGINNING HIDES AN END');
   renderBattleUI();
+  setFtueStep('act');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -576,6 +695,7 @@ function renderBattleUI() {
   renderTeamStrip('player');
   renderTeamStrip('enemy');
   swapButton.disabled = battle.locked || aliveFighters('player').length < 2;
+  renderFtue();
 }
 
 function renderAbilities(player) {
@@ -790,6 +910,7 @@ async function playerAction(index) {
   if (!ability || player.cooldowns[index] > 0 || (ability.cost && player.focus < ability.cost) || (index === 2 && player.status.seal > 0)) return;
   battle.locked = true;
   battle.metrics.turns += 1;
+  if (state.ftue.active && state.ftue.step === 'act') state.ftue.step = 'focus';
   executeAbility(player, enemy, ability, index);
   renderBattleUI();
   await wait(720);
@@ -1931,6 +2052,9 @@ $('#sound-button').addEventListener('click', (event) => {
   if (!state.muted) sound.click();
 });
 $('#play-again-button').addEventListener('click', resetGame);
+$('#ftue-skip').addEventListener('click', completeFtue);
+$('#ftue-continue').addEventListener('click', completeFtue);
+$('#restart-ftue-button').addEventListener('click', restartFtue);
 $('#archive-previous').addEventListener('click', () => {
   if (state.archive.selected <= 0) return;
   state.archive.selected -= 1;
