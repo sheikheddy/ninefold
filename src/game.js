@@ -1,0 +1,1243 @@
+import './styles.css';
+
+const CHARACTERS = [
+  {
+    id: 'thoth', name: 'THOTH', verse: ['THOTH KEEPS THE WORD', 'Till silent signs are heard.'], stageLine: 'THOTH WRITES THE PAGE', domain: 'SCRIBE', symbol: '𓅝',
+    accent: '#61e7e1', dark: '#17394a', hp: 104, power: 17, speed: 17,
+    lore: 'Writes possibility into being and shelters allies behind living glyphs.',
+    abilities: [
+      { name: 'THE REED WRITES BRIGHT', icon: '⌇', desc: 'And strikes the waiting night.', kind: 'damage', power: 15, gain: 24 },
+      { name: 'THE GLYPHS ALIGN', icon: '▧', desc: 'To raise a ward divine.', kind: 'shield', power: 30, gain: 16, cooldown: 2 },
+      { name: 'THE HOURS UNFURL', icon: '◫', desc: 'And dim the rival world.', kind: 'damage', power: 28, cost: 65, effect: 'weaken', cooldown: 3 },
+    ],
+  },
+  {
+    id: 'prometheus', name: 'PROMETHEUS', verse: ['PROMETHEUS BEARS THE FLAME', "And brands the dark with heaven's name."], stageLine: 'PROMETHEUS BURNS THE CAGE', domain: 'FLAME', symbol: '♨',
+    accent: '#ff774f', dark: '#512033', hp: 112, power: 20, speed: 13,
+    lore: 'Steals momentum with relentless flame, accepting pain to end battles quickly.',
+    abilities: [
+      { name: 'THE EMBERS RISE', icon: '◆', desc: 'And fire fills their eyes.', kind: 'damage', power: 17, gain: 24 },
+      { name: "STEAL HEAVEN'S FLAME", icon: '♨', desc: 'Then brand the rival name.', kind: 'damage', power: 13, gain: 14, effect: 'burn', cooldown: 2 },
+      { name: 'THE FIRST FIRE CALLS', icon: '✦', desc: 'As every shelter falls.', kind: 'damage', power: 34, cost: 65, recoil: 7, cooldown: 3 },
+    ],
+  },
+  {
+    id: 'minerva', name: 'MINERVA', verse: ['MINERVA FORMS THE PLAN', 'Then shields the wise with steady hand.'], stageLine: 'MINERVA COUNSELS THE SAGE', domain: 'CRAFT', symbol: '⚒',
+    accent: '#ffce6c', dark: '#52362c', hp: 118, power: 16, speed: 14,
+    lore: 'Builds an advantage one measured move at a time behind an unbroken aegis.',
+    abilities: [
+      { name: 'THE SPEARPOINT FLIES', icon: '↗', desc: 'Where hidden error lies.', kind: 'damage', power: 14, gain: 25 },
+      { name: 'LET AEGIS GLOW', icon: '⬡', desc: 'And turn aside the blow.', kind: 'shield', power: 36, gain: 14, cooldown: 2 },
+      { name: 'THE PERFECT PLAN', icon: '⌘', desc: 'Strikes true and heals the hand.', kind: 'damage', power: 23, cost: 65, heal: 14, cooldown: 3 },
+    ],
+  },
+  {
+    id: 'quetzalcoatl', name: 'QUETZALCŌĀTL', verse: ['QUETZALCŌĀTL RIDES THE AIR', 'And sows the dawn with feathers fair.'], stageLine: 'QUETZALCŌĀTL STIRS THE AGE', domain: 'WIND', symbol: '〰',
+    accent: '#70ef8e', dark: '#1a4a43', hp: 108, power: 17, speed: 19,
+    lore: 'Moves like wind through feathers, balancing renewal with solar force.',
+    abilities: [
+      { name: 'THE FEATHERS FLY', icon: '〽', desc: 'And cut the waiting sky.', kind: 'damage', power: 14, gain: 26 },
+      { name: 'THE DAWN DRAWS NEAR', icon: '☼', desc: 'Restoring what was dear.', kind: 'heal', power: 24, gain: 13, cooldown: 2 },
+      { name: 'THE FIFTH SUN BURNS', icon: '◉', desc: 'And brands whomever turns.', kind: 'damage', power: 27, cost: 65, effect: 'burn', cooldown: 3 },
+    ],
+  },
+  {
+    id: 'erlang', name: 'ERLANG SHEN', verse: ['ERLANG OPENS HIS EYE', 'And names the mask beneath the lie.'], stageLine: 'ERLANG READS THE PAGE', domain: 'INSIGHT', symbol: '◈',
+    accent: '#62a9ff', dark: '#20355f', hp: 110, power: 18, speed: 18,
+    lore: 'Sees through every disguise and exposes the fault line in any defense.',
+    abilities: [
+      { name: 'THE TRIDENT LEAPS', icon: 'Ψ', desc: 'Where guarded weakness sleeps.', kind: 'damage', power: 15, gain: 24 },
+      { name: 'THE TRUE EYE SPIES', icon: '◉', desc: 'And marks the mask of lies.', kind: 'mark', power: 0, gain: 18, cooldown: 2 },
+      { name: 'HOUND OF HEAVEN, FLY', icon: '♞', desc: 'Through every shield and lie.', kind: 'damage', power: 29, cost: 65, pierce: true, cooldown: 3 },
+    ],
+  },
+  {
+    id: 'tyr', name: 'TÝR', verse: ['TÝR SWEARS THE LAW', 'And holds the line without a flaw.'], stageLine: 'TÝR BINDS THE RAGE', domain: 'LAW', symbol: '↑',
+    accent: '#b8c7ff', dark: '#303d59', hp: 124, power: 18, speed: 11,
+    lore: 'Turns sacrifice into certainty and binds reckless rivals beneath the law.',
+    abilities: [
+      { name: 'THE SWORD OATH RINGS', icon: '†', desc: 'And law its answer brings.', kind: 'damage', power: 16, gain: 25 },
+      { name: 'THE HAND OF LAW', icon: '◇', desc: 'Builds ward without a flaw.', kind: 'shield', power: 27, gain: 15, cleanse: true, cooldown: 2 },
+      { name: "FENRIR'S BOND IS TIED", icon: '∞', desc: "The rival's art is now denied.", kind: 'damage', power: 27, cost: 65, effect: 'seal', cooldown: 3 },
+    ],
+  },
+  {
+    id: 'ogma', name: 'OGMA', verse: ['OGMA CARVES THE RHYME', 'That binds the tongue and outlasts time.'], stageLine: 'OGMA SPEAKS TO THE AGE', domain: 'WORD', symbol: 'ᚑ',
+    accent: '#d994ff', dark: '#442d59', hp: 106, power: 19, speed: 16,
+    lore: 'Carves speech into matter, weakening resolve before the final word lands.',
+    abilities: [
+      { name: 'THE OGHAM BITES', icon: 'ᚑ', desc: 'A letter forged for fights.', kind: 'damage', power: 16, gain: 24 },
+      { name: 'THE HONEYED WORD', icon: '≈', desc: 'Makes rival strength absurd.', kind: 'weaken', power: 0, gain: 18, cooldown: 2 },
+      { name: 'THE WORD OF POWER', icon: '!', desc: 'Strikes like a falling tower.', kind: 'damage', power: 32, cost: 65, cooldown: 3 },
+    ],
+  },
+  {
+    id: 'jacheongbi', name: 'JACHEONGBI', verse: ['JACHEONGBI SOWS THE PLAIN', 'Then calls the lost world back to grain.'], stageLine: 'JACHEONGBI REAPS THE AGE', domain: 'HARVEST', symbol: '❋',
+    accent: '#f0df73', dark: '#4a4230', hp: 116, power: 15, speed: 15,
+    lore: 'Plants recovery in the present and reaps it across the cycles ahead.',
+    abilities: [
+      { name: 'THE SICKLE SWINGS', icon: '◜', desc: 'And brightens what it brings.', kind: 'damage', power: 14, gain: 25 },
+      { name: 'THE FIVE GRAINS GROW', icon: '❋', desc: 'And healing roots below.', kind: 'regen', power: 7, gain: 15, cooldown: 2 },
+      { name: 'THE HARVEST MOON', icon: '◒', desc: 'Cuts deep and mends the wound.', kind: 'damage', power: 24, cost: 65, heal: 18, cooldown: 3 },
+    ],
+  },
+  {
+    id: 'omoikane', name: 'OMOIKANE', verse: ['OMOIKANE COUNTS EACH THOUGHT', "And weaves the end before it's sought."], stageLine: 'OMOIKANE PLANS THE STAGE', domain: 'MIND', symbol: '⌬',
+    accent: '#9d83ff', dark: '#35305f', hp: 102, power: 17, speed: 20,
+    lore: 'Plans several moves at once, converting foresight into focus and control.',
+    abilities: [
+      { name: 'THE THOUGHT SPARK FLIES', icon: '⌁', desc: "Before the rival's eyes.", kind: 'damage', power: 13, gain: 28 },
+      { name: 'THE MYRIAD PLAN', icon: '⌬', desc: 'Builds focus, ward, and hand.', kind: 'focus', power: 28, shield: 12, gain: 0, cooldown: 2 },
+      { name: 'THE CAVE PLAN CLOSES', icon: '◩', desc: "The rival's art reposes.", kind: 'damage', power: 25, cost: 65, effect: 'seal', cooldown: 3 },
+    ],
+  },
+];
+
+const $ = (selector) => document.querySelector(selector);
+const selectionScreen = $('#selection-screen');
+const battleScreen = $('#battle-screen');
+const characterGrid = $('#character-grid');
+const teamSlots = $('#team-slots');
+const startButton = $('#start-button');
+const randomButton = $('#random-button');
+const selectionHint = $('#selection-hint');
+const modalBackdrop = $('#modal-backdrop');
+const abilityList = $('#ability-list');
+const battleLog = $('#battle-log');
+const swapButton = $('#swap-button');
+const canvas = $('#battle-canvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const state = {
+  selected: [],
+  battle: null,
+  muted: false,
+  effects: [],
+  lastFrame: performance.now(),
+  portraitFrame: -1,
+};
+
+class PixelSound {
+  constructor() {
+    this.context = null;
+    this.musicGain = null;
+    this.musicTimer = null;
+    this.musicStep = 0;
+  }
+  ensure() {
+    if (!this.context) {
+      this.context = new (window.AudioContext || window.webkitAudioContext)();
+      this.musicGain = this.context.createGain();
+      this.musicGain.gain.value = state.muted ? 0 : .82;
+      this.musicGain.connect(this.context.destination);
+    }
+    if (this.context.state === 'suspended') this.context.resume();
+    if (!this.musicTimer && !state.muted) this.startMusic();
+  }
+  tone(freq = 220, duration = .08, type = 'square', volume = .035, delay = 0) {
+    if (state.muted) return;
+    this.ensure();
+    const at = this.context.currentTime + delay;
+    const osc = this.context.createOscillator();
+    const gain = this.context.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, at);
+    osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq * .72), at + duration);
+    gain.gain.setValueAtTime(volume, at);
+    gain.gain.exponentialRampToValueAtTime(.0001, at + duration);
+    osc.connect(gain).connect(this.context.destination);
+    osc.start(at); osc.stop(at + duration);
+  }
+  musicNote(freq, duration = .36, type = 'triangle', volume = .012, delay = 0) {
+    if (!this.context || state.muted) return;
+    const at = this.context.currentTime + delay;
+    const osc = this.context.createOscillator();
+    const gain = this.context.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, at);
+    osc.detune.setValueAtTime(Math.sin(this.musicStep * 1.7) * 4, at);
+    gain.gain.setValueAtTime(.0001, at);
+    gain.gain.exponentialRampToValueAtTime(volume, at + .025);
+    gain.gain.exponentialRampToValueAtTime(.0001, at + duration);
+    osc.connect(gain).connect(this.musicGain);
+    osc.start(at); osc.stop(at + duration + .02);
+  }
+  musicTick() {
+    const melody = [
+      293.66, null, 349.23, 440, null, 392,
+      293.66, null, 329.63, 392, null, 349.23,
+      261.63, null, 293.66, 349.23, null, 329.63,
+      220, null, 261.63, 293.66, null, 220,
+    ];
+    const bass = [146.83, 130.81, 174.61, 110];
+    const step = this.musicStep % melody.length;
+    if (!state.muted && this.context?.state === 'running') {
+      const note = melody[step];
+      if (note) this.musicNote(note, step % 6 === 3 ? .5 : .32, 'triangle', .011);
+      if (step % 6 === 0) this.musicNote(bass[Math.floor(step / 6)], 1.05, 'sine', .014);
+      if (step % 6 === 2) this.musicNote((melody[step] || 293.66) * 2, .22, 'sine', .0045, .035);
+      if (step % 12 === 9) {
+        const root = bass[Math.floor(step / 6)] || 130.81;
+        this.musicNote(root * 2, .7, 'sine', .005);
+        this.musicNote(root * 2.5, .7, 'sine', .004, .018);
+      }
+    }
+    this.musicStep += 1;
+  }
+  startMusic() {
+    if (this.musicTimer) return;
+    this.musicTick();
+    this.musicTimer = window.setInterval(() => this.musicTick(), 210);
+  }
+  setMuted(muted) {
+    if (!muted) this.ensure();
+    if (!this.musicGain || !this.context) return;
+    const now = this.context.currentTime;
+    this.musicGain.gain.cancelScheduledValues(now);
+    this.musicGain.gain.setTargetAtTime(muted ? .0001 : .82, now, .035);
+  }
+  click() { this.tone(440, .045, 'square', .025); }
+  hit() { this.tone(135, .11, 'sawtooth', .045); this.tone(82, .08, 'square', .025, .03); }
+  heal() { [0, .07, .14].forEach((delay, index) => this.tone(420 + index * 130, .12, 'sine', .032, delay)); }
+  shield() { this.tone(260, .18, 'triangle', .04); this.tone(520, .13, 'square', .018, .05); }
+  ultimate() { [0, .06, .12].forEach((delay, index) => this.tone(150 + index * 90, .18, 'sawtooth', .04, delay)); }
+  victory() { [0, .12, .24, .38].forEach((delay, index) => this.tone([262,330,392,523][index], .3, 'square', .03, delay)); }
+}
+const sound = new PixelSound();
+
+function cloneFighter(character, side, index) {
+  return {
+    ...character,
+    side, index,
+    maxHp: character.hp,
+    currentHp: character.hp,
+    focus: 0,
+    shield: 0,
+    cooldowns: [0, 0, 0],
+    status: { burn: 0, weaken: 0, mark: 0, seal: 0, regen: 0 },
+  };
+}
+
+function renderRoster() {
+  characterGrid.innerHTML = '';
+  CHARACTERS.forEach((character, index) => {
+    const selectedIndex = state.selected.indexOf(character.id);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `character-card${selectedIndex >= 0 ? ' selected' : ''}${state.selected.length >= 3 && selectedIndex < 0 ? ' disabled' : ''}`;
+    button.disabled = state.selected.length >= 3 && selectedIndex < 0;
+    button.style.setProperty('--accent', character.accent);
+    button.title = `${character.verse.join(' — ')} ${character.lore}`;
+    button.setAttribute('aria-pressed', selectedIndex >= 0 ? 'true' : 'false');
+    button.setAttribute('aria-label', `${character.name}. ${character.verse.join(' ')}`);
+    button.innerHTML = `
+      <span class="card-index">0${index + 1}</span><span class="selected-tick">${selectedIndex >= 0 ? selectedIndex + 1 : '✓'}</span>
+      <span class="portrait-wrap"><canvas width="128" height="128" aria-hidden="true"></canvas></span>
+      <span class="card-info"><strong>${character.verse[0]}</strong><small>${character.verse[1]}</small><span class="card-domain">${character.symbol}</span></span>`;
+    button.addEventListener('click', () => toggleSelection(character.id));
+    characterGrid.appendChild(button);
+    const portrait = button.querySelector('canvas');
+    portrait.dataset.characterId = character.id;
+    const portraitCtx = portrait.getContext('2d');
+    portraitCtx.imageSmoothingEnabled = false;
+    drawPortrait(portraitCtx, character);
+  });
+  renderTeamSlots();
+}
+
+function renderTeamSlots() {
+  teamSlots.innerHTML = '';
+  for (let i = 0; i < 3; i += 1) {
+    const id = state.selected[i];
+    const character = CHARACTERS.find((item) => item.id === id);
+    const slot = document.createElement('div');
+    slot.className = `team-slot${character ? ' filled' : ''}`;
+    slot.style.setProperty('--slot-color', character?.accent || '#33405d');
+    slot.setAttribute('aria-label', character ? `Slot ${i + 1}: ${character.name}` : `Slot ${i + 1}: empty`);
+    if (character) {
+      const mini = document.createElement('canvas');
+      mini.width = 64; mini.height = 64;
+      mini.dataset.characterId = character.id;
+      drawPortrait(mini.getContext('2d'), character);
+      slot.appendChild(mini);
+    } else slot.textContent = `0${i + 1}`;
+    teamSlots.appendChild(slot);
+  }
+  startButton.disabled = state.selected.length !== 3;
+  const selectionVerses = [
+    'THREE MINDS MUST ALIGN;<br>THEN FATE WILL DEAL THE WISDOM NINE.',
+    'TWO CHOICES YET TO WEIGH;<br>BEFORE THE CARDS MAY PLAY.',
+    "ONE KEEPER MORE;<br>THEN OPEN FATE'S DOOR.",
+    "THREE KEEPERS STAND IN LINE;<br>THE ARCHIVE WAITS—THE HAND IS THINE.",
+  ];
+  selectionHint.innerHTML = selectionVerses[state.selected.length];
+}
+
+function toggleSelection(id) {
+  sound.click();
+  const index = state.selected.indexOf(id);
+  if (index >= 0) state.selected.splice(index, 1);
+  else if (state.selected.length < 3) state.selected.push(id);
+  renderRoster();
+}
+
+function randomizeTeam() {
+  sound.click();
+  state.selected = [...CHARACTERS].sort(() => Math.random() - .5).slice(0, 3).map((character) => character.id);
+  renderRoster();
+}
+
+function startBattle() {
+  if (state.selected.length !== 3) return;
+  sound.ultimate();
+  const playerCharacters = state.selected.map((id) => CHARACTERS.find((character) => character.id === id));
+  let enemyPool = CHARACTERS.filter((character) => !state.selected.includes(character.id));
+  if (enemyPool.length < 3) enemyPool = [...CHARACTERS];
+  const enemyCharacters = enemyPool.sort(() => Math.random() - .5).slice(0, 3);
+  state.battle = {
+    playerTeam: playerCharacters.map((character, index) => cloneFighter(character, 'player', index)),
+    enemyTeam: enemyCharacters.map((character, index) => cloneFighter(character, 'enemy', index)),
+    playerActive: 0,
+    enemyActive: 0,
+    round: 1,
+    locked: false,
+    over: false,
+    log: [],
+    metrics: { turns: 0, damage: 0, kos: 0 },
+    hitFlash: { player: 0, enemy: 0 },
+    motion: {
+      player: { type: 'idle', start: 0, duration: 0 },
+      enemy: { type: 'idle', start: 0, duration: 0 },
+    },
+  };
+  selectionScreen.hidden = true;
+  battleScreen.hidden = false;
+  addLog(`<b>${playerCharacters[0].name}</b> steps into the light—<br>three minds are dealt to test the night.`, 'player');
+  addLog(`<b>${enemyCharacters[0].name}</b> answers the call;<br>one council rises, one must fall.`, 'enemy');
+  announce('THREE MINDS ALIGN', 'THE NINEFOLD SIGNS ENTWINE');
+  renderBattleUI();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getActive(side) {
+  if (!state.battle) return null;
+  return side === 'player'
+    ? state.battle.playerTeam[state.battle.playerActive]
+    : state.battle.enemyTeam[state.battle.enemyActive];
+}
+
+function aliveFighters(side) {
+  const team = side === 'player' ? state.battle.playerTeam : state.battle.enemyTeam;
+  return team.filter((fighter) => fighter.currentHp > 0);
+}
+
+function renderBattleUI() {
+  const battle = state.battle;
+  if (!battle) return;
+  const player = getActive('player');
+  $('#round-value').textContent = String(battle.round).padStart(2, '0');
+  $('#active-name').textContent = player.stageLine;
+  $('#active-domain').textContent = player.symbol;
+  $('#active-domain').style.color = player.accent;
+  $('#hp-value').textContent = `${Math.max(0, player.currentHp)} / ${player.maxHp}${player.shield ? ` +${player.shield}` : ''}`;
+  const hpPercent = Math.max(0, (player.currentHp / player.maxHp) * 100);
+  $('#hp-fill').style.width = `${hpPercent}%`;
+  $('#hp-fill').classList.toggle('low', hpPercent <= 30);
+  $('#focus-value').textContent = `${player.focus} / 100`;
+  $('#focus-fill').style.width = `${player.focus}%`;
+  renderAbilities(player);
+  renderBattleLog();
+  renderTeamStrip('player');
+  renderTeamStrip('enemy');
+  swapButton.disabled = battle.locked || aliveFighters('player').length < 2;
+}
+
+function renderAbilities(player) {
+  abilityList.innerHTML = '';
+  player.abilities.forEach((ability, index) => {
+    const cooldown = player.cooldowns[index];
+    const insufficient = ability.cost && player.focus < ability.cost;
+    const sealed = index === 2 && player.status.seal > 0;
+    const disabled = state.battle.locked || cooldown > 0 || insufficient || sealed;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'ability-button';
+    button.style.setProperty('--ability-color', index === 2 ? player.accent : index === 1 ? '#9d83ff' : '#61e7e1');
+    button.disabled = disabled;
+    let cost = ability.cost
+      ? `${ability.cost} THOUGHT<br>FOR POWER SOUGHT`
+      : `GAIN ${ability.gain || 0} LIGHT<br>TO FEED YOUR MIGHT`;
+    if (cooldown > 0) cost = `WAIT ${cooldown} TURN${cooldown === 1 ? '' : 'S'}<br>WHILE WISDOM BURNS`;
+    if (sealed) cost = 'THE LAST ART SLEEPS<br>WHILE SILENCE KEEPS';
+    button.innerHTML = `
+      <span class="ability-icon">${ability.icon}</span>
+      <span class="ability-copy"><strong>${index + 1}. ${ability.name}</strong><small>${ability.desc}</small></span>
+      <span class="ability-cost${!disabled ? ' ready' : ''}">${cost}</span>`;
+    button.addEventListener('click', () => playerAction(index));
+    abilityList.appendChild(button);
+  });
+}
+
+function renderTeamStrip(side) {
+  const container = side === 'player' ? $('#player-team-strip') : $('#enemy-team-strip');
+  const team = side === 'player' ? state.battle.playerTeam : state.battle.enemyTeam;
+  const activeIndex = side === 'player' ? state.battle.playerActive : state.battle.enemyActive;
+  container.innerHTML = '';
+  team.forEach((fighter, index) => {
+    const pip = document.createElement('i');
+    pip.className = `fighter-pip${fighter.currentHp <= 0 ? ' ko' : ''}${index === activeIndex && fighter.currentHp > 0 ? ' active' : ''}`;
+    pip.style.setProperty('--pip', fighter.accent);
+    pip.title = `${fighter.name}: ${Math.max(0, fighter.currentHp)}/${fighter.maxHp}`;
+    container.appendChild(pip);
+  });
+}
+
+function renderBattleLog() {
+  battleLog.innerHTML = '';
+  state.battle.log.slice(-5).forEach((entry, index, array) => {
+    const line = document.createElement('p');
+    line.className = `log-line ${entry.side}${index === array.length - 1 ? ' latest' : ''}`;
+    line.innerHTML = entry.html;
+    battleLog.appendChild(line);
+  });
+}
+
+function addLog(html, side = 'player') {
+  if (!state.battle) return;
+  state.battle.log.push({ html, side });
+  if (state.battle.log.length > 18) state.battle.log.shift();
+  renderBattleLog();
+}
+
+function announce(firstLine, secondLine) {
+  const element = $('#announcement');
+  element.innerHTML = `<span>${firstLine}</span><span>${secondLine}</span>`;
+  element.classList.remove('show');
+  void element.offsetWidth;
+  element.classList.add('show');
+}
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function computeDamage(actor, target, ability) {
+  const variance = Math.floor(Math.random() * 5) - 2;
+  let damage = Math.max(1, Math.round(ability.power + actor.power * .48 + variance));
+  if (actor.status.weaken > 0) damage = Math.round(damage * .74);
+  if (target.status.mark > 0) damage = Math.round(damage * 1.3);
+  return damage;
+}
+
+function applyDamage(target, damage, pierce = false) {
+  let hpDamage = damage;
+  let blocked = 0;
+  if (!pierce && target.shield > 0) {
+    blocked = Math.min(target.shield, damage);
+    target.shield -= blocked;
+    hpDamage -= blocked;
+  }
+  target.currentHp = Math.max(0, target.currentHp - hpDamage);
+  return { hpDamage, blocked };
+}
+
+function executeAbility(actor, target, ability, index) {
+  const motionNow = performance.now();
+  state.battle.motion[actor.side] = { type: 'attack', start: motionNow, duration: 470 };
+  state.battle.motion[target.side] = { type: 'hurt', start: motionNow + 145, duration: 390 };
+  if (ability.cost) actor.focus = Math.max(0, actor.focus - ability.cost);
+  else actor.focus = Math.min(100, actor.focus + (ability.gain || 0));
+  if (ability.cooldown) actor.cooldowns[index] = ability.cooldown + 1;
+
+  const isDamage = ability.kind === 'damage';
+  let result = { damage: 0, blocked: 0, healed: 0 };
+  if (isDamage) {
+    const rawDamage = computeDamage(actor, target, ability);
+    const applied = applyDamage(target, rawDamage, ability.pierce);
+    result = { ...result, damage: applied.hpDamage, blocked: applied.blocked };
+    if (actor.side === 'player') state.battle.metrics.damage += applied.hpDamage;
+    state.battle.hitFlash[target.side] = performance.now() + 220;
+    addEffect('hit', target.side, target.accent, applied.hpDamage ? `-${applied.hpDamage}` : 'SHIELD STAYS\nAND TURNS THE BLAZE');
+    sound.hit();
+  }
+  if (ability.kind === 'shield') {
+    actor.shield = Math.min(60, actor.shield + ability.power);
+    if (ability.cleanse) actor.status.burn = 0;
+    addEffect('shield', actor.side, actor.accent, `+${ability.power}`);
+    sound.shield();
+  }
+  if (ability.kind === 'heal') {
+    const before = actor.currentHp;
+    actor.currentHp = Math.min(actor.maxHp, actor.currentHp + ability.power);
+    result.healed += actor.currentHp - before;
+    addEffect('heal', actor.side, actor.accent, `+${result.healed}`);
+    sound.heal();
+  }
+  if (ability.kind === 'mark') {
+    target.status.mark = 2;
+    addEffect('mark', target.side, actor.accent, 'MARKS GROW\nAND GUARDS SHOW');
+    sound.shield();
+  }
+  if (ability.kind === 'weaken') {
+    target.status.weaken = 2;
+    addEffect('mark', target.side, actor.accent, 'STRENGTH WANES\nTHE WAGER GAINS');
+    sound.shield();
+  }
+  if (ability.kind === 'regen') {
+    actor.status.regen = 3;
+    addEffect('heal', actor.side, actor.accent, 'ROOTS RISE\nLIFE REPLIES');
+    sound.heal();
+  }
+  if (ability.kind === 'focus') {
+    actor.focus = Math.min(100, actor.focus + ability.power);
+    actor.shield = Math.min(60, actor.shield + (ability.shield || 0));
+    addEffect('focus', actor.side, actor.accent, `+${ability.power} THOUGHT\nFOR POWER SOUGHT`);
+    sound.shield();
+  }
+  if (ability.effect === 'burn') {
+    target.status.burn = Math.max(target.status.burn, 3);
+    addEffect('burn', target.side, '#ff774f', 'FLAME BURNS\nTHE WAGER TURNS');
+  }
+  if (ability.effect === 'weaken') target.status.weaken = Math.max(target.status.weaken, 2);
+  if (ability.effect === 'seal') {
+    target.status.seal = Math.max(target.status.seal, 2);
+    addEffect('mark', target.side, '#9d83ff', 'ARTS SLEEP\nWHILE SILENCE KEEPS');
+  }
+  if (ability.heal) {
+    const before = actor.currentHp;
+    actor.currentHp = Math.min(actor.maxHp, actor.currentHp + ability.heal);
+    result.healed += actor.currentHp - before;
+    if (actor.currentHp > before) addEffect('heal', actor.side, actor.accent, `+${actor.currentHp - before}`);
+  }
+  if (ability.recoil) {
+    actor.currentHp = Math.max(1, actor.currentHp - ability.recoil);
+    addEffect('hit', actor.side, '#ff6177', `-${ability.recoil}`);
+  }
+  if (index === 2) sound.ultimate();
+
+  let detail = '';
+  if (result.damage) detail = ` for ${result.damage}`;
+  if (result.blocked) detail += `, though ${result.blocked} met the shield`;
+  if (result.healed && !result.damage) detail = `, restoring ${result.healed}`;
+  addLog(`<b>${actor.name}</b> lets ${ability.name} fly${detail};<br>the rival hand must now reply.`, actor.side);
+  announce(`${actor.name} DEALS`, `${ability.name}—FATE REVEALS`);
+  return result;
+}
+
+async function playerAction(index) {
+  const battle = state.battle;
+  const player = getActive('player');
+  const enemy = getActive('enemy');
+  if (!battle || battle.locked || battle.over || !player || !enemy) return;
+  const ability = player.abilities[index];
+  if (!ability || player.cooldowns[index] > 0 || (ability.cost && player.focus < ability.cost) || (index === 2 && player.status.seal > 0)) return;
+  battle.locked = true;
+  battle.metrics.turns += 1;
+  executeAbility(player, enemy, ability, index);
+  renderBattleUI();
+  await wait(720);
+  if (await handleKnockouts()) return;
+  await enemyResponse();
+}
+
+function chooseEnemyAbility(enemy) {
+  const usable = enemy.abilities.map((ability, index) => ({ ability, index })).filter(({ ability, index }) => (
+    enemy.cooldowns[index] === 0 && (!ability.cost || enemy.focus >= ability.cost) && !(index === 2 && enemy.status.seal > 0)
+  ));
+  const ultimate = usable.find(({ index }) => index === 2);
+  if (ultimate && Math.random() < .72) return ultimate;
+  const defensive = usable.find(({ ability, index }) => index === 1 && ['heal', 'shield', 'regen'].includes(ability.kind));
+  if (defensive && enemy.currentHp / enemy.maxHp < .5 && Math.random() < .75) return defensive;
+  return usable[Math.floor(Math.random() * usable.length)] || { ability: enemy.abilities[0], index: 0 };
+}
+
+async function enemyResponse() {
+  const battle = state.battle;
+  if (!battle || battle.over) return;
+  await wait(280);
+  const enemy = getActive('enemy');
+  const player = getActive('player');
+  const choice = chooseEnemyAbility(enemy);
+  executeAbility(enemy, player, choice.ability, choice.index);
+  renderBattleUI();
+  await wait(760);
+  if (await handleKnockouts()) return;
+  tickCycle();
+  if (await handleKnockouts()) return;
+  battle.round += 1;
+  battle.locked = false;
+  renderBattleUI();
+}
+
+function tickCycle() {
+  const battle = state.battle;
+  [...battle.playerTeam, ...battle.enemyTeam].forEach((fighter) => {
+    fighter.cooldowns = fighter.cooldowns.map((value) => Math.max(0, value - 1));
+    if (fighter.currentHp <= 0) return;
+    if (fighter.status.burn > 0) {
+      const burnDamage = Math.min(6, fighter.currentHp);
+      fighter.currentHp = Math.max(0, fighter.currentHp - burnDamage);
+      fighter.status.burn -= 1;
+      addEffect('burn', fighter.side, '#ff774f', `-${burnDamage}`);
+      addLog(`<b>${fighter.name}</b> burns beneath the flame;<br>${burnDamage} life is taken from their name.`, fighter.side);
+    }
+    if (fighter.status.regen > 0 && fighter.currentHp > 0) {
+      const before = fighter.currentHp;
+      fighter.currentHp = Math.min(fighter.maxHp, fighter.currentHp + 7);
+      const healed = fighter.currentHp - before;
+      fighter.status.regen -= 1;
+      if (healed) addEffect('heal', fighter.side, fighter.accent, `+${healed}`);
+    }
+    ['weaken', 'mark', 'seal'].forEach((status) => {
+      if (fighter.status[status] > 0) fighter.status[status] -= 1;
+    });
+  });
+  renderBattleUI();
+}
+
+async function handleKnockouts() {
+  const battle = state.battle;
+  if (!battle || battle.over) return true;
+  const enemy = getActive('enemy');
+  const player = getActive('player');
+  if (enemy.currentHp <= 0) {
+    addLog(`<b>${enemy.name}</b> fades beyond our sight;<br>the Archive folds them into night.`, 'enemy');
+    announce(`${enemy.name} LEAVES THE LIGHT`, 'THE ARCHIVE CLAIMS THEM FOR THE NIGHT');
+    state.battle.metrics.kos += 1;
+    sound.hit();
+    await wait(380);
+    const nextIndex = battle.enemyTeam.findIndex((fighter) => fighter.currentHp > 0);
+    if (nextIndex < 0) {
+      endBattle(true);
+      return true;
+    }
+    battle.enemyActive = nextIndex;
+    const next = getActive('enemy');
+    addLog(`<b>${next.name}</b> steps upon the floor;<br>the wager wakes to war once more.`, 'enemy');
+    announce(`${next.name} TAKES THE FLOOR`, 'THE WAGER WAKES TO WAR ONCE MORE');
+    renderBattleUI();
+    await wait(520);
+  }
+  if (player.currentHp <= 0) {
+    addLog(`<b>${player.name}</b> fades beyond our sight;<br>the Archive folds them into night.`, 'player');
+    announce(`${player.name} LEAVES THE LIGHT`, 'THE ARCHIVE CLAIMS THEM FOR THE NIGHT');
+    sound.hit();
+    await wait(380);
+    const nextIndex = battle.playerTeam.findIndex((fighter) => fighter.currentHp > 0);
+    if (nextIndex < 0) {
+      endBattle(false);
+      return true;
+    }
+    battle.playerActive = nextIndex;
+    const next = getActive('player');
+    addLog(`<b>${next.name}</b> steps upon the floor;<br>the council wakes to strive once more.`, 'player');
+    announce(`${next.name} TAKES THE FLOOR`, 'THE COUNCIL WAKES TO STRIVE ONCE MORE');
+    renderBattleUI();
+    await wait(520);
+  }
+  return false;
+}
+
+function openSwapModal() {
+  const battle = state.battle;
+  if (!battle || battle.locked || battle.over || aliveFighters('player').length < 2) return;
+  sound.click();
+  const options = $('#swap-options');
+  options.innerHTML = '';
+  battle.playerTeam.forEach((fighter, index) => {
+    const button = document.createElement('button');
+    const isCurrent = index === battle.playerActive;
+    button.type = 'button';
+    button.className = 'swap-option';
+    button.style.setProperty('--swap-color', fighter.accent);
+    button.disabled = fighter.currentHp <= 0 || isCurrent;
+    const statusVerse = isCurrent
+      ? 'NOW HOLDS THE FLOOR<br>AND WAITS TO WAGER MORE'
+      : fighter.currentHp <= 0
+        ? 'HAS LEFT THE LIGHT<br>AND SLEEPS BEYOND THE FIGHT'
+        : `${fighter.currentHp}/${fighter.maxHp} LIFE IN STORE<br>AND READY TO WAGER MORE`;
+    button.innerHTML = `<canvas width="72" height="72" data-character-id="${fighter.id}" aria-hidden="true"></canvas><span><strong>${fighter.name}</strong><small>${statusVerse}</small></span>`;
+    button.addEventListener('click', () => performSwap(index));
+    options.appendChild(button);
+    drawPortrait(button.querySelector('canvas').getContext('2d'), fighter);
+  });
+  openModal('swap-modal');
+}
+
+async function performSwap(index) {
+  const battle = state.battle;
+  if (!battle || battle.locked || index === battle.playerActive || battle.playerTeam[index].currentHp <= 0) return;
+  battle.locked = true;
+  battle.metrics.turns += 1;
+  battle.playerActive = index;
+  const fighter = getActive('player');
+  closeModal();
+  addLog(`<b>${fighter.name}</b> joins the standing hand;<br>a wiser wager now is planned.`, 'player');
+  announce(`${fighter.name} TAKES THE FLOOR`, 'A WISER WAGER WAKES ONCE MORE');
+  sound.shield();
+  renderBattleUI();
+  await wait(650);
+  await enemyResponse();
+}
+
+function endBattle(victory) {
+  const battle = state.battle;
+  battle.over = true;
+  battle.locked = true;
+  renderBattleUI();
+  $('#result-kicker').innerHTML = victory
+    ? 'THE FINAL HAND IS WON<br>THE NINEFOLD LIGHT MEETS SUN'
+    : 'THE FINAL HAND IS LOST<br>YET WISDOM COUNTS THE COST';
+  $('#result-title').innerHTML = victory
+    ? 'VICTORY GREETS THE SUN<br>THE ARCHIVE WAKES AS ONE'
+    : 'DEFEAT HAS CLAIMED ITS COST<br>NO ROOT OF WISDOM IS LOST';
+  $('#result-copy').innerHTML = victory
+    ? 'The scattered sparks unite;<br>their wisdom wakes the waiting light.'
+    : 'Yet wisdom roots in pain;<br>what falls may rise and deal again.';
+  $('#result-sigil').textContent = victory ? '✦' : '×';
+  $('#result-sigil').style.background = victory ? 'var(--cyan)' : 'var(--danger)';
+  $('#result-stats').innerHTML = `
+    <div class="result-stat"><strong>${battle.round}</strong><small>CYCLES THAT BURN<br>BEFORE FATE'S RETURN</small></div>
+    <div class="result-stat"><strong>${battle.metrics.damage}</strong><small>WOUNDS THAT SCORE<br>ACROSS THE FLOOR</small></div>
+    <div class="result-stat"><strong>${battle.metrics.kos}</strong><small>RIVALS UNDONE<br>BENEATH THE SUN</small></div>`;
+  if (victory) sound.victory();
+  else sound.tone(110, .6, 'sawtooth', .04);
+  setTimeout(() => openModal('result-modal'), 700);
+}
+
+function resetGame() {
+  state.battle = null;
+  closeModal();
+  state.effects = [];
+  state.selected = [];
+  battleScreen.hidden = true;
+  selectionScreen.hidden = false;
+  renderRoster();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openModal(id) {
+  [...modalBackdrop.querySelectorAll('.modal')].forEach((modal) => { modal.hidden = true; });
+  modalBackdrop.hidden = false;
+  $(`#${id}`).hidden = false;
+}
+
+function closeModal() {
+  if (!$('#result-modal').hidden && state.battle?.over) return;
+  modalBackdrop.hidden = true;
+  [...modalBackdrop.querySelectorAll('.modal')].forEach((modal) => { modal.hidden = true; });
+}
+
+function addEffect(type, side, color, text) {
+  state.effects.push({ type, side, color, text, start: performance.now(), duration: 900 });
+}
+
+function colorWithAlpha(hex, alpha) {
+  const value = hex.replace('#', '');
+  const red = Number.parseInt(value.slice(0, 2), 16);
+  const green = Number.parseInt(value.slice(2, 4), 16);
+  const blue = Number.parseInt(value.slice(4, 6), 16);
+  return `rgba(${red},${green},${blue},${alpha})`;
+}
+
+function drawPortraitAura(portraitCtx, character, time, energy = 1) {
+  const width = portraitCtx.canvas.width;
+  const height = portraitCtx.canvas.height;
+  const seed = CHARACTERS.findIndex((item) => item.id === character.id) + 1;
+  const phase = time / 720 + seed * .83;
+  portraitCtx.save();
+  portraitCtx.globalAlpha = .18 + energy * .08;
+  portraitCtx.strokeStyle = character.accent;
+  portraitCtx.lineWidth = 1.5;
+  portraitCtx.setLineDash([3, 5]);
+  portraitCtx.beginPath();
+  portraitCtx.ellipse(width / 2, height * .66, width * (.32 + Math.sin(phase) * .015), height * .22, Math.sin(phase * .7) * .08, 0, Math.PI * 2);
+  portraitCtx.stroke();
+  portraitCtx.setLineDash([]);
+  for (let index = 0; index < 4; index += 1) {
+    const orbit = phase + index * Math.PI / 2;
+    const px = width / 2 + Math.cos(orbit) * width * .34;
+    const py = height * .58 + Math.sin(orbit) * height * .21;
+    portraitCtx.fillStyle = index % 2 ? '#17141c' : character.accent;
+    const size = index % 3 === 0 ? 3 : 2;
+    portraitCtx.fillRect(Math.round(px), Math.round(py), size, size);
+  }
+  portraitCtx.restore();
+}
+
+function drawPortrait(portraitCtx, character, time = 0, energy = 1) {
+  const width = portraitCtx.canvas.width;
+  const height = portraitCtx.canvas.height;
+  portraitCtx.clearRect(0, 0, width, height);
+  portraitCtx.imageSmoothingEnabled = false;
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const liveTime = still ? 0 : time;
+  drawPortraitAura(portraitCtx, character, liveTime, energy);
+  const scale = Math.floor(Math.min(width / 42, height / 45));
+  drawCharacterSprite(portraitCtx, character, width / 2, height * .83, scale, 1, 0, {
+    time: liveTime,
+    energy,
+    seed: CHARACTERS.findIndex((item) => item.id === character.id) + 1,
+  });
+}
+
+function drawCharacterSprite(targetCtx, character, x, y, scale = 4, facing = 1, bob = 0, motion = {}) {
+  const r = (color, rx, ry, rw, rh) => {
+    targetCtx.fillStyle = color;
+    targetCtx.fillRect(Math.round(rx), Math.round(ry), Math.round(rw), Math.round(rh));
+  };
+  const a = character.accent;
+  const d = character.dark;
+  const skin = '#f1c6a5';
+  const white = '#edf3ff';
+  const black = '#101529';
+  const time = motion.time || 0;
+  const seed = motion.seed || 1;
+  const energy = motion.energy || 1;
+  const idlePhase = time / 330 + seed * .91;
+  const idleBob = Math.round(Math.sin(idlePhase) * energy);
+  const breathe = 1 + Math.sin(idlePhase * .74) * .018 * energy;
+  const sway = Math.sin(idlePhase * .46) * .015 * energy;
+  targetCtx.save();
+  targetCtx.translate(Math.round(x + (motion.offsetX || 0)), Math.round(y + bob + idleBob + (motion.offsetY || 0)));
+  targetCtx.rotate(sway + (motion.rotate || 0));
+  targetCtx.scale(scale * facing * (motion.scaleX || 1), scale * breathe * (motion.scaleY || 1));
+
+  // Every keeper gets a tiny contact shadow in the same sprite language.
+  r('rgba(0,0,0,.24)', -11, -1, 22, 2);
+
+  if (character.id === 'thoth') {
+    r('#d5a94f', -10, -30, 2, 30); r('#f4d66e', -11, -31, 4, 4);
+    r(black, -5, -8, 3, 8); r(black, 3, -8, 3, 8);
+    r(white, -7, -20, 14, 12); r(a, -7, -20, 14, 3); r('#d5a94f', -5, -17, 10, 3);
+    r(black, -5, -29, 10, 10); r(black, 3, -26, 9, 4); r('#d5a94f', 9, -25, 5, 2);
+    r(a, -4, -30, 8, 2); r(white, 1, -27, 2, 2); r(black, 2, -27, 1, 1);
+    r(white, -9, -17, 3, 8); r(white, 6, -17, 3, 8);
+  } else if (character.id === 'prometheus') {
+    r('#4a2636', -6, -8, 4, 8); r('#4a2636', 3, -8, 4, 8);
+    r('#e8e2d4', -7, -20, 14, 13); r('#bb4e38', -7, -20, 5, 12); r('#d9a25d', -7, -18, 14, 3);
+    r(skin, -10, -18, 3, 10); r(skin, 7, -18, 3, 10);
+    r(skin, -5, -28, 10, 9); r(black, -3, -25, 2, 2); r(black, 3, -25, 2, 2);
+    r('#ff4b43', -6, -31, 12, 5); r('#ff8d43', -4, -35, 4, 6); r('#ffd35c', 1, -38, 3, 8); r('#ff5a45', 4, -34, 4, 6);
+    r('#6d3b26', 9, -17, 2, 17); r('#ffcf58', 7, -24, 6, 8); r('#ff6646', 8, -27, 4, 7);
+  } else if (character.id === 'minerva') {
+    r('#5b3d36', -6, -8, 4, 8); r('#5b3d36', 3, -8, 4, 8);
+    r('#dbc98c', -7, -20, 14, 13); r('#865f4c', -4, -20, 8, 13); r(a, -7, -20, 14, 3);
+    r(skin, -5, -28, 10, 8); r('#a9864d', -7, -31, 14, 6); r('#6f5137', -7, -27, 3, 7);
+    r('#e65d52', -5, -36, 10, 5); r('#e65d52', -2, -39, 4, 4); r(black, 2, -26, 2, 2);
+    r('#c9d0dc', 8, -31, 2, 31); r('#eff5ff', 7, -33, 4, 5);
+    r('#8766b6', -12, -19, 8, 13); r(a, -11, -18, 6, 11); r('#8766b6', -10, -15, 4, 5);
+  } else if (character.id === 'quetzalcoatl') {
+    r('#2b806d', -11, -9, 19, 7); r(a, -7, -13, 17, 7); r('#f0d96c', -2, -16, 13, 6);
+    r('#2f8b76', -4, -24, 11, 11); r('#6ddc80', -2, -27, 10, 8); r('#f0d96c', 5, -23, 7, 4); r(black, 4, -24, 2, 2);
+    r('#57c887', -7, -31, 3, 8); r('#5aaeff', -4, -35, 3, 10); r('#f36b79', -1, -33, 3, 8); r('#ffd56f', 2, -36, 3, 10);
+    r('#6bd7bf', -12, -24, 8, 3); r('#5aaeff', -14, -28, 8, 3); r('#f36b79', -12, -32, 7, 3);
+  } else if (character.id === 'erlang') {
+    r('#17203f', -6, -8, 4, 8); r('#17203f', 3, -8, 4, 8);
+    r('#335ba6', -7, -21, 14, 14); r(a, -5, -19, 10, 4); r('#d4b96e', -7, -14, 14, 3);
+    r(skin, -5, -29, 10, 9); r(black, -7, -33, 14, 8); r(black, -7, -25, 3, 7); r(black, 4, -25, 3, 7);
+    r('#f55c73', -1, -29, 3, 2); r(black, -3, -25, 2, 2); r(black, 3, -25, 2, 2);
+    r('#b8d0e8', 9, -32, 2, 32); r('#f2f5ff', 7, -34, 6, 5); r('#f2f5ff', 9, -37, 2, 5);
+    r('#29334e', -13, -7, 8, 5); r('#b9c4dd', -12, -9, 4, 3); r('#62a9ff', -8, -8, 3, 2);
+  } else if (character.id === 'tyr') {
+    r('#31384d', -6, -8, 4, 8); r('#31384d', 3, -8, 4, 8);
+    r('#405a7c', -7, -21, 14, 14); r('#8e3841', -7, -21, 4, 14); r(a, -5, -18, 10, 3);
+    r(skin, -5, -29, 10, 9); r('#d2a05f', -7, -32, 14, 5); r('#7b4d34', -5, -21, 10, 4); r(black, 2, -26, 2, 2);
+    r(skin, 6, -19, 3, 8); r('#d6dfef', 9, -27, 2, 26); r('#eef4ff', 7, -29, 6, 5);
+    r('#8e3841', -11, -23, 5, 17);
+  } else if (character.id === 'ogma') {
+    r('#273d32', -6, -8, 4, 8); r('#273d32', 3, -8, 4, 8);
+    r('#355746', -7, -20, 14, 13); r(a, -7, -20, 14, 3); r('#c9a55a', -5, -16, 10, 2);
+    r(skin, -5, -28, 10, 9); r('#a84b37', -7, -33, 14, 8); r('#a84b37', -7, -26, 3, 8); r('#a84b37', 4, -26, 3, 8); r(black, 2, -25, 2, 2);
+    r('#75523e', 8, -28, 4, 25); r('#9d7452', 6, -31, 8, 7);
+    r('#68718b', -13, -20, 6, 16); r(white, -11, -18, 2, 2); r(white, -11, -13, 2, 2); r(white, -11, -8, 2, 2);
+  } else if (character.id === 'jacheongbi') {
+    r('#24444a', -6, -8, 4, 8); r('#24444a', 3, -8, 4, 8);
+    r('#d24f63', -8, -19, 16, 12); r('#f2da75', -6, -20, 12, 6); r('#5e9c91', -8, -12, 16, 5);
+    r(skin, -5, -28, 10, 9); r(black, -7, -32, 14, 7); r(black, 4, -27, 4, 15); r(black, 6, -15, 3, 4); r(black, 2, -25, 2, 2);
+    r('#a9b6c8', 9, -23, 2, 19); r('#dbe4ee', 7, -25, 7, 5); r('#0d1326', 9, -23, 4, 2);
+    r('#d8b94e', -12, -18, 3, 15); r(a, -14, -20, 2, 4); r(a, -11, -22, 2, 5); r(a, -8, -20, 2, 4);
+  } else if (character.id === 'omoikane') {
+    r('#302a58', -6, -8, 4, 8); r('#302a58', 3, -8, 4, 8);
+    r('#6954b7', -8, -21, 16, 14); r(a, -6, -20, 12, 3); r('#c8b8ff', -4, -15, 8, 5);
+    r('#d8b59a', -5, -28, 10, 9); r('#e6e0ff', -7, -33, 14, 8); r('#9d83ff', -10, -30, 4, 8); r('#9d83ff', 6, -30, 4, 8); r(black, -3, -25, 2, 2); r(black, 3, -25, 2, 2);
+    r('#9d83ff', -10, -37, 3, 3); r('#61e7e1', -4, -39, 3, 3); r('#f0df73', 3, -38, 3, 3); r('#9d83ff', 8, -34, 3, 3);
+    r('#e5d7a7', 8, -18, 8, 11); r('#7e6a49', 8, -18, 2, 11); r('#7e6a49', 14, -18, 2, 11); r('#6f5b42', 10, -15, 4, 1);
+  }
+
+  // A low-frame-rate blink keeps the faces alive without losing their pixel language.
+  const blinking = ((time + seed * 613) % 3100) < 145;
+  if (blinking) {
+    const blinkMap = {
+      thoth: { fill: black, eyes: [[1, -27]] },
+      prometheus: { fill: skin, eyes: [[-3, -25], [3, -25]] },
+      minerva: { fill: skin, eyes: [[2, -26]] },
+      quetzalcoatl: { fill: '#2f8b76', eyes: [[4, -24]] },
+      erlang: { fill: skin, eyes: [[-3, -25], [3, -25]] },
+      tyr: { fill: skin, eyes: [[2, -26]] },
+      ogma: { fill: skin, eyes: [[2, -25]] },
+      jacheongbi: { fill: skin, eyes: [[2, -25]] },
+      omoikane: { fill: '#d8b59a', eyes: [[-3, -25], [3, -25]] },
+    };
+    const blink = blinkMap[character.id];
+    blink.eyes.forEach(([eyeX, eyeY]) => {
+      r(blink.fill, eyeX, eyeY, 2, 2);
+      r(black, eyeX, eyeY + 1, 2, 1);
+    });
+  }
+
+  // Each keeper's loop is rooted in their own lore rather than a shared idle effect.
+  const loreFrame = Math.floor(time / 145 + seed) % 8;
+  if (character.id === 'thoth') {
+    // Living glyphs climb from the reed while a small line is continually written.
+    const glyphY = -37 + (loreFrame % 4) * 5;
+    r(a, -17, glyphY, 4, 1); r(black, -15, glyphY - 2, 1, 2);
+    r('#d5a94f', -7 + (loreFrame % 5), -15, 1, 3);
+    if (loreFrame % 2 === 0) r(white, 14, -29, 2, 2);
+  } else if (character.id === 'prometheus') {
+    // The stolen flame changes silhouette as sparks rise from the torch and crown.
+    const flameLift = loreFrame % 3;
+    r('#ff5a45', 8, -31 - flameLift, 3, 5); r('#ffd35c', 9, -34 - flameLift, 1, 4);
+    r(loreFrame % 2 ? '#ffd35c' : '#ff6646', 13 - loreFrame, -35 - loreFrame, 2, 2);
+    r('#ff8d43', -8 + (loreFrame % 4), -38 - (loreFrame % 3), 2, 3);
+  } else if (character.id === 'minerva') {
+    // The aegis tightens and releases while a calculated spear-glint traces a plan.
+    const shieldPulse = loreFrame % 3;
+    r(a, -14 - shieldPulse, -21 - shieldPulse, 2, 17 + shieldPulse * 2);
+    r(a, -13, -22 - shieldPulse, 8 + shieldPulse, 2);
+    r(white, 7 + (loreFrame % 4), -37 + (loreFrame % 4), 2, 2);
+    r('#c99554', -15 + loreFrame * 2, -4, 2, 1);
+  } else if (character.id === 'quetzalcoatl') {
+    // Feathers ride three different wind paths and the long body ripples behind them.
+    r('#5aaeff', -19 + loreFrame * 2, -35 - (loreFrame % 3), 4, 1);
+    r('#f36b79', 14 - loreFrame * 2, -29 + (loreFrame % 2), 3, 1);
+    r('#f0d96c', -13 + loreFrame, -18 - (loreFrame % 4), 2, 2);
+    r(a, -10 + (loreFrame % 3), -11, 18, 1);
+  } else if (character.id === 'erlang') {
+    // The third eye opens in a pulse while the celestial hound paces at his feet.
+    const eyeOpen = loreFrame < 5;
+    r(eyeOpen ? '#f55c73' : black, -2, -30, eyeOpen ? 4 : 3, eyeOpen ? 2 : 1);
+    const houndX = -18 + loreFrame * 4;
+    r('#29334e', houndX, -7, 5, 3); r('#b9c4dd', houndX + 1, -9, 2, 2);
+    r(a, houndX + (loreFrame % 2 ? 4 : 0), -4, 2, 2);
+  } else if (character.id === 'tyr') {
+    // A binding oath travels up the sword; its light flares only after the vow completes.
+    const oathY = -7 - loreFrame * 4;
+    r(a, 8, oathY, 4, 2);
+    if (loreFrame >= 6) {
+      r(white, 7, -34, 6, 1); r(white, 9, -36, 2, 5);
+    }
+    r('#8e3841', -15 + (loreFrame % 4), -25, 2, 2);
+  } else if (character.id === 'ogma') {
+    // Ogham notches rise along the staff and detach as spoken letters.
+    const notchY = -5 - (loreFrame % 6) * 5;
+    r(white, 7, notchY, 7, 1); r(a, 10, notchY - 2, 1, 5);
+    r(a, 15 - loreFrame, -32 - (loreFrame % 3), 2, 2);
+    if (loreFrame % 2 === 0) r(white, -15, -18 + loreFrame, 3, 1);
+  } else if (character.id === 'jacheongbi') {
+    // Seed, shoot, leaf, and grain cycle continuously around the harvest keeper.
+    const growth = loreFrame % 4;
+    [-15, -10, 11, 16].forEach((sproutX, index) => {
+      const height = 1 + ((growth + index) % 4);
+      r('#6ca56f', sproutX, -height - 1, 1, height);
+      if (height > 2) r(index % 2 ? '#f0df73' : a, sproutX - 1, -height - 2, 3, 2);
+    });
+    r('#f0df73', -14 + loreFrame * 4, -7 - (loreFrame % 3), 2, 2);
+  } else if (character.id === 'omoikane') {
+    // Thought nodes orbit, connect, and resolve into a brief four-point plan.
+    const thoughtAngle = loreFrame * Math.PI / 4;
+    const thoughtX = Math.round(Math.cos(thoughtAngle) * 16);
+    const thoughtY = -25 + Math.round(Math.sin(thoughtAngle) * 12);
+    r('#9d83ff', thoughtX, thoughtY, 3, 3);
+    r('#61e7e1', -thoughtX, -27 - Math.round(Math.sin(thoughtAngle) * 9), 2, 2);
+    r('#f0df73', Math.round(thoughtX * .55), -42 + (loreFrame % 3), 2, 2);
+    if (loreFrame === 0 || loreFrame === 4) { r(white, -3, -43, 6, 1); r(white, -1, -45, 2, 5); }
+  }
+  targetCtx.restore();
+}
+
+function getBattleSpriteMotion(side, time) {
+  const current = state.battle?.motion?.[side];
+  if (!current || current.type === 'idle') return {};
+  const progress = Math.max(0, Math.min(1, (time - current.start) / current.duration));
+  if (time < current.start) return {};
+  if (progress >= 1) {
+    state.battle.motion[side] = { type: 'idle', start: 0, duration: 0 };
+    return {};
+  }
+  if (current.type === 'attack') {
+    const direction = side === 'player' ? 1 : -1;
+    const lunge = Math.sin(progress * Math.PI);
+    return {
+      offsetX: direction * lunge * 36,
+      offsetY: -Math.sin(progress * Math.PI * 2) * 3,
+      rotate: direction * lunge * .075,
+      scaleX: 1 + lunge * .08,
+      scaleY: 1 - lunge * .045,
+      energy: 1.7,
+    };
+  }
+  const recoil = Math.sin(progress * Math.PI * 6) * (1 - progress);
+  return {
+    offsetX: recoil * 10,
+    offsetY: Math.sin(progress * Math.PI) * 5,
+    rotate: recoil * .045,
+    scaleX: 1 + Math.sin(progress * Math.PI) * .08,
+    scaleY: 1 - Math.sin(progress * Math.PI) * .13,
+    energy: 2,
+  };
+}
+
+function drawAnimatedPortraits(time) {
+  const frame = Math.floor(time / 84);
+  if (frame === state.portraitFrame) return;
+  state.portraitFrame = frame;
+  document.querySelectorAll('canvas[data-character-id]').forEach((portrait) => {
+    if (!portrait.isConnected || portrait.offsetParent === null) return;
+    const character = CHARACTERS.find((item) => item.id === portrait.dataset.characterId);
+    if (!character) return;
+    const card = portrait.closest('.character-card');
+    const energy = card?.classList.contains('selected') ? 1.55 : card?.matches(':hover') ? 1.3 : 1;
+    drawPortrait(portrait.getContext('2d'), character, time, energy);
+  });
+}
+
+function drawArena(time) {
+  if (!state.battle || battleScreen.hidden) return;
+  const battle = state.battle;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const paper = ctx.createRadialGradient(480, 210, 20, 480, 230, 640);
+  paper.addColorStop(0, '#fffdf6'); paper.addColorStop(.44, '#eee9f2'); paper.addColorStop(.76, '#d9e7e2'); paper.addColorStop(1, '#c9bfd7');
+  ctx.fillStyle = paper; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  drawDreamBackdrop(time);
+
+  // A wavering notebook floor makes the arena feel drawn rather than rendered.
+  const floor = ctx.createLinearGradient(0, 245, 0, 430);
+  floor.addColorStop(0, 'rgba(201,190,216,.55)'); floor.addColorStop(1, 'rgba(150,140,177,.82)');
+  ctx.fillStyle = floor; ctx.fillRect(0, 248, 960, 182);
+  ctx.strokeStyle = 'rgba(30,24,37,.12)'; ctx.lineWidth = 2;
+  for (let y = 268; y < 430; y += 23) {
+    ctx.beginPath();
+    for (let px = 0; px <= 960; px += 24) {
+      const py = y + Math.sin(px / 63 + time / 850 + y) * 2;
+      if (px === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+  ctx.save();
+  ctx.globalAlpha = .075;
+  ctx.font = 'bold 150px Georgia';
+  ctx.fillStyle = '#17131c'; ctx.fillText('◉', 62, 372); ctx.fillText('✦', 742, 367);
+  ctx.restore();
+
+  drawFighterCard(258, 137, getActive('player'), false);
+  drawFighterCard(702, 137, getActive('enemy'), true);
+
+  // Central ink token.
+  ctx.save();
+  ctx.translate(480, 276);
+  ctx.rotate(Math.sin(time / 780) * .065);
+  ctx.fillStyle = 'rgba(20,16,25,.28)'; ctx.beginPath(); ctx.arc(5, 7, 40, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#17131c'; ctx.beginPath(); ctx.arc(0, 0, 38 + Math.sin(time / 420), 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#fffdf5'; ctx.lineWidth = 4; ctx.stroke();
+  ctx.setLineDash([3, 6]); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 28, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = '#fffdf5'; ctx.textAlign = 'center'; ctx.font = 'bold 18px Courier New'; ctx.fillText('VS', 0, 7);
+  ctx.restore();
+
+  drawPlatform(258, 348, getActive('player').accent);
+  drawPlatform(702, 348, getActive('enemy').accent);
+  drawCanvasHud(getActive('player'), 34, 36, false);
+  drawCanvasHud(getActive('enemy'), 926, 36, true);
+
+  const player = getActive('player');
+  const enemy = getActive('enemy');
+  const playerMotion = getBattleSpriteMotion('player', time);
+  const enemyMotion = getBattleSpriteMotion('enemy', time);
+  const playerAlpha = battle.hitFlash.player > time && Math.floor(time / 45) % 2 ? .3 : 1;
+  const enemyAlpha = battle.hitFlash.enemy > time && Math.floor(time / 45) % 2 ? .3 : 1;
+  ctx.globalAlpha = playerAlpha;
+  drawCharacterSprite(ctx, player, 258, 347, 6, 1, 0, { time, seed: player.index + 1, ...playerMotion });
+  ctx.globalAlpha = enemyAlpha;
+  drawCharacterSprite(ctx, enemy, 702, 347, 6, -1, 0, { time, seed: enemy.index + 5, ...enemyMotion });
+  ctx.globalAlpha = 1;
+  drawStatuses(player, 258, 391);
+  drawStatuses(enemy, 702, 391);
+  drawEffects(time);
+}
+
+function drawDreamBackdrop(time) {
+  ctx.save();
+  ctx.translate(480, 205);
+  ctx.rotate(Math.sin(time / 4200) * .018);
+  const colors = ['#241e2a', '#81729b', '#8aada5', '#d2a6b5'];
+  for (let band = 0; band < 9; band += 1) {
+    ctx.beginPath();
+    const offset = band * 31 - 145;
+    for (let px = -620; px <= 620; px += 14) {
+      const wave = Math.sin(px / 68 + time / 1250 + band * .77) * (9 + band * .9);
+      const bend = (px * px) / 14000 * Math.sin(time / 2600 + band);
+      const py = offset + wave + bend;
+      if (px === -620) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = colors[band % colors.length];
+    ctx.globalAlpha = band % 3 === 0 ? .13 : .07;
+    ctx.lineWidth = band % 2 ? 2 : 5;
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Floating ink eyes, stars, and imperfect pencil dust.
+  for (let i = 0; i < 30; i += 1) {
+    const sx = (i * 91 + 23) % canvas.width;
+    const sy = (i * 53 + 17) % 232;
+    const float = Math.round(Math.sin(time / 650 + i * 1.9) * 3);
+    const blink = Math.sin(time / 470 + i * 1.3) > .55;
+    ctx.fillStyle = i % 4 === 0 ? '#7f7195' : '#241e2a';
+    ctx.globalAlpha = blink ? .34 : .13;
+    if (i % 7 === 0) {
+      ctx.beginPath(); ctx.ellipse(sx, sy + float, 8, blink ? 2 : 4, 0, 0, Math.PI * 2); ctx.strokeStyle = ctx.fillStyle; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillRect(sx - 1, sy - 1 + float, 2, 2);
+    } else {
+      ctx.fillRect(sx, sy + float, i % 5 === 0 ? 4 : 2, i % 5 === 0 ? 4 : 2);
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawFighterCard(x, y, fighter, mirrored) {
+  const width = 178; const height = 216; const left = x - width / 2;
+  ctx.save();
+  ctx.translate(x, y + height / 2);
+  ctx.rotate((mirrored ? 1 : -1) * (.025 + Math.sin(state.lastFrame / 900) * .006));
+  ctx.translate(-x, -(y + height / 2));
+  ctx.fillStyle = 'rgba(24,18,29,.36)';
+  ctx.beginPath(); ctx.roundRect(left + 8, y + 10, width, height, 13); ctx.fill();
+  ctx.fillStyle = '#17131c';
+  ctx.beginPath(); ctx.roundRect(left, y, width, height, 13); ctx.fill();
+  const face = ctx.createLinearGradient(left, y, left + width, y + height);
+  face.addColorStop(0, '#fffdf5'); face.addColorStop(.68, '#eee9f1'); face.addColorStop(1, colorWithAlpha(fighter.accent, .22));
+  ctx.fillStyle = face;
+  ctx.beginPath(); ctx.roundRect(left + 6, y + 6, width - 12, height - 12, 9); ctx.fill();
+  ctx.strokeStyle = '#251e2a'; ctx.lineWidth = 2;
+  ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.roundRect(left + 13, y + 13, width - 26, height - 26, 5); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = '#201a25';
+  ctx.font = 'bold 20px Georgia';
+  ctx.textAlign = mirrored ? 'right' : 'left';
+  ctx.fillText('IX', mirrored ? left + width - 18 : left + 18, y + 33);
+  ctx.fillStyle = fighter.accent;
+  ctx.font = 'bold 25px Georgia';
+  ctx.fillText(fighter.symbol, mirrored ? left + width - 18 : left + 18, y + 57);
+  ctx.restore();
+}
+
+function drawPlatform(x, y, color) {
+  ctx.fillStyle = 'rgba(25,19,30,.3)'; ctx.beginPath(); ctx.ellipse(x + 5, y + 8, 105, 18, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#17131c'; ctx.beginPath(); ctx.ellipse(x, y, 100, 17, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#fffdf5'; ctx.beginPath(); ctx.ellipse(x, y - 2, 93, 13, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = color; ctx.lineWidth = 4; ctx.setLineDash([10, 7]); ctx.beginPath(); ctx.ellipse(x, y - 2, 83, 10, 0, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(255,255,255,.62)'; ctx.fillRect(x - 54, y - 10, 36, 2);
+}
+
+function drawCanvasHud(fighter, x, y, right) {
+  const width = 300;
+  const left = right ? x - width : x;
+  ctx.fillStyle = 'rgba(25,19,30,.28)'; ctx.beginPath(); ctx.roundRect(left + 5, y + 6, width, 63, 5); ctx.fill();
+  ctx.fillStyle = '#17131c'; ctx.beginPath(); ctx.roundRect(left, y, width, 63, 5); ctx.fill();
+  ctx.fillStyle = '#fffdf5'; ctx.beginPath(); ctx.roundRect(left + 4, y + 4, width - 8, 55, 2); ctx.fill();
+  ctx.textAlign = right ? 'right' : 'left';
+  ctx.font = 'bold 13px Courier New'; ctx.fillStyle = '#201a25'; ctx.fillText(fighter.verse[0], right ? x - 15 : x + 15, y + 22);
+  ctx.font = 'bold 9px Courier New'; ctx.fillStyle = fighter.accent; ctx.fillText(fighter.verse[1].toUpperCase(), right ? x - 15 : x + 15, y + 37);
+  const barX = left + 15; const barY = y + 45; const barWidth = width - 30;
+  ctx.fillStyle = '#cbc4d0'; ctx.beginPath(); ctx.roundRect(barX, barY, barWidth, 8, 4); ctx.fill();
+  ctx.fillStyle = fighter.currentHp / fighter.maxHp < .3 ? '#ff6177' : fighter.accent;
+  ctx.beginPath(); ctx.roundRect(barX, barY, Math.max(1, barWidth * fighter.currentHp / fighter.maxHp), 8, 4); ctx.fill();
+  if (fighter.shield) { ctx.fillStyle = '#ffffff'; ctx.fillRect(barX, barY - 3, Math.min(barWidth, fighter.shield * 3), 2); }
+  ctx.textAlign = 'left';
+}
+
+function drawStatuses(fighter, x, y) {
+  const active = [];
+  if (fighter.shield) active.push({ text: `WARD ${fighter.shield} · GUARD`, color: '#b8c7ff' });
+  if (fighter.status.burn) active.push({ text: `BURN ${fighter.status.burn} · TURN`, color: '#ff774f' });
+  if (fighter.status.regen) active.push({ text: `ROOT ${fighter.status.regen} · FRUIT`, color: '#70ef8e' });
+  if (fighter.status.mark) active.push({ text: `MARK ${fighter.status.mark} · DARK`, color: '#62a9ff' });
+  if (fighter.status.weaken) active.push({ text: `WEAK ${fighter.status.weaken} · BLEAK`, color: '#d994ff' });
+  if (fighter.status.seal) active.push({ text: `SEAL ${fighter.status.seal} · KNEEL`, color: '#9d83ff' });
+  ctx.font = '9px Courier New'; ctx.textAlign = 'center';
+  active.forEach((status, index) => {
+    const width = ctx.measureText(status.text).width + 10;
+    const sx = x + (index - (active.length - 1) / 2) * 58;
+    ctx.fillStyle = '#17131c'; ctx.beginPath(); ctx.roundRect(sx - width / 2 - 2, y - 2, width + 4, 20, 5); ctx.fill();
+    ctx.fillStyle = '#fffdf5'; ctx.beginPath(); ctx.roundRect(sx - width / 2, y, width, 16, 3); ctx.fill();
+    ctx.fillStyle = status.color; ctx.fillText(status.text, sx, y + 11);
+  });
+  ctx.textAlign = 'left';
+}
+
+function drawEffects(time) {
+  state.effects = state.effects.filter((effect) => time - effect.start < effect.duration);
+  state.effects.forEach((effect) => {
+    const progress = (time - effect.start) / effect.duration;
+    const x = effect.side === 'player' ? 258 : 702;
+    const direction = effect.side === 'player' ? 1 : -1;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, 1 - progress);
+    if (effect.type === 'hit') {
+      ctx.fillStyle = effect.color;
+      for (let i = 0; i < 10; i += 1) {
+        const angle = (Math.PI * 2 * i) / 10;
+        ctx.fillRect(x + Math.cos(angle) * progress * 80, 270 + Math.sin(angle) * progress * 65, 7, 7);
+      }
+      ctx.fillStyle = '#fff'; ctx.fillRect(x - 42 * direction, 235 - progress * 25, 72 * direction, 5);
+    } else if (effect.type === 'shield') {
+      ctx.strokeStyle = effect.color; ctx.lineWidth = 5;
+      ctx.strokeRect(x - 68 - progress * 10, 180 - progress * 10, 136 + progress * 20, 160 + progress * 20);
+    } else if (effect.type === 'heal' || effect.type === 'focus') {
+      ctx.fillStyle = effect.color;
+      for (let i = 0; i < 8; i += 1) ctx.fillRect(x - 50 + i * 14, 330 - progress * (80 + (i % 3) * 18), 5, 12);
+    } else if (effect.type === 'burn') {
+      ctx.fillStyle = '#ff774f';
+      for (let i = 0; i < 8; i += 1) ctx.fillRect(x - 34 + i * 10, 330 - progress * (90 + (i % 2) * 30), 7, 16);
+    } else if (effect.type === 'mark') {
+      ctx.strokeStyle = effect.color; ctx.lineWidth = 3;
+      ctx.strokeRect(x - 30 - progress * 15, 230 - progress * 15, 60 + progress * 30, 60 + progress * 30);
+    }
+    ctx.globalAlpha = Math.max(0, 1 - progress * 1.15);
+    const effectLines = effect.text.split('\n');
+    ctx.font = `bold ${effectLines.length > 1 ? 12 : 16}px Courier New`; ctx.textAlign = 'center'; ctx.fillStyle = effect.color;
+    effectLines.forEach((line, lineIndex) => ctx.fillText(line, x, 197 + lineIndex * 15 - progress * 45));
+    ctx.restore();
+  });
+}
+
+function drawFrame(time) {
+  drawAnimatedPortraits(time);
+  drawArena(time);
+  state.lastFrame = time;
+  requestAnimationFrame(drawFrame);
+}
+
+startButton.addEventListener('click', startBattle);
+randomButton.addEventListener('click', randomizeTeam);
+swapButton.addEventListener('click', openSwapModal);
+$('#how-to-button').addEventListener('click', () => { sound.click(); openModal('help-modal'); });
+$('#sound-button').addEventListener('click', (event) => {
+  state.muted = !state.muted;
+  sound.setMuted(state.muted);
+  event.currentTarget.setAttribute('aria-pressed', String(state.muted));
+  event.currentTarget.textContent = state.muted ? '×' : '♪';
+  event.currentTarget.setAttribute('aria-label', state.muted ? 'Unmute sound and music' : 'Mute sound and music');
+  if (!state.muted) sound.click();
+});
+$('#play-again-button').addEventListener('click', resetGame);
+document.querySelectorAll('[data-close-modal]').forEach((button) => button.addEventListener('click', closeModal));
+modalBackdrop.addEventListener('click', (event) => { if (event.target === modalBackdrop) closeModal(); });
+window.addEventListener('keydown', (event) => {
+  const modalOpen = !modalBackdrop.hidden;
+  if (event.key === 'Escape' && modalOpen) { closeModal(); return; }
+  if (!state.battle || battleScreen.hidden || modalOpen) return;
+  if (['1', '2', '3'].includes(event.key)) playerAction(Number(event.key) - 1);
+  if (event.key.toLowerCase() === 's') openSwapModal();
+});
+
+renderRoster();
+requestAnimationFrame(drawFrame);
