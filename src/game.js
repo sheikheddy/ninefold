@@ -35,8 +35,14 @@ function fillSplitCanvasText(targetCtx, value, x, y) {
     }
     targetCtx.fillText('II', cursor, y);
     cursor += targetCtx.measureText('II').width + fontSize * .36;
-    targetCtx.fillRect(cursor, y - fontSize * .39, fontSize * .62, Math.max(1, fontSize * .09));
-    cursor += fontSize * .62;
+    const barLength = fontSize * .62;
+    const barThickness = Math.max(1, fontSize * .09);
+    targetCtx.save();
+    targetCtx.translate(cursor + barLength / 2, y - fontSize * .28);
+    targetCtx.rotate(-Math.PI / 30);
+    targetCtx.fillRect(-barLength / 2, -barThickness / 2, barLength, barThickness);
+    targetCtx.restore();
+    cursor += barLength;
   });
   targetCtx.restore();
 }

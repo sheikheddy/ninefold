@@ -116,7 +116,7 @@ h1, h2, h3, p { margin-top: 0; }
   width: .72em;
   line-height: 1;
   text-align: center;
-  transform: rotate(90deg);
+  transform: translateY(.12em) rotate(84deg);
   transform-origin: center;
 }
 
