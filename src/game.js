@@ -754,40 +754,6 @@ function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0, hueBa
     });
     petalCtx.restore();
   }
-  if (fallStart) {
-    // What the flower leaves behind: a head of almond-shaped achenes.
-    const set = Math.min(1, Math.max(0, (now - fallStart - 700) / 700));
-    if (set > 0) {
-      petalCtx.globalAlpha = set;
-      for (let i = 0; i < 17; i += 1) {
-        const angle = (Math.PI * 2 * i) / 17 + .22;
-        const reach = (11 + (i % 3) * 3.2) * set;
-        petalCtx.save();
-        petalCtx.translate(mid + Math.cos(angle) * reach, mid + Math.sin(angle) * reach);
-        petalCtx.rotate(angle + Math.PI / 2);
-        petalCtx.strokeStyle = 'rgba(212,196,162,.7)'; // the feathery tail
-        petalCtx.lineWidth = 1;
-        petalCtx.beginPath();
-        petalCtx.moveTo(0, -1.5);
-        petalCtx.quadraticCurveTo(3.2, -8, 1.6, -15 * set);
-        petalCtx.stroke();
-        petalCtx.fillStyle = '#8c6f4a'; // the almond
-        petalCtx.beginPath();
-        petalCtx.moveTo(0, -5);
-        petalCtx.quadraticCurveTo(3.5, -.8, 0, 5.2);
-        petalCtx.quadraticCurveTo(-3.5, -.8, 0, -5);
-        petalCtx.fill();
-        petalCtx.fillStyle = 'rgba(240,227,200,.55)';
-        petalCtx.beginPath();
-        petalCtx.moveTo(-.3, -3.6);
-        petalCtx.quadraticCurveTo(-2, -.5, -.3, 3);
-        petalCtx.quadraticCurveTo(-1.3, -.5, -.3, -3.6);
-        petalCtx.fill();
-        petalCtx.restore();
-      }
-      petalCtx.globalAlpha = 1;
-    }
-  }
   if (includeCenter) {
     for (let i = 0; i < 26; i += 1) { // the spidery stamen crown
       const angle = (Math.PI * 2 * i) / 26 + .14;
@@ -862,9 +828,7 @@ function renderTeamSlots() {
         };
         requestAnimationFrame(pluck);
       } else {
-        // The petals already fell for this keeper; the seed head stays.
-        slotPetalMemory[i] = character.id;
-        drawSlotPetals(petalCtx, -9000, 0, false, seed, hueBase);
+        slotPetalMemory[i] = character.id; // the petals already fell for this keeper
       }
     } else {
       slotPetalMemory[i] = null;
