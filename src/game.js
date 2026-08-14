@@ -1183,6 +1183,7 @@ async function enemyResponse() {
   tickCycle();
   if (await handleKnockouts()) return;
   battle.round += 1;
+  advanceGeneva();
   battle.locked = false;
   renderBattleUI();
 }
@@ -2363,9 +2364,139 @@ function drawEffects(time) {
   });
 }
 
+// --- A Geneva drive turns the round counter. -------------------------------
+// The mechanism a film projector uses to pull one frame at a time: the crank
+// turns continuously, the four-slot cross indexes a quarter turn and then is
+// locked. One scene, one advance. Entry and exit are tangential, so the cross
+// starts and stops at zero angular velocity.
+const GENEVA_HALF = Math.acos(Math.SQRT1_2); // 45°: driver's engagement arc
+const GENEVA_TURN = 1150;                    // ms for one crank revolution
+const geneva = { indexed: 0, start: -Infinity };
+
+function genevaCrossOffset(alpha) {
+  if (alpha <= -GENEVA_HALF) return 0;
+  if (alpha >= GENEVA_HALF) return -Math.PI / 2;
+  const a = Math.SQRT1_2; // crank radius / centre distance, for four slots
+  return -Math.atan2(a * Math.sin(alpha), 1 - a * Math.cos(alpha)) - GENEVA_HALF;
+}
+
+function advanceGeneva() {
+  geneva.start = performance.now();
+}
+
+function drawGeneva(time) {
+  const canvas = $('#geneva');
+  if (!canvas || battleScreen.hidden) return;
+  const g = canvas.getContext('2d');
+  const ink = '#17131c';
+  const paper = '#fffdf5';
+  const accent = getActive('player')?.accent || '#9d83ff';
+
+  let turn = (time - geneva.start) / GENEVA_TURN;
+  if (turn >= 1) { // the crank has come all the way round; bank the index
+    geneva.indexed += 1;
+    geneva.start = -Infinity;
+    turn = 0;
+  }
+  const spinning = turn > 0 && turn < 1;
+  const alpha = spinning ? -Math.PI + turn * Math.PI * 2 : -Math.PI;
+  const crossAngle = -(Math.PI / 2) * geneva.indexed + genevaCrossOffset(alpha);
+
+  g.setTransform(2, 0, 0, 2, 0, 0); // draw in 76x56 units at 2x for crispness
+  g.clearRect(0, 0, 76, 56);
+  const c = 23;                    // centre distance
+  const pinR = c * Math.SQRT1_2;   // crank radius, set for tangential entry
+  const rim = Math.sqrt(c * c - pinR * pinR); // 16.26: where the pin meets the rim
+  const lockR = 9;                 // lock disc, notched to let the lobes pass
+  const driver = { x: 20, y: 28 };
+  const cross = { x: driver.x + c, y: 28 };
+
+  // The cross first, so its slots and flanks can be cut out of it.
+  g.save();
+  g.translate(cross.x, cross.y);
+  g.rotate(crossAngle - Math.PI / 4); // phase so a slot meets the pin at the rim
+  g.fillStyle = paper;
+  g.strokeStyle = ink;
+  g.lineWidth = 1.5;
+  g.beginPath();
+  g.arc(0, 0, rim, 0, Math.PI * 2);
+  g.fill();
+  g.stroke();
+  g.globalCompositeOperation = 'destination-out';
+  for (let i = 0; i < 4; i += 1) {
+    g.save();
+    g.rotate((Math.PI / 2) * i);
+    g.fillRect(-2.2, c - pinR, 4.4, rim); // the radial slot
+    g.beginPath();
+    g.arc(0, c - pinR, 2.2, 0, Math.PI * 2); // rounded slot bottom
+    g.fill();
+    g.restore();
+    g.save();
+    g.rotate((Math.PI / 2) * i + Math.PI / 4);
+    g.beginPath();
+    g.arc(0, c, lockR + .5, 0, Math.PI * 2); // concave flank riding the lock
+    g.fill();
+    g.restore();
+  }
+  g.globalCompositeOperation = 'source-over';
+  g.restore();
+
+  // Ink the cut edges so the slots read as cut, not painted on.
+  g.save();
+  g.translate(cross.x, cross.y);
+  g.rotate(crossAngle - Math.PI / 4); // phase so a slot meets the pin at the rim
+  g.strokeStyle = ink;
+  g.lineWidth = 1.3;
+  for (let i = 0; i < 4; i += 1) {
+    g.save();
+    g.rotate((Math.PI / 2) * i);
+    g.beginPath();
+    g.moveTo(-2.2, rim); g.lineTo(-2.2, c - pinR);
+    g.arc(0, c - pinR, 2.2, Math.PI, 0, true);
+    g.lineTo(2.2, rim);
+    g.stroke();
+    g.restore();
+  }
+  g.restore();
+
+  // The crank: a lock disc with the clearance notch, the arm, and the pin.
+  g.save();
+  g.translate(driver.x, driver.y);
+  g.rotate(alpha - Math.PI / 2); // pin toward the cross at rest
+  const notchR = rim + .15;
+  const yi = (c * c + lockR * lockR - notchR * notchR) / (2 * c);
+  const xi = Math.sqrt(lockR * lockR - yi * yi);
+  g.fillStyle = paper;
+  g.strokeStyle = ink;
+  g.lineWidth = 1.5;
+  g.beginPath();
+  g.arc(0, 0, lockR, Math.atan2(yi, xi), Math.atan2(yi, -xi), true);
+  g.arc(0, c, notchR, Math.atan2(yi - c, -xi), Math.atan2(yi - c, xi));
+  g.closePath();
+  g.fill();
+  g.stroke();
+  g.fillStyle = ink; // the arm out to the pin
+  g.fillRect(-1.5, 0, 3, pinR);
+  g.fillStyle = accent;
+  g.strokeStyle = ink;
+  g.lineWidth = 1.1;
+  g.beginPath();
+  g.arc(0, pinR, 2.4, 0, Math.PI * 2);
+  g.fill();
+  g.stroke();
+  g.fillStyle = ink;
+  g.beginPath();
+  g.arc(0, 0, 1.8, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+
+  g.setTransform(1, 0, 0, 1, 0, 0);
+}
+
 function drawFrame(time) {
   drawAnimatedPortraits(time);
   drawArena(time);
+  drawGeneva(time);
   state.lastFrame = time;
   requestAnimationFrame(drawFrame);
 }

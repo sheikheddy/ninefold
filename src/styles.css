@@ -228,7 +228,8 @@ h1 em { font-style: normal; color: transparent; -webkit-text-stroke: 1px var(--v
 
 .battle-screen { max-width: 1320px; margin: 0 auto; }
 .battle-heading { display: flex; justify-content: space-between; align-items: end; margin-bottom: 17px; }
-.round-counter { display: flex; align-items: baseline; gap: 10px; }
+.round-counter { display: flex; align-items: center; gap: 10px; }
+.geneva { width: 76px; height: 56px; display: block; flex: none; }
 .round-counter small { color: var(--muted); font-size: 8px; letter-spacing: .16em; }
 .round-counter strong { color: var(--cyan); font-size: 28px; }
 .battle-layout { display: grid; grid-template-columns: minmax(0, 2.25fr) minmax(280px, .75fr); gap: 14px; }
