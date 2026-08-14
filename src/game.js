@@ -682,7 +682,9 @@ function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0, hueBa
     let alpha = 1;
     let wilt = 0;
     if (fallStart) {
-      const dt = now - fallStart - i * 150;
+      // The whole corolla goes at once; only a few frames of jitter separate
+      // one sepal from the next.
+      const dt = now - fallStart + wob(23) * 90;
       if (dt > 0) {
         wilt = Math.min(1, dt / 430); // it browns and curls before it lets go
         const fallT = Math.max(0, dt - 400);
@@ -824,7 +826,7 @@ function renderTeamSlots() {
         const fallStart = performance.now();
         const pluck = (now) => {
           drawSlotPetals(petalCtx, fallStart, now, false, seed, hueBase);
-          if (now < fallStart + 1600 && petals.isConnected) requestAnimationFrame(pluck);
+          if (now < fallStart + 1250 && petals.isConnected) requestAnimationFrame(pluck);
         };
         requestAnimationFrame(pluck);
       } else {
