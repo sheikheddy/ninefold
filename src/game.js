@@ -1354,8 +1354,8 @@ function writeArchiveProgress() {
 function archiveCountLine() {
   const unlocked = state.archive.unlocked;
   if (unlocked === ARCHIVE_FRAGMENTS.length) return 'EVERY FRAGMENT HAS RETURNED<br>THE DARK HAS NOTHING LEFT TO HIDE';
-  if (unlocked === 1) return 'ONE FRAGMENT HAS RETURNED<br>THE REST ARE WAITING IN THE DARK';
-  return `${unlocked} FRAGMENTS HAVE RETURNED<br>THE REST ARE WAITING IN THE DARK`;
+  if (unlocked === 1) return 'ONE FRAGMENT HAS RETURNED';
+  return `${unlocked} FRAGMENTS HAVE RETURNED`;
 }
 
 function updateArchiveProgress() {
@@ -1374,7 +1374,7 @@ function renderArchiveReader() {
   const image = $('#archive-image');
   image.src = ARCHIVE_FRAGMENTS[state.archive.selected];
   image.alt = `Unlocked story fragment ${state.archive.selected + 1} of ${state.archive.unlocked}`;
-  $('#archive-reader-label').innerHTML = `FRAGMENT ${ordinal} SURFACES<br>WHAT WAS BURIED KEEPS SPEAKING`;
+  $('#archive-reader-label').innerHTML = `FRAGMENT ${ordinal}`;
   $('#archive-previous').disabled = state.archive.selected === 0;
   $('#archive-next').disabled = state.archive.selected === state.archive.unlocked - 1;
   [...$('#archive-index').children].forEach((button, buttonIndex) => {
