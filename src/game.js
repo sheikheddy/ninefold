@@ -1,7 +1,9 @@
 import './styles.css';
 
 function splitThreeParts(value) {
-  const normalized = String(value).replace(/(^|\D)03(?=\D|$)/g, (_, prefix) => `${prefix}3`);
+  const normalized = String(value)
+    .replace(/\bthree\b/gi, '៣')
+    .replace(/(^|\D)03(?=\D|$)/g, (_, prefix) => `${prefix}3`);
   return normalized.split(/(\bIII\b|3)/g).filter(Boolean).map((part) => ({
     text: part,
     glyph: part === '3' || part === 'III',
@@ -57,7 +59,7 @@ function createSplitThree() {
 }
 
 function splitThreeTextNode(node) {
-  if (!/[3]|\bIII\b/.test(node.nodeValue || '') || node.parentElement?.closest('.split-three, script, style, textarea')) return;
+  if (!/[3]|\bIII\b|\bthree\b/i.test(node.nodeValue || '') || node.parentElement?.closest('.split-three, script, style, textarea')) return;
   const replacement = document.createDocumentFragment();
   splitThreeParts(node.nodeValue).forEach((part) => {
     replacement.append(part.glyph ? createSplitThree() : document.createTextNode(part.text));
