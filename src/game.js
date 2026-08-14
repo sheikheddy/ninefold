@@ -3,9 +3,11 @@ import './styles.css';
 const ARCHIVE_STORAGE_KEY = 'ninefold.archive.unlocked.v1';
 const FTUE_STORAGE_KEY = 'ninefold.ftue.complete.v1';
 const INITIAL_ARCHIVE_UNLOCKS = 3;
-const ARCHIVE_FRAGMENTS = Array.from({ length: 14 }, (_, index) => (
-  `/archive/fragment-${String(index + 1).padStart(2, '0')}.png`
-));
+const ARCHIVE_FRAGMENTS = Array.from({ length: 14 }, (_, index) => {
+  const name = `fragment-${String(index + 1).padStart(2, '0')}.png`;
+  // Single-file builds (the shared/hosted page) carry the art inline.
+  return window.ARCHIVE_EMBED?.[name] || `/archive/${name}`;
+});
 
 function readArchiveProgress() {
   try {
@@ -2208,8 +2210,124 @@ window.addEventListener('keydown', (event) => {
   if (event.key.toLowerCase() === 's') openSwapModal();
 });
 
+// --- Shed hairs on the glass: long, twisty, wipeable, patient to return. ---
+const HAIR_COUNT = 5;
+const hairCanvas = document.createElement('canvas');
+hairCanvas.className = 'shed-hair';
+hairCanvas.setAttribute('aria-hidden', 'true');
+document.body.appendChild(hairCanvas);
+const hairCtx = hairCanvas.getContext('2d');
+const hairPalette = ['#1d1512', '#2a1d15', '#161010', '#33241a', '#241a14'];
+
+function shedHairPath() {
+  const margin = 36;
+  const width = Math.max(320, window.innerWidth);
+  const height = Math.max(320, window.innerHeight);
+  let x = margin + Math.random() * (width - margin * 2);
+  let y = margin + Math.random() * (height - margin * 2);
+  let heading = Math.random() * Math.PI * 2;
+  let curvature = (Math.random() - .5) * .1;
+  const steps = 150 + Math.floor(Math.random() * 150);
+  const points = [{ x, y }];
+  for (let i = 0; i < steps; i += 1) {
+    curvature += (Math.random() - .5) * .035;
+    curvature = Math.max(-.24, Math.min(.24, curvature));
+    if (Math.random() < .025) curvature = (Math.random() - .5) * .5; // a sudden kink
+    heading += curvature;
+    x += Math.cos(heading) * 3.1;
+    y += Math.sin(heading) * 3.1;
+    if (x < margin || x > width - margin) { heading = Math.PI - heading; curvature *= .4; }
+    if (y < margin || y > height - margin) { heading = -heading; curvature *= .4; }
+    points.push({ x, y });
+  }
+  return points;
+}
+
+const hairStrands = Array.from({ length: HAIR_COUNT }, (_, index) => ({
+  index,
+  points: null,
+  color: hairPalette[index % hairPalette.length],
+  alpha: 0,
+  landing: true,
+  wipe: null,
+  returnAt: 0,
+}));
+
+function drawHairStrand(strand) {
+  const points = strand.points;
+  const drift = strand.wipe ? strand.wipe.drift : 0;
+  const drawPass = (offsetX, offsetY, color, lineWidth, alpha) => {
+    hairCtx.strokeStyle = color;
+    hairCtx.lineWidth = lineWidth;
+    hairCtx.globalAlpha = alpha;
+    hairCtx.beginPath();
+    points.forEach((point, i) => {
+      const px = point.x + offsetX + drift;
+      const py = point.y + offsetY + drift * .4;
+      if (i === 0) hairCtx.moveTo(px, py); else hairCtx.lineTo(px, py);
+    });
+    hairCtx.stroke();
+  };
+  drawPass(0, 0, strand.color, 1.25, strand.alpha);
+  drawPass(.7, -.7, 'rgba(140,104,72,.3)', .45, strand.alpha); // a thin sheen along one edge
+}
+
+function drawHair(time) {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  if (hairCanvas.width !== width || hairCanvas.height !== height) {
+    hairCanvas.width = width;
+    hairCanvas.height = height;
+    hairStrands.forEach((strand) => { if (!strand.wipe && strand.points) strand.points = shedHairPath(); });
+  }
+  hairCtx.clearRect(0, 0, width, height);
+  hairCtx.lineCap = 'round';
+  hairCtx.lineJoin = 'round';
+  hairStrands.forEach((strand) => {
+    if (!strand.points) {
+      if (!strand.returnAt) strand.returnAt = time + strand.index * 900; // first sheds arrive one by one
+      if (time >= strand.returnAt) {
+        strand.points = shedHairPath();
+        strand.alpha = 0;
+        strand.landing = true;
+        strand.wipe = null;
+      } else return;
+    }
+    if (strand.landing) {
+      strand.alpha = Math.min(.85, strand.alpha + .03);
+      if (strand.alpha >= .85) strand.landing = false;
+    }
+    if (strand.wipe) {
+      strand.wipe.drift += 2.6;
+      strand.alpha -= .07;
+      if (strand.alpha <= 0) {
+        strand.points = null;
+        strand.wipe = null;
+        strand.returnAt = time + 22000 + Math.random() * 21000;
+        return;
+      }
+    }
+    drawHairStrand(strand);
+  });
+  hairCtx.globalAlpha = 1;
+  requestAnimationFrame(drawHair);
+}
+
+document.addEventListener('pointerdown', (event) => {
+  hairStrands.forEach((strand) => {
+    if (!strand.points || strand.wipe || strand.landing) return;
+    const hit = strand.points.some((point) => Math.hypot(point.x - event.clientX, point.y - event.clientY) < 10);
+    if (!hit) return;
+    strand.wipe = { drift: 0 };
+    sound.tone(640 - strand.index * 40, .05, 'triangle', .02);
+    event.preventDefault();
+    event.stopPropagation();
+  });
+}, true);
+
 installSplitThreeTypography();
 updateArchiveProgress();
 renderRoster();
 openArchiveIntro();
 requestAnimationFrame(drawFrame);
+requestAnimationFrame(drawHair);
