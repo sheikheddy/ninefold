@@ -90,7 +90,7 @@ function createSplitThree() {
 }
 
 function splitThreeTextNode(node) {
-  if (!/[3]|\bIII\b|\bthree\b/i.test(node.nodeValue || '') || node.parentElement?.closest('.split-three, script, style, textarea')) return;
+  if (!/[3]|\bIII\b|\bthree\b/i.test(node.nodeValue || '') || node.parentElement?.closest('.split-three, [data-plain-number], script, style, textarea')) return;
   const replacement = document.createDocumentFragment();
   splitThreeParts(node.nodeValue).forEach((part) => {
     replacement.append(part.glyph ? createSplitThree() : document.createTextNode(part.text));
@@ -224,6 +224,8 @@ const randomButton = $('#random-button');
 const archiveButton = $('#archive-button');
 const ftueCoach = $('#ftue-coach');
 const selectionHint = $('#selection-hint');
+const titleSelectionMarks = [...document.querySelectorAll('[data-title-selection-mark]')]
+  .sort((first, second) => Number(first.dataset.titleSelectionMark) - Number(second.dataset.titleSelectionMark));
 const modalBackdrop = $('#modal-backdrop');
 const abilityList = $('#ability-list');
 const battleLog = $('#battle-log');
@@ -266,7 +268,7 @@ const FTUE_STEPS = {
   },
   enter: {
     index: 2,
-    kicker: '[▄ ▄ ▄ ▄▄▄ ▄▄▄ ▄▄▄ ▄ ▄ ▄ TOUCH: THE DOOR]<br>THE CHORUS HAS LEARNED YOUR NAME',
+    kicker: '[THIRD TOUCH: THE DOOR]<br>THE CHORUS HAS LEARNED YOUR NAME',
     title: 'ENTER THE FIGURE NOW<br>LET THE ORDEAL ANSWER BACK',
     copy: 'Your first name will lead the scene.<br>The others wait inside the wound.',
     target: () => startButton,
@@ -789,57 +791,59 @@ function drawSlotPetals(petalCtx, fallStart, now, includeCenter, seed = 0, hueBa
 }
 
 function renderTeamSlots() {
-  teamSlots.innerHTML = '';
-  for (let i = 0; i < 3; i += 1) {
-    const id = state.selected[i];
-    const character = CHARACTERS.find((item) => item.id === id);
-    const slot = document.createElement('div');
-    slot.className = `team-slot${character ? ' filled' : ''}`;
-    slot.style.setProperty('--slot-color', character?.accent || '#33405d');
-    // A freshly emptied slot sheds its pressed specimen and grows a new one.
-    if (!slotSpecimens[i] || (!character && slotPetalMemory[i])) slotSpecimens[i] = randomSpecimen();
-    const specimen = slotSpecimens[i];
-    const seed = specimenSeed(specimen);
-    const hueBase = 243 + SPECIMEN_SPECIES.indexOf(specimen.species) * 2.1;
-    const label = specimenLabel(specimen);
-    slot.title = character ? `${character.name} presses ${label}` : label;
-    slot.setAttribute('aria-label', character
-      ? `Slot ${i + 1}: ${character.name}, pressing ${label}`
-      : `Slot ${i + 1}: empty — ${label}`);
-    slot.addEventListener('pointerenter', () => {
-      const caption = $('#specimen-caption');
-      if (caption) caption.textContent = slot.title;
-    });
-    const petals = document.createElement('canvas');
-    petals.width = 280; petals.height = 280;
-    petals.className = 'slot-petals';
-    slot.appendChild(petals);
-    const petalCtx = petals.getContext('2d');
-    if (character) {
-      const mini = document.createElement('canvas');
-      mini.width = 64; mini.height = 64;
-      mini.dataset.characterId = character.id;
-      drawPortrait(mini.getContext('2d'), character);
-      slot.appendChild(mini);
-      if (slotPetalMemory[i] !== character.id && !hairStill) {
-        slotPetalMemory[i] = character.id;
-        const fallStart = performance.now();
-        const pluck = (now) => {
-          drawSlotPetals(petalCtx, fallStart, now, false, seed, hueBase);
-          if (now < fallStart + 1250 && petals.isConnected) requestAnimationFrame(pluck);
-        };
-        requestAnimationFrame(pluck);
+  if (teamSlots) {
+    teamSlots.innerHTML = '';
+    for (let i = 0; i < 3; i += 1) {
+      const id = state.selected[i];
+      const character = CHARACTERS.find((item) => item.id === id);
+      const slot = document.createElement('div');
+      slot.className = `team-slot${character ? ' filled' : ''}`;
+      slot.style.setProperty('--slot-color', character?.accent || '#33405d');
+      // A freshly emptied slot sheds its pressed specimen and grows a new one.
+      if (!slotSpecimens[i] || (!character && slotPetalMemory[i])) slotSpecimens[i] = randomSpecimen();
+      const specimen = slotSpecimens[i];
+      const seed = specimenSeed(specimen);
+      const hueBase = 243 + SPECIMEN_SPECIES.indexOf(specimen.species) * 2.1;
+      const label = specimenLabel(specimen);
+      slot.title = character ? `${character.name} presses ${label}` : label;
+      slot.setAttribute('aria-label', character
+        ? `Slot ${i + 1}: ${character.name}, pressing ${label}`
+        : `Slot ${i + 1}: empty — ${label}`);
+      slot.addEventListener('pointerenter', () => {
+        const caption = $('#specimen-caption');
+        if (caption) caption.textContent = slot.title;
+      });
+      const petals = document.createElement('canvas');
+      petals.width = 280; petals.height = 280;
+      petals.className = 'slot-petals';
+      slot.appendChild(petals);
+      const petalCtx = petals.getContext('2d');
+      if (character) {
+        const mini = document.createElement('canvas');
+        mini.width = 64; mini.height = 64;
+        mini.dataset.characterId = character.id;
+        drawPortrait(mini.getContext('2d'), character);
+        slot.appendChild(mini);
+        if (slotPetalMemory[i] !== character.id && !hairStill) {
+          slotPetalMemory[i] = character.id;
+          const fallStart = performance.now();
+          const pluck = (now) => {
+            drawSlotPetals(petalCtx, fallStart, now, false, seed, hueBase);
+            if (now < fallStart + 1250 && petals.isConnected) requestAnimationFrame(pluck);
+          };
+          requestAnimationFrame(pluck);
+        } else {
+          slotPetalMemory[i] = character.id; // the petals already fell for this keeper
+        }
       } else {
-        slotPetalMemory[i] = character.id; // the petals already fell for this keeper
+        slotPetalMemory[i] = null;
+        drawSlotPetals(petalCtx, 0, 0, true, seed, hueBase);
       }
-    } else {
-      slotPetalMemory[i] = null;
-      drawSlotPetals(petalCtx, 0, 0, true, seed, hueBase);
+      teamSlots.appendChild(slot);
     }
-    teamSlots.appendChild(slot);
+    const caption = $('#specimen-caption');
+    if (caption && !caption.textContent) caption.textContent = teamSlots.firstChild?.title || '';
   }
-  const caption = $('#specimen-caption');
-  if (caption && !caption.textContent) caption.textContent = teamSlots.firstChild?.title || '';
   startButton.disabled = state.selected.length !== 3;
   // A full chorus pins the door to the bottom of the screen.
   $('.selection-footer')?.classList.toggle('ready', state.selected.length === 3);
@@ -849,6 +853,7 @@ function renderTeamSlots() {
     'TWO BODIES MAKE A SECRET;<br>THE THIRD WILL MAKE IT FATE.',
     'THREE NAMES INSIDE THE MOUTH;<br>SAY GO, AND BECOME THEIR AFTERMATH.',
   ];
+  titleSelectionMarks.forEach((mark, index) => mark.classList.toggle('filled', index < state.selected.length));
   selectionHint.innerHTML = selectionVerses[state.selected.length];
   syncFtueSelection();
 }
@@ -945,20 +950,64 @@ function renderAbilities(player) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'ability-button';
+    button.dataset.plainNumber = '';
     button.style.setProperty('--ability-color', index === 2 ? player.accent : index === 1 ? '#9d83ff' : '#61e7e1');
     button.disabled = disabled;
-    let cost = ability.cost
-      ? `${ability.cost} DESIRE<br>TO BECOME THE ACT`
-      : `GAIN ${ability.gain || 0} DESIRE<br>THE BODY LEARNS TO WANT`;
-    if (cooldown > 0) cost = `WAIT ${cooldown} BREATH${cooldown === 1 ? '' : 'S'}<br>THE SCENE CONTINUES WITHOUT YOU`;
-    if (sealed) cost = 'THE LAST WORD IS MISSING<br>SILENCE WEARS ITS SHAPE';
+    const effect = getAbilitySummary(ability);
+    let status = 'READY';
+    let reason = ability.cost ? `COSTS ${ability.cost} DESIRE` : `BUILDS ${ability.gain || 0} DESIRE`;
+    if (state.battle.locked) {
+      status = 'WAIT';
+      reason = 'THE OTHER SIDE IS ACTING';
+    } else if (cooldown > 0) {
+      status = 'COOLING DOWN';
+      reason = `AVAILABLE IN ${cooldown} TURN${cooldown === 1 ? '' : 'S'}`;
+    } else if (sealed) {
+      status = 'SEALED';
+      reason = 'UNAVAILABLE UNTIL SEAL ENDS';
+    } else if (insufficient) {
+      status = 'NEEDS DESIRE';
+      reason = `${ability.cost - player.focus} MORE TO UNLOCK`;
+    }
+    button.dataset.status = disabled ? 'blocked' : 'ready';
+    button.title = `${effect}. ${status}: ${reason}.`;
+    button.setAttribute('aria-label', `Move ${index + 1}: ${ability.name}. ${effect}. ${status}: ${reason}.`);
     button.innerHTML = `
       <span class="ability-icon">${ability.icon}</span>
-      <span class="ability-copy"><strong>${index + 1}. ${ability.name}</strong><small>${ability.desc}</small></span>
-      <span class="ability-cost${!disabled ? ' ready' : ''}">${cost}</span>`;
+      <span class="ability-copy"><strong>${index + 1}. ${ability.name}</strong><small>${ability.desc}</small><small class="ability-effect">${effect}</small></span>
+      <span class="ability-status"><strong>${status}</strong><small>${reason}</small></span>`;
     button.addEventListener('click', () => playerAction(index));
     abilityList.appendChild(button);
   });
+}
+
+function getAbilitySummary(ability) {
+  const details = [];
+  if (ability.kind === 'damage') details.push('ATTACK');
+  if (ability.kind === 'shield') details.push(`ADD ${ability.power} SHIELD`);
+  if (ability.kind === 'heal') details.push(`HEAL ${ability.power} HP`);
+  if (ability.kind === 'mark') details.push('MARK ENEMY FOR 2 TURNS');
+  if (ability.kind === 'weaken') details.push('WEAKEN ENEMY FOR 2 TURNS');
+  if (ability.kind === 'regen') details.push('REGENERATE FOR 3 TURNS');
+  if (ability.kind === 'focus') details.push(`ADD ${ability.power} DESIRE`);
+  if (ability.effect === 'burn') details.push('BURN FOR 3 TURNS');
+  if (ability.effect === 'weaken') details.push('WEAKEN FOR 2 TURNS');
+  if (ability.effect === 'seal') details.push('SEAL MOVE 3 FOR 2 TURNS');
+  if (ability.heal) details.push(`HEAL ${ability.heal} HP`);
+  if (ability.revive) details.push('REVIVE AN ALLY');
+  if (ability.pierce) details.push('IGNORES SHIELD');
+  return details.join(' · ');
+}
+
+function getAbilityActionLabel(ability, result) {
+  if (ability.kind === 'damage') return `ATTACK · ${result.damage} DAMAGE`;
+  if (ability.kind === 'shield') return `DEFEND · +${ability.power} SHIELD`;
+  if (ability.kind === 'heal') return result.healed ? `HEAL · +${result.healed} HP` : 'HEAL · HP ALREADY FULL';
+  if (ability.kind === 'mark') return 'MARK ENEMY · 2 TURNS';
+  if (ability.kind === 'weaken') return 'WEAKEN ENEMY · 2 TURNS';
+  if (ability.kind === 'regen') return 'REGENERATE · 3 TURNS';
+  if (ability.kind === 'focus') return `FOCUS · +${ability.power} DESIRE`;
+  return 'ACTION';
 }
 
 function renderTeamStrip(side) {
@@ -1024,12 +1073,13 @@ function applyDamage(target, damage, pierce = false) {
 
 function executeAbility(actor, target, ability, index) {
   const motionNow = performance.now();
+  const targetsOpponent = ['damage', 'mark', 'weaken'].includes(ability.kind);
   state.battle.motion[actor.side] = {
-    type: 'attack', start: motionNow, duration: 680, characterId: actor.id, abilityIndex: index,
+    type: targetsOpponent ? 'attack' : 'cast', start: motionNow, duration: 680, characterId: actor.id, abilityIndex: index,
   };
-  state.battle.motion[target.side] = { type: 'hurt', start: motionNow + 185, duration: 430 };
+  if (targetsOpponent) state.battle.motion[target.side] = { type: 'hurt', start: motionNow + 185, duration: 430 };
   addEffect('lore', actor.side, actor.accent, '', {
-    characterId: actor.id, abilityIndex: index, targetSide: target.side, duration: 1040,
+    characterId: actor.id, abilityIndex: index, targetSide: targetsOpponent ? target.side : actor.side, duration: 1040,
   });
   if (ability.cost) actor.focus = Math.max(0, actor.focus - ability.cost);
   else actor.focus = Math.min(100, actor.focus + (ability.gain || 0));
@@ -1134,7 +1184,9 @@ function executeAbility(actor, target, ability, index) {
   if (result.blocked) detail += `, though ${result.blocked} met the shield`;
   if (result.healed && !result.damage) detail = `, restoring ${result.healed}`;
   addLog(`<b>${actor.name}</b> performs ${ability.name}${detail};<br>the act survives inside the other.`, actor.side);
-  announce(`${actor.name}: THE ACT`, `${ability.name}: THE AFTERMATH`);
+  const actionLabel = getAbilityActionLabel(ability, result);
+  addEffect('action', targetsOpponent ? target.side : actor.side, actor.accent, actionLabel, { duration: 1100 });
+  announce(actionLabel, ability.name);
   return result;
 }
 
@@ -1912,6 +1964,21 @@ function getBattleSpriteMotion(side, time) {
       rotate: direction * lunge * .075,
       scaleX: 1 + lunge * .08,
       scaleY: 1 - lunge * .045,
+    };
+  }
+  if (current.type === 'cast') {
+    const direction = side === 'player' ? 1 : -1;
+    const pulse = Math.sin(progress * Math.PI);
+    return {
+      energy: 2.15,
+      signature: current.characterId,
+      signatureProgress: progress,
+      abilityIndex: current.abilityIndex,
+      offsetX: direction * Math.sin(progress * Math.PI * 2) * 5,
+      offsetY: -pulse * 14,
+      rotate: direction * Math.sin(progress * Math.PI * 2) * .035,
+      scaleX: 1 + pulse * .12,
+      scaleY: 1 + pulse * .12,
     };
   }
   const recoil = Math.sin(progress * Math.PI * 6) * (1 - progress);
